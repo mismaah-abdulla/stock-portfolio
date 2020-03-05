@@ -39,7 +39,7 @@
         dense
       >
         <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-        <v-toolbar-title>Stocks</v-toolbar-title>
+        <v-toolbar-title>Markets</v-toolbar-title>
     </v-app-bar>
   </div>
 </template>

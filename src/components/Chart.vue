@@ -25,6 +25,11 @@
             }]
           },
           options: {
+            elements: {
+              line: {
+                tension: 0
+              }
+            },
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -40,19 +45,15 @@
       mounted () {
         this.loaded = false
         try{
-          fetch('http://localhost/AAPL')
+          fetch('http://localhost/BABA')
           .then(response => response.json())
           .then(data =>{
-            // console.log(data)
-            // this.stockData.labels = Object.values(data.Earnings.Annual).map(x => x.date)
-            // this.stockData.datasets.data = Object.values(data.Earnings.Annual).map(x => x.epsActual)
             this.stockData = {
-              labels: Object.values(data.Earnings.Annual).map(x => x.date),
+              labels: Object.values(data.Earnings.Annual).reverse().map(x => x.date),
               datasets: [{
                 label: data.General.Name,
-                data: Object.values(data.Earnings.Annual).map(x => x.epsActual),
+                data: Object.values(data.Earnings.Annual).reverse().map(x => x.epsActual),
                 borderColor: [
-                  'rgba(4, 4, 42, 1)',
                   'rgba(4, 4, 42, 1)',
                 ],
                 borderWidth: 2

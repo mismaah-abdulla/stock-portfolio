@@ -45,14 +45,14 @@
       mounted () {
         this.loaded = false
         try{
-          fetch('http://localhost/BABA')
+          fetch('http://localhost/AAPL')
           .then(response => response.json())
           .then(data =>{
             this.stockData = {
-              labels: Object.values(data.Earnings.Annual).reverse().map(x => x.date),
+              labels: Object.values(data.Earnings.History).reverse().map(x => x.date),
               datasets: [{
                 label: data.General.Name,
-                data: Object.values(data.Earnings.Annual).reverse().map(x => x.epsActual),
+                data: Object.values(data.Earnings.History).reverse().map(x => x.epsActual),
                 borderColor: [
                   'rgba(4, 4, 42, 1)',
                 ],

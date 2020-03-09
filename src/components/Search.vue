@@ -38,9 +38,7 @@ export default {
     Chart,
   },
   data: () => ({
-    symbols: [],
     symbolsExchangesNames: [],
-    symbolsAndNames: [],
     isLoading: false,
     model: null,
     search: null
@@ -62,14 +60,12 @@ export default {
         .then(res => res.json())
         .then(res => {
           for(let i of res){
-            this.symbols.push(i)
             this.symbolsExchangesNames.push({
               Code: i.Code,
               Exchange: i.Exchange,
               Name: i.Name,
               CodeAndName: `${i.Code} ${i.Name}`
             })
-            this.symbolsAndNames.push(`${i.Code} ${i.Name}`)
           }
         })
         .catch(err => {

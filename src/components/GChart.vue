@@ -15,6 +15,10 @@ export default {
   components: {
     GChart,
   },
+  props: {
+    exchangeCode: String,
+    symbol: String
+  },
   data () {
     return {
       loaded: false,
@@ -31,8 +35,8 @@ export default {
   },
   mounted () {
     this.loaded = false
-    let exchangeCode = 'US'
-    let symbol = 'AAPL'
+    let exchangeCode = this.$props.exchangeCode
+    let symbol = this.$props.symbol
     let eodAPI = `http://localhost/API/EOD/${exchangeCode}/${symbol}`
     try{
       fetch(eodAPI)

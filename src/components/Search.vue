@@ -4,17 +4,6 @@
       color="grey darken-2"
       dark
     >
-      <!-- <v-card-title class="headline grey darken-3">
-        Search for Stock Symbols
-      </v-card-title> -->
-      <v-card-text>
-        <!-- Explore hundreds of free API's ready for consumption! For more information visit
-        <a
-          class="grey--text text--lighten-3"
-          href="https://github.com/toddmotto/public-apis"
-          target="_blank"
-        >the Github repository</a>. -->
-      </v-card-text>
       <v-card-text>
         <v-autocomplete
           v-model="model"
@@ -24,16 +13,19 @@
           color="white"
           hide-no-data
           hide-selected
-          item-text="Description"
-          item-value="API"
-          label="Public APIs"
+          cache-items
+          clearable
+          dense
+          item-text="CodeAndName"
+          item-value="Name"
+          label="Stock symbols or names"
           placeholder="Start typing to Search"
           prepend-icon="mdi-account-search"
           return-object
         ></v-autocomplete>
       </v-card-text>
       <v-divider></v-divider>
-      <v-expand-transition>
+      <!-- <v-expand-transition>
         <v-list v-if="model" class="red lighten-3">
           <v-list-tile
             v-for="(field, i) in fields"
@@ -45,8 +37,8 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-      </v-expand-transition>
-      <v-card-actions>
+      </v-expand-transition> -->
+      <!-- <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
           :disabled="!model"
@@ -56,10 +48,10 @@
           Clear
           <v-icon right>mdi-close-circle</v-icon>
         </v-btn>
-      </v-card-actions>
+      </v-card-actions> -->
       
     </v-card>
-    <Chart/>
+    <Chart v-if="model!=null" :exchangeCode="model.Exchange" :symbol="model.Code"/>
   </div>
 </template>
 
@@ -71,32 +63,27 @@ export default {
     Chart,
   },
   data: () => ({
-    descriptionLimit: 60,
-    entries: [],
+    symbols: [],
+    symbolsExchangesNames: [],
+    symbolsAndNames: [],
     isLoading: false,
     model: null,
     search: null
   }),
 
   computed: {
-    fields () {
-      if (!this.model) return []
+    // fields () {
+    //   if (!this.model) return []
 
-      return Object.keys(this.model).map(key => {
-        return {
-          key,
-          value: this.model[key] || 'n/a'
-        }
-      })
-    },
+    //   return Object.keys(this.model).map(key => {
+    //     return {
+    //       key,
+    //       value: this.model[key] || 'n/a'
+    //     }
+    //   })
+    // },
     items () {
-      return this.entries.map(entry => {
-        const Description = entry.Description.length > this.descriptionLimit
-          ? entry.Description.slice(0, this.descriptionLimit) + '...'
-          : entry.Description
-
-        return Object.assign({}, entry, { Description })
-      })
+      return this.symbolsExchangesNames
     }
   },
 
@@ -112,12 +99,19 @@ export default {
       this.isLoading = true
 
       // Lazily load input items
-      fetch('https://api.publicapis.org/entries')
+      fetch('http://localhost/API/symbols/SG')
         .then(res => res.json())
         .then(res => {
-          const { count, entries } = res
-          this.count = count
-          this.entries = entries
+          for(let i of res){
+            this.symbols.push(i)
+            this.symbolsExchangesNames.push({
+              Code: i.Code,
+              Exchange: i.Exchange,
+              Name: i.Name,
+              CodeAndName: `${i.Code} ${i.Name}`
+            })
+            this.symbolsAndNames.push(`${i.Code} ${i.Name}`)
+          }
         })
         .catch(err => {
           console.log(err)

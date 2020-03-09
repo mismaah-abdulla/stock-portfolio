@@ -1,5 +1,6 @@
 <template>
     <v-container fluid>
+      <v-btn v-on:click="duration = 5">5D</v-btn>
       <GChart v-if="loaded"
       type="CandlestickChart"
       :data="stockData"
@@ -22,6 +23,7 @@ export default {
   data () {
     return {
       loaded: false,
+      duration: 30,
       stockData: [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']],
       options: {
         legend: 'Intraday Stock',
@@ -35,14 +37,12 @@ export default {
   },
   mounted () {
     this.loaded = false
-    let exchangeCode = this.$props.exchangeCode
-    let symbol = this.$props.symbol
-    let eodAPI = `http://localhost/API/EOD/${exchangeCode}/${symbol}`
+    let eodAPI = `http://localhost/API/EOD/${this.$props.exchangeCode}/${this.$props.symbol}`
     try{
       fetch(eodAPI)
       .then(response => response.json())
       .then(data =>{
-        for(let i = data.length-60; i < data.length; i++){
+        for(let i = data.length-this.duration; i < data.length; i++){
           let moment = require('moment')
           let date = new Date(data[i].date)
           let daymonth = moment(new Date(date)).format("DD MMM")

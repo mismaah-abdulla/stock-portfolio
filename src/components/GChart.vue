@@ -1,6 +1,5 @@
 <template>
     <v-container fluid>
-      <Search></Search>
       <GChart v-if="loaded"
       type="CandlestickChart"
       :data="stockData"
@@ -10,12 +9,11 @@
 </template>
 <script>
 import { GChart } from 'vue-google-charts'
-import Search from './Search.vue'
+
 export default {
   name: "Chart",
   components: {
     GChart,
-    Search,
   },
   data () {
     return {

@@ -1,5 +1,6 @@
 <template>
     <v-container fluid>
+      <Search></Search>
       <GChart v-if="loaded"
       type="CandlestickChart"
       :data="stockData"
@@ -9,14 +10,17 @@
 </template>
 <script>
 import { GChart } from 'vue-google-charts'
+import Search from './Search.vue'
 export default {
+  name: "Chart",
   components: {
     GChart,
+    Search,
   },
   data () {
     return {
       loaded: false,
-      stockData: [['Date', 'OHLC', 'Null', 'Null', 'Null']],
+      stockData: [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']],
       options: {
         legend: 'Intraday Stock',
         bar: { groupWidth: '100%' },
@@ -36,7 +40,6 @@ export default {
       fetch(eodAPI)
       .then(response => response.json())
       .then(data =>{
-        console.log(data)
         for(let i = data.length-60; i < data.length; i++){
           let moment = require('moment')
           let date = new Date(data[i].date)

@@ -1,10 +1,11 @@
 <template>
     <v-container fluid>
-      <v-btn v-on:click="duration = 5">5D</v-btn>
+      <v-btn @click="duration = 5">5D</v-btn>
       <GChart v-if="loaded"
       type="CandlestickChart"
       :data="stockData"
       :options="options"
+      :key="duration"
       />
     </v-container>
 </template>
@@ -25,19 +26,13 @@ export default {
       loaded: false,
       duration: 30,
       stockData: [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']],
-      options: {
-        legend: 'Intraday Stock',
-        bar: { groupWidth: '100%' },
-        candlestick: {
-          fallingColor: { strokeWidth: 0, fill: '#a52714' },
-          risingColor: { strokeWidth: 0, fill: '#0f9d58' }
-        }
-      }
+      options: null
     }
   },
   mounted () {
     this.loaded = false
-    let eodAPI = `http://localhost/API/EOD/${this.$props.exchangeCode}/${this.$props.symbol}`
+    let eodAPI = `http://localhost/API/EOD/US/${this.$props.symbol}`
+    // let eodAPI = `http://localhost/API/EOD/${this.$props.exchangeCode}/${this.$props.symbol}`
     try{
       fetch(eodAPI)
       .then(response => response.json())

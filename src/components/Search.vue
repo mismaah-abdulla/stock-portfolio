@@ -26,7 +26,7 @@
       </v-card-text>
       <v-divider></v-divider>
     </v-card>
-    <Chart v-if="model!=null" :exchangeCode="model.Exchange" :symbol="model.Code"/>
+    <Chart v-if="model" :exchangeCode="model.Exchange" :symbol="model.Code"/>
   </div>
 </template>
 
@@ -56,7 +56,7 @@ export default {
       if (this.items.length > 0) return
       if (this.isLoading) return
       this.isLoading = true
-      fetch('http://localhost/API/symbols/SG')
+      fetch('http://localhost/API/symbols/US')
         .then(res => res.json())
         .then(res => {
           for(let i of res){

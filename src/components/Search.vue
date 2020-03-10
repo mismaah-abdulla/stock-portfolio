@@ -54,7 +54,7 @@ export default {
       if (this.items.length > 0) return
         if (this.isLoading) return
         this.isLoading = true
-        fetch('http://localhost/API/symbols/US')
+        fetch('http://192.168.1.250/API/symbols/US')
           .then(res => res.json())
           .then(res => {
             for(let i of res){

@@ -1,9 +1,9 @@
 <template>
     <v-container fluid>
       <v-row justify="center">
-        <v-column class="px-2" v-for="button in buttons" :key="button.duration">
+        <div class="px-2" v-for="button in buttons" :key="button.duration">
           <v-btn outlined @click="renderChart(button.duration)">{{ button.text }}</v-btn>
-        </v-column>
+        </div>
       </v-row>
       <GChart v-if="loaded"
       type="CandlestickChart"
@@ -44,6 +44,9 @@ export default {
         fetch(eodAPI)
         .then(response => response.json())
         .then(data =>{
+          if(data.length < this.duration){
+            this.duration = data.length
+          }
           for(let i = data.length-this.duration; i < data.length; i++){
             let moment = require('moment')
             let date = new Date(data[i].date)

@@ -6,28 +6,12 @@
       expand-on-hover
     >
       <v-list dense>
-        <v-list-item link>
+        <v-list-item link v-for="item in drawerItems" :key="item.title">
           <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
+            <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Watchlist</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-contact-mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Portfolio</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-contact-mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>News Feed</v-list-item-title>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -49,6 +33,12 @@
     name: 'Drawer',
     data: () => ({
       drawer: null,
+      drawerItems: [
+      {title: "Markets", icon: "mdi-home"},
+      {title: "Watchlist", icon: "mdi-contact-mail"},
+      {title: "Portfolio", icon: "mdi-contact-mail"},
+      {title: "News Feed", icon: "mdi-contact-mail"}
+      ] 
     }),
     props: {
       source: String,

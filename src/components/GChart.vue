@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-      <v-btn @click="duration = 5">5D</v-btn>
+      <v-btn @click="updateChart(5)">5D</v-btn>
       <GChart v-if="loaded"
       type="CandlestickChart"
       :data="stockData"
@@ -27,6 +27,13 @@ export default {
       duration: 30,
       stockData: [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']],
       options: null
+    }
+  },
+  methods: {
+    updateChart(duration){
+      this.duration = duration
+      console.log(duration)
+      this.$forceUpdate()
     }
   },
   mounted () {

@@ -49,29 +49,56 @@ export default {
       return this.symbolsExchangesNames
     }
   },
-
+  methods: {
+    fetchDebounced() {
+      clearTimeout(this._timerId)
+      this._timerId = setTimeout(() => {
+        if (this.items.length > 0) return
+        if (this.isLoading) return
+        this.isLoading = true
+        fetch('http://localhost/API/symbols/US')
+          .then(res => res.json())
+          .then(res => {
+            for(let i of res){
+              this.symbolsExchangesNames.push({
+                Code: i.Code,
+                Exchange: i.Exchange,
+                Name: i.Name,
+                CodeAndName: `${i.Code} ${i.Name}`
+              })
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          .finally(() => (this.isLoading = false))
+      }, 500)
+      
+    }
+  },
   watch: {
     search (val) {
       console.log(val)
-      if (this.items.length > 0) return
-      if (this.isLoading) return
-      this.isLoading = true
-      fetch('http://localhost/API/symbols/US')
-        .then(res => res.json())
-        .then(res => {
-          for(let i of res){
-            this.symbolsExchangesNames.push({
-              Code: i.Code,
-              Exchange: i.Exchange,
-              Name: i.Name,
-              CodeAndName: `${i.Code} ${i.Name}`
-            })
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
-        .finally(() => (this.isLoading = false))
+      this.fetchDebounced()
+      // if (this.items.length > 0) return
+      // if (this.isLoading) return
+      // this.isLoading = true
+      // fetch('http://localhost/API/symbols/US')
+      //   .then(res => res.json())
+      //   .then(res => {
+      //     for(let i of res){
+      //       this.symbolsExchangesNames.push({
+      //         Code: i.Code,
+      //         Exchange: i.Exchange,
+      //         Name: i.Name,
+      //         CodeAndName: `${i.Code} ${i.Name}`
+      //       })
+      //     }
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //   })
+      //   .finally(() => (this.isLoading = false))
     }
   }
 }

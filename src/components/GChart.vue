@@ -27,7 +27,7 @@ export default {
   data () {
     return {
       loaded: false,
-      buttons: [{duration: 7, text: "7D"},{duration: 20, text: "1M"},{duration: 60, text: "3M"},{duration: 252, text: "1Y"}],
+      buttons: [{duration: 7, text: "7D"},{duration: 20, text: "1M"},{duration: 60, text: "3M"},{duration: 120, text: "6M"},{duration: 252, text: "1Y"}],
       duration: 20,
       stockData: [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']],
       options: null

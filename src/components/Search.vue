@@ -50,10 +50,8 @@ export default {
     }
   },
   methods: {
-    fetchDebounced() {
-      clearTimeout(this._timerId)
-      this._timerId = setTimeout(() => {
-        if (this.items.length > 0) return
+    fetchData() {
+      if (this.items.length > 0) return
         if (this.isLoading) return
         this.isLoading = true
         fetch('http://localhost/API/symbols/US')
@@ -72,6 +70,11 @@ export default {
             console.log(err)
           })
           .finally(() => (this.isLoading = false))
+    },
+    fetchDebounced() {
+      clearTimeout(this._timerId)
+      this._timerId = setTimeout(() => {
+        this.fetchData()
       }, 500)
       
     }
@@ -80,25 +83,6 @@ export default {
     search (val) {
       console.log(val)
       this.fetchDebounced()
-      // if (this.items.length > 0) return
-      // if (this.isLoading) return
-      // this.isLoading = true
-      // fetch('http://localhost/API/symbols/US')
-      //   .then(res => res.json())
-      //   .then(res => {
-      //     for(let i of res){
-      //       this.symbolsExchangesNames.push({
-      //         Code: i.Code,
-      //         Exchange: i.Exchange,
-      //         Name: i.Name,
-      //         CodeAndName: `${i.Code} ${i.Name}`
-      //       })
-      //     }
-      //   })
-      //   .catch(err => {
-      //     console.log(err)
-      //   })
-      //   .finally(() => (this.isLoading = false))
     }
   }
 }

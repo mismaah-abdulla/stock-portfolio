@@ -1,14 +1,9 @@
 <template>
     <v-container fluid>
       <v-row justify="center">
-        <v-column class="pa-2" v-for="button in buttons" :key="button.duration">
+        <v-column class="px-2" v-for="button in buttons" :key="button.duration">
           <v-btn outlined @click="renderChart(button.duration)">{{ button.text }}</v-btn>
         </v-column>
-        <!-- <v-btn px-2 outlined v-for="button in buttons" :key="button.duration" @click="renderChart(button.duration)">{{ button.text }}</v-btn> -->
-        <!-- <v-btn outlined @click="renderChart(7)">7D</v-btn>
-        <v-btn @click="renderChart(20)">1M</v-btn>
-        <v-btn @click="renderChart(60)">3M</v-btn>
-        <v-btn @click="renderChart(252)">1Y</v-btn> -->
       </v-row>
       <GChart v-if="loaded"
       type="CandlestickChart"
@@ -61,6 +56,7 @@ export default {
               top: 50,
               left: 50,
               right: 50,
+              // bottom: 200
             },
             height: '500',
             // width: '2000',

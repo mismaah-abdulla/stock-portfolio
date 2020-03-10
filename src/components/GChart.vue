@@ -1,11 +1,19 @@
 <template>
     <v-container fluid>
-      <v-btn @click="updateChart(5)">5D</v-btn>
+      <v-row justify="center">
+        <v-column class="pa-2" v-for="button in buttons" :key="button.duration">
+          <v-btn outlined @click="renderChart(button.duration)">{{ button.text }}</v-btn>
+        </v-column>
+        <!-- <v-btn px-2 outlined v-for="button in buttons" :key="button.duration" @click="renderChart(button.duration)">{{ button.text }}</v-btn> -->
+        <!-- <v-btn outlined @click="renderChart(7)">7D</v-btn>
+        <v-btn @click="renderChart(20)">1M</v-btn>
+        <v-btn @click="renderChart(60)">3M</v-btn>
+        <v-btn @click="renderChart(252)">1Y</v-btn> -->
+      </v-row>
       <GChart v-if="loaded"
       type="CandlestickChart"
       :data="stockData"
       :options="options"
-      :key="duration"
       />
     </v-container>
 </template>
@@ -24,51 +32,53 @@ export default {
   data () {
     return {
       loaded: false,
+      buttons: [{duration: 7, text: "7D"},{duration: 20, text: "1M"},{duration: 60, text: "3M"},{duration: 252, text: "1Y"}],
       duration: 30,
       stockData: [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']],
       options: null
     }
   },
   methods: {
-    updateChart(duration){
+    renderChart(duration){
+      this.stockData = [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']]
       this.duration = duration
-      console.log(duration)
-      this.$forceUpdate()
+      this.loaded = false
+      let eodAPI = `http://localhost/API/EOD/US/${this.$props.symbol}`
+      // let eodAPI = `http://localhost/API/EOD/${this.$props.exchangeCode}/${this.$props.symbol}`
+      try{
+        fetch(eodAPI)
+        .then(response => response.json())
+        .then(data =>{
+          for(let i = data.length-this.duration; i < data.length; i++){
+            let moment = require('moment')
+            let date = new Date(data[i].date)
+            let daymonth = moment(new Date(date)).format("DD MMM")
+            this.stockData.push([daymonth, data[i].low, data[i].open, data[i].close, data[i].high])
+          }
+          this.options = { 
+            legend: 'none', 
+            chartArea: {
+              top: 50,
+              left: 50,
+              right: 50,
+            },
+            height: '500',
+            // width: '2000',
+            candlestick: {
+              fallingColor: { strokeWidth: 0, fill: '#a52714' },
+              risingColor: { strokeWidth: 0, fill: '#0f9d58' }
+            }
+          }
+          this.loaded = true
+        })
+      }catch(e){
+        console.log(e)
+      }
+      
     }
   },
   mounted () {
-    this.loaded = false
-    let eodAPI = `http://localhost/API/EOD/US/${this.$props.symbol}`
-    // let eodAPI = `http://localhost/API/EOD/${this.$props.exchangeCode}/${this.$props.symbol}`
-    try{
-      fetch(eodAPI)
-      .then(response => response.json())
-      .then(data =>{
-        for(let i = data.length-this.duration; i < data.length; i++){
-          let moment = require('moment')
-          let date = new Date(data[i].date)
-          let daymonth = moment(new Date(date)).format("DD MMM")
-          this.stockData.push([daymonth, data[i].low, data[i].open, data[i].close, data[i].high])
-        }
-        this.options = { 
-          legend: 'none', 
-          chartArea: {
-            top: 50,
-            left: 50,
-            right: 50,
-          },
-          height: '500',
-          // width: '2000',
-          candlestick: {
-            fallingColor: { strokeWidth: 0, fill: '#a52714' },
-            risingColor: { strokeWidth: 0, fill: '#0f9d58' }
-          }
-        }
-        this.loaded = true
-      })
-    }catch(e){
-      console.log(e)
-    }
+    this.renderChart(this.duration)
   }
 }
 </script>

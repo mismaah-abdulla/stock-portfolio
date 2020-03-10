@@ -54,15 +54,17 @@ export default {
       if (this.items.length > 0) return
         if (this.isLoading) return
         this.isLoading = true
-        fetch('http://192.168.1.250/API/symbols/US')
+        let hostname = window.location.hostname
+        // fetch('http://192.168.1.250/API/symbols/US')
+        fetch(`http://${hostname}/backend/search/${this.search}`)
           .then(res => res.json())
           .then(res => {
             for(let i of res){
               this.symbolsExchangesNames.push({
-                Code: i.Code,
+                Code: i.Symbol,
                 Exchange: i.Exchange,
                 Name: i.Name,
-                CodeAndName: `${i.Code} ${i.Name}`
+                CodeAndName: `${i.Symbol} ${i.Name}`
               })
             }
           })
@@ -82,6 +84,7 @@ export default {
   watch: {
     search (val) {
       console.log(val)
+      console.log(this.search)
       this.fetchDebounced()
     }
   }

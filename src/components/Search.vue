@@ -18,7 +18,7 @@
           item-text="CodeAndName"
           item-value="Name"
           label="Stock symbols or names"
-          placeholder="Start typing to Search"
+          placeholder="Start typing to search"
           prepend-icon="mdi-account-search"
           return-object
           autofocus
@@ -51,12 +51,10 @@ export default {
   },
   methods: {
     fetchData() {
-      if (this.isLoading) return
+      // if (this.isLoading) return
       this.isLoading = true
       this.symbolsExchangesNames = []
       let hostname = window.location.hostname
-      console.log("INSIDE fetchData() "+this.search)
-      // fetch('http://192.168.1.250/API/symbols/US')
       fetch(`http://${hostname}/backend/search/${this.search}`)
         .then(res => res.json())
         .then(res => {
@@ -84,7 +82,7 @@ export default {
   },
   watch: {
     search (val) {
-      console.log(val)
+      if(val == null || val == "") return
       this.fetchDebounced()
     }
   }

@@ -15,14 +15,14 @@
           hide-no-data
           hide-selected
           clearable
-          dense
           item-text="CodeAndName"
           item-value="Name"
-          label="Stock symbols or names"
-          placeholder="Start typing to search"
+          placeholder="Search stock symbols and names"
           prepend-icon="mdi-account-search"
           return-object
+          cache-items
           autofocus
+          dense
         ></v-autocomplete>
       </v-card-text>
       <v-divider></v-divider>

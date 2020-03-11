@@ -38,8 +38,8 @@ export default {
       this.stockData = [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']]
       this.duration = duration
       this.loaded = false
-      let eodAPI = `http://192.168.1.250/API/EOD/US/${this.$props.symbol}`
-      // let eodAPI = `http://localhost/API/EOD/${this.$props.exchangeCode}/${this.$props.symbol}`
+      let hostname = window.location.hostname
+      let eodAPI = `http://${hostname}/backend/eod/${this.$props.symbol}.${this.$props.exchangeCode}`
       try{
         fetch(eodAPI)
         .then(response => response.json())

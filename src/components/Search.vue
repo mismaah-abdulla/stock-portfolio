@@ -78,7 +78,7 @@ export default {
       clearTimeout(this._timerId)
       this._timerId = setTimeout(() => {
         this.fetchData()
-      }, 500)
+      }, 200)
       
     }
   },

@@ -23,7 +23,13 @@
           cache-items
           autofocus
           dense
-        ></v-autocomplete>
+        >
+          <template v-slot:item="{ item }">
+            <v-list-item-title>{{item.Code}}</v-list-item-title>
+            <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
+          </template>
+        </v-autocomplete>
       </v-card-text>
       <v-divider></v-divider>
     </v-card>

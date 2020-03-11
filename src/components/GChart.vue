@@ -2,7 +2,7 @@
     <v-container fluid>
       <v-row justify="center">
         <div class="px-2" v-for="button in buttons" :key="button.duration">
-          <v-btn outlined @click="renderChart(button.duration)">{{ button.text }}</v-btn>
+          <v-btn outlined @click="renderChart(fetchedData, button.duration)">{{ button.text }}</v-btn>
         </div>
       </v-row>
       <GChart v-if="loaded"
@@ -30,13 +30,34 @@ export default {
       buttons: [{duration: 7, text: "7D"},{duration: 20, text: "1M"},{duration: 60, text: "3M"},{duration: 120, text: "6M"},{duration: 252, text: "1Y"}],
       duration: 20,
       stockData: [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']],
-      options: null
+      options: null,
+      fetchedData: null
     }
   },
   methods: {
-    renderChart(duration){
+    renderChart(data, duration) {
       this.stockData = [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']]
-      this.duration = duration
+      for(let i = data.length-duration; i < data.length; i++){
+        let moment = require('moment')
+        let date = new Date(data[i].date)
+        let daymonth = moment(new Date(date)).format("DD MMM")
+        this.stockData.push([daymonth, data[i].low, data[i].open, data[i].close, data[i].high])
+      }
+      this.options = { 
+        legend: 'none', 
+        chartArea: {
+          top: 50,
+          left: 50,
+          right: 50,
+        },
+        height: '500',
+        candlestick: {
+          fallingColor: { strokeWidth: 0, fill: '#a52714' },
+          risingColor: { strokeWidth: 0, fill: '#0f9d58' }
+        }
+      }
+    },
+    getData(){
       this.loaded = false
       let hostname = window.location.hostname
       let eodAPI = `http://${hostname}/backend/eod/${this.$props.symbol}.${this.$props.exchangeCode}`
@@ -47,27 +68,8 @@ export default {
           if(data.length < this.duration){
             this.duration = data.length
           }
-          for(let i = data.length-this.duration; i < data.length; i++){
-            let moment = require('moment')
-            let date = new Date(data[i].date)
-            let daymonth = moment(new Date(date)).format("DD MMM")
-            this.stockData.push([daymonth, data[i].low, data[i].open, data[i].close, data[i].high])
-          }
-          this.options = { 
-            legend: 'none', 
-            chartArea: {
-              top: 50,
-              left: 50,
-              right: 50,
-              // bottom: 200
-            },
-            height: '500',
-            // width: '2000',
-            candlestick: {
-              fallingColor: { strokeWidth: 0, fill: '#a52714' },
-              risingColor: { strokeWidth: 0, fill: '#0f9d58' }
-            }
-          }
+          this.fetchedData = data
+          this.renderChart(data, this.duration)
           this.loaded = true
         })
       }catch(e){
@@ -77,7 +79,7 @@ export default {
     }
   },
   mounted () {
-    this.renderChart(this.duration)
+    this.getData()
   }
 }
 </script>

@@ -59,7 +59,7 @@ export default {
       this.options = { 
         legend: 'none', 
         chartArea: {
-          top: 50,
+          top: 20,
           left: 50,
           right: 50,
         },

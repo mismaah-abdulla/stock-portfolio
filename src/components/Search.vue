@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     fetchData() {
-      // if (this.isLoading) return
+      if (this.isLoading && this.model) return
       this.isLoading = true
       this.symbolsExchangesNames = []
       let hostname = window.location.hostname
@@ -83,6 +83,10 @@ export default {
   watch: {
     search (val) {
       if(val == null || val == "") return
+      console.log(val)
+      if(this.model){
+        if(val == this.model.CodeAndName) return
+      }
       this.fetchDebounced()
     }
   }

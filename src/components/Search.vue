@@ -51,29 +51,28 @@ export default {
   },
   methods: {
     fetchData() {
-      if (this.items.length > 0) return
-        if (this.isLoading) return
-        this.isLoading = true
-        this.symbolsExchangesNames = []
-        let hostname = window.location.hostname
-        console.log(this.search)
-        // fetch('http://192.168.1.250/API/symbols/US')
-        fetch(`http://${hostname}/backend/search/${this.search}`)
-          .then(res => res.json())
-          .then(res => {
-            for(let i of res){
-              this.symbolsExchangesNames.push({
-                Code: i.Symbol,
-                Exchange: i.Exchange,
-                Name: i.Name,
-                CodeAndName: `${i.Symbol} ${i.Name}`
-              })
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          })
-          .finally(() => (this.isLoading = false))
+      if (this.isLoading) return
+      this.isLoading = true
+      this.symbolsExchangesNames = []
+      let hostname = window.location.hostname
+      console.log("INSIDE fetchData() "+this.search)
+      // fetch('http://192.168.1.250/API/symbols/US')
+      fetch(`http://${hostname}/backend/search/${this.search}`)
+        .then(res => res.json())
+        .then(res => {
+          for(let i of res){
+            this.symbolsExchangesNames.push({
+              Code: i.Symbol,
+              Exchange: i.Exchange,
+              Name: i.Name,
+              CodeAndName: `${i.Symbol} ${i.Name}`
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .finally(() => (this.isLoading = false))
     },
     fetchDebounced() {
       clearTimeout(this._timerId)

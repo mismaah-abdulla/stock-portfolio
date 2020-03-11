@@ -13,7 +13,6 @@
           color="white"
           hide-no-data
           hide-selected
-          cache-items
           clearable
           dense
           item-text="CodeAndName"
@@ -22,6 +21,7 @@
           placeholder="Start typing to Search"
           prepend-icon="mdi-account-search"
           return-object
+          autofocus
         ></v-autocomplete>
       </v-card-text>
       <v-divider></v-divider>
@@ -54,7 +54,9 @@ export default {
       if (this.items.length > 0) return
         if (this.isLoading) return
         this.isLoading = true
+        this.symbolsExchangesNames = []
         let hostname = window.location.hostname
+        console.log(this.search)
         // fetch('http://192.168.1.250/API/symbols/US')
         fetch(`http://${hostname}/backend/search/${this.search}`)
           .then(res => res.json())
@@ -84,7 +86,6 @@ export default {
   watch: {
     search (val) {
       console.log(val)
-      console.log(this.search)
       this.fetchDebounced()
     }
   }

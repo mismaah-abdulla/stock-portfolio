@@ -50,11 +50,14 @@ export default {
   methods: {
     renderChart(data, duration) {
       this.stockData = [['Date', 'Low - High, Open - Close', 'Null', 'Null', 'Null']]
+      if (duration > data.length) duration = data.length
       for(let i = data.length-duration; i < data.length; i++){
         let moment = require('moment')
         let date = new Date(data[i].date)
-        let daymonth = moment(new Date(date)).format("DD MMM")
-        this.stockData.push([daymonth, data[i].low, data[i].open, data[i].close, data[i].high])
+        if(date.getFullYear() >= new Date().getFullYear()-1){
+          let daymonth = moment(new Date(date)).format("DD MMM")
+          this.stockData.push([daymonth, data[i].low, data[i].open, data[i].close, data[i].high])
+        }
       }
       this.options = { 
         legend: 'none', 
@@ -78,9 +81,6 @@ export default {
         fetch(eodAPI)
         .then(response => response.json())
         .then(data =>{
-          if(data.length < this.duration){
-            this.duration = data.length
-          }
           this.fetchedData = data
           this.renderChart(data, this.duration)
           this.loaded = true

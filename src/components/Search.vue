@@ -54,6 +54,7 @@ export default {
     fetchData() {
       if (this.isLoading && this.model) return
       this.isLoading = true
+      this.model = null
       this.symbolsExchangesNames = []
       let hostname = window.location.hostname
       fetch(`http://${hostname}/backend/search/${this.search}`)
@@ -89,7 +90,7 @@ export default {
         if(val == this.model.CodeAndName) return
       }
       this.fetchDebounced()
-    }
+    },
   }
 }
 </script>

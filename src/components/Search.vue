@@ -6,6 +6,7 @@
     >
       <v-card-text>
         <v-autocomplete
+          spellcheck="false"
           v-model="model"
           :items="items"
           :loading="isLoading"

@@ -1,6 +1,11 @@
 <template>
     <v-container fluid>
-      <v-row justify="center">
+      <v-row v-if="$vuetify.breakpoint.xsOnly" justify="center">
+        <div class="px-1" v-for="button in buttons" :key="button.duration">
+          <v-btn small outlined @click="renderChart(fetchedData, button.duration)">{{ button.text }}</v-btn>
+        </div>
+      </v-row>
+      <v-row v-if="!$vuetify.breakpoint.xsOnly" justify="center">
         <div class="px-2" v-for="button in buttons" :key="button.duration">
           <v-btn outlined @click="renderChart(fetchedData, button.duration)">{{ button.text }}</v-btn>
         </div>

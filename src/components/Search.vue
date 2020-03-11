@@ -11,23 +11,25 @@
           :items="items"
           :loading="isLoading"
           :search-input.sync="search"
+          @change="search=''"
           color="white"
           hide-no-data
           hide-selected
           clearable
           item-text="CodeAndName"
-          item-value="Name"
+          item-value="Code"
           placeholder="Search stock symbols and names"
           prepend-icon="mdi-account-search"
           return-object
-          cache-items
           autofocus
           dense
         >
           <template v-slot:item="{ item }">
-            <v-list-item-title>{{item.Code}}</v-list-item-title>
+            <v-list>
+            <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
             <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
             <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
+            </v-list>
           </template>
         </v-autocomplete>
       </v-card-text>
@@ -91,7 +93,6 @@ export default {
   watch: {
     search (val) {
       if(val == null || val == "") return
-      console.log(val)
       if(this.model){
         if(val == this.model.CodeAndName) return
       }

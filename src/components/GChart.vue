@@ -10,6 +10,14 @@
           <v-btn outlined @click="renderChart(fetchedData, button.duration)">{{ button.text }}</v-btn>
         </div>
       </v-row>
+      <v-row v-if="!loaded" class="pt-5" justify="center">
+        <v-progress-circular class="pt-5"
+          :size="70"
+          :width="6"
+          color="grey"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
       <GChart v-if="loaded"
       type="CandlestickChart"
       :data="stockData"

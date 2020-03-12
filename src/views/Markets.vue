@@ -35,7 +35,31 @@
       </v-card-text>
       <v-divider></v-divider>
     </v-card>
-    <Chart v-if="model" :key="model.Code" :stock="model"/>
+    <v-tabs
+      v-if="model" 
+      v-model="tab"
+      background-color="transparent"
+      color="basil"
+      grow
+    >
+      <v-tab
+        v-for="item in tabHeaders"
+        :key="item"
+      >
+        {{ item }}
+      </v-tab>
+    </v-tabs>
+
+    <v-tabs-items v-model="tab">
+      <v-tab-item>
+        <Chart v-if="model"  :key="model.Code" :stock="model"/>
+      </v-tab-item>
+      <v-tab-item>
+      </v-tab-item>
+      <v-tab-item>
+      </v-tab-item>
+    </v-tabs-items>
+    
   </div>
 </template>
 
@@ -50,7 +74,9 @@ export default {
     symbolsExchangesNames: [],
     isLoading: false,
     model: null,
-    search: null
+    search: null,
+    tab: null,
+    tabHeaders: ["Chart", "Stats", "News Feed"]
   }),
 
   computed: {

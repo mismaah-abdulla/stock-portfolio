@@ -12,11 +12,12 @@
           :loading="isLoading"
           :search-input.sync="search"
           @change="search=''"
+          :filter="customFilter"
           color="white"
           hide-no-data
           hide-selected
           clearable
-          item-text="CodeAndName"
+          item-text="Name"
           item-value="Code"
           placeholder="Search stock symbols and names"
           prepend-icon="mdi-account-search"
@@ -62,7 +63,6 @@ export default {
     fetchData() {
       if (this.isLoading && this.model) return
       this.isLoading = true
-      this.model = null
       this.symbolsExchangesNames = []
       let hostname = window.location.hostname
       fetch(`http://${hostname}/backend/search/${this.search}`)
@@ -87,7 +87,12 @@ export default {
       this._timerId = setTimeout(() => {
         this.fetchData()
       }, 200)
-      
+    },
+    customFilter(item, queryText){
+      const textOne = item.Name.toLowerCase()
+      const textTwo = item.Code.toLowerCase()
+      const searchText = queryText.toLowerCase()
+      return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1
     }
   },
   watch: {

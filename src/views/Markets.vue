@@ -35,7 +35,7 @@
       </v-card-text>
       <v-divider></v-divider>
     </v-card>
-    <CompanyDetails v-if="model" :stock="model"></CompanyDetails>
+    <CompanyDetails v-if="model" :key="model.Code" :stock="model"></CompanyDetails>
     <v-tabs
       v-if="model" 
       v-model="tab"

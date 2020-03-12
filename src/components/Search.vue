@@ -11,7 +11,6 @@
           :items="items"
           :loading="isLoading"
           :search-input.sync="search"
-          @change="search=''"
           :filter="customFilter"
           color="white"
           hide-no-data
@@ -20,7 +19,7 @@
           item-text="Name"
           item-value="Code"
           placeholder="Search stock symbols and names"
-          prepend-icon="mdi-account-search"
+          prepend-icon="search"
           return-object
           autofocus
           dense

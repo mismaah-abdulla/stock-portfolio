@@ -1,14 +1,35 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Markets from '../views/Markets.vue'
+import Dashboard from '../views/Dashboard'
+import Markets from '../views/Markets'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    name: 'Dashboard',
+    component: Dashboard
+  },
+  {
+    path: '/markets',
     name: 'Markets',
     component: Markets
+  },
+  {
+    path: '/watchlist',
+    name: 'Watchlist',
+    component: Dashboard
+  },
+  {
+    path: '/portfolio',
+    name: 'Portfolio',
+    component: Dashboard
+  },
+  {
+    path: '/newsfeed',
+    name: 'News Feed',
+    component: Dashboard
   },
   // {
   //   path: '/about',

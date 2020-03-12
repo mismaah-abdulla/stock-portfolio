@@ -97,6 +97,7 @@ export default {
   watch: {
     search (val) {
       if(val == null || val == "") return
+      if(this.model && val == this.model.Name) return
       this.fetchDebounced()
     },
   }

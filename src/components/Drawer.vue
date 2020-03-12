@@ -3,7 +3,6 @@
     <v-navigation-drawer
       v-model="drawer"
       app
-      expand-on-hover
     >
       <v-list dense>
         <v-list-item link v-for="item in drawerItems" :key="item.title" :to="item.link">

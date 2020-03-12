@@ -100,9 +100,12 @@
 
  <v-dialog v-model="dialog2" max-width="500px">
             <template v-slot:activator="{ on }">
-             <v-btn class="mx-2" v-on="on" fixed bottom left fab dark color="primary" >
-    <v-icon dark>mdi-plus</v-icon>
-    </v-btn>
+             <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on" fixed bottom left fab dark color="primary" >
+               <v-icon dark>mdi-plus</v-icon>
+               </v-btn>
+             <v-btn v-if="!$vuetify.breakpoint.xsOnly && !$vuetify.breakpoint.smOnly" class="mx-2" v-on="on" fixed bottom right fab dark color="primary" >
+                <v-icon dark>mdi-plus</v-icon>
+            </v-btn>
             </template>
             <v-card>
               <v-card-title>

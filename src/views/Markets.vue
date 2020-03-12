@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="px-3 pt-3">
     <v-card
       color="grey darken-2"
       dark
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import Chart from './GChart.vue'
+import Chart from '../components/Chart'
 export default {
   name: "Search",
   components: {

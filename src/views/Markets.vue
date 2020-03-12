@@ -35,6 +35,7 @@
       </v-card-text>
       <v-divider></v-divider>
     </v-card>
+    <CompanyDetails v-if="model" :stock="model"></CompanyDetails>
     <v-tabs
       v-if="model" 
       v-model="tab"
@@ -49,7 +50,6 @@
         {{ item }}
       </v-tab>
     </v-tabs>
-
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <Chart v-if="model"  :key="model.Code" :stock="model"/>
@@ -65,10 +65,12 @@
 
 <script>
 import Chart from '../components/Chart'
+import CompanyDetails from '../components/CompanyDetails'
 export default {
   name: "Search",
   components: {
     Chart,
+    CompanyDetails
   },
   data: () => ({
     symbolsExchangesNames: [],

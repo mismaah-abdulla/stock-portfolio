@@ -34,6 +34,7 @@
     data: () => ({
       drawer: null,
       drawerItems: [
+      {title: "Dashboard", icon: "dashboard"},
       {title: "Markets", icon: "show_chart"},
       {title: "Watchlist", icon: "list"},
       {title: "Portfolio", icon: "recent_actors"},

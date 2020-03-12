@@ -34,10 +34,10 @@
     data: () => ({
       drawer: null,
       drawerItems: [
-      {title: "Markets", icon: "mdi-home"},
-      {title: "Watchlist", icon: "mdi-contact-mail"},
-      {title: "Portfolio", icon: "mdi-contact-mail"},
-      {title: "News Feed", icon: "mdi-contact-mail"}
+      {title: "Markets", icon: "show_chart"},
+      {title: "Watchlist", icon: "list"},
+      {title: "Portfolio", icon: "recent_actors"},
+      {title: "News Feed", icon: "dynamic_feed"}
       ] 
     }),
     props: {

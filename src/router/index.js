@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Dashboard from '../views/Dashboard'
 import Markets from '../views/Markets'
+import Watchlist from '../views/Watchlist'
 
 Vue.use(VueRouter)
 
@@ -19,7 +20,7 @@ const routes = [
   {
     path: '/watchlist',
     name: 'Watchlist',
-    component: Dashboard
+    component: Watchlist
   },
   {
     path: '/portfolio',

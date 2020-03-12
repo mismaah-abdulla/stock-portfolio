@@ -36,7 +36,7 @@
       </v-card-text>
       <v-divider></v-divider>
     </v-card>
-    <Chart v-if="model" :exchangeCode="model.Exchange" :symbol="model.Code"/>
+    <Chart v-if="model" :key="model.Code" :exchangeCode="model.Exchange" :symbol="model.Code"/>
   </div>
 </template>
 
@@ -73,7 +73,6 @@ export default {
               Code: i.Symbol,
               Exchange: i.Exchange,
               Name: i.Name,
-              CodeAndName: `${i.Symbol} ${i.Name}`
             })
           }
         })
@@ -98,9 +97,6 @@ export default {
   watch: {
     search (val) {
       if(val == null || val == "") return
-      if(this.model){
-        if(val == this.model.CodeAndName) return
-      }
       this.fetchDebounced()
     },
   }

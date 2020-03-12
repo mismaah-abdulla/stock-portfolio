@@ -10,5 +10,9 @@ import Footer from './components/Footer'
 import Drawer from './components/Drawer'
 export default {
   name: 'App',
+  components: {
+    Footer,
+    Drawer
+  }
 }
 </script>

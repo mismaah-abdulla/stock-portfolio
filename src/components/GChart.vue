@@ -34,8 +34,7 @@ export default {
     GChart,
   },
   props: {
-    exchangeCode: String,
-    symbol: String
+    stock: Object
   },
   data () {
     return {
@@ -76,7 +75,7 @@ export default {
     getData(){
       this.loaded = false
       let hostname = window.location.hostname
-      let eodAPI = `http://${hostname}/backend/eod/${this.$props.symbol}.${this.$props.exchangeCode}`
+      let eodAPI = `http://${hostname}/backend/eod/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(eodAPI)
         .then(response => response.json())

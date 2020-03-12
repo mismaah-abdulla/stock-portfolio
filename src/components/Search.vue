@@ -36,7 +36,7 @@
       </v-card-text>
       <v-divider></v-divider>
     </v-card>
-    <Chart v-if="model" :key="model.Code" :exchangeCode="model.Exchange" :symbol="model.Code"/>
+    <Chart v-if="model" :key="model.Code" :stock="model"/>
   </div>
 </template>
 

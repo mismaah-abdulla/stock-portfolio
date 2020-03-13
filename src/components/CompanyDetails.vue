@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row v-if="!loaded" class="pt-5 pl-5" justify="left">
+    <v-row v-if="!loaded" class="pt-5 pl-5">
       <v-progress-circular
         :size="50"
         :width="5"
@@ -17,7 +17,8 @@
           <v-list-item-content class="py-0">
             <v-list-item-title class="title" v-text="details.Code"></v-list-item-title>
             <v-list-item-subtitle v-text="details.Name"></v-list-item-subtitle>
-            <v-list-item-subtitle>Exchange: {{ details.Exchange }}</v-list-item-subtitle>
+            <v-list-item-subtitle v-if="details.Exchange" >Exchange: {{ details.Exchange }}</v-list-item-subtitle>
+            <v-list-item-subtitle v-else >Exchange: n/a </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -44,14 +45,28 @@ export default {
       let detailsAPI = `http://${hostname}/backend/fundamentals/general/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(detailsAPI)
-        .then(response => response.json())
+        .then(response => {
+          if (response.status == 204) throw new Error(response.status)
+          else return response.json()
+        })
+        // .then(response => response.json())
         .then(data =>{
+          console.log(data)
           this.details = data
           if(this.details.LogoURL) this.logoURL =`https://eodhistoricaldata.com/${this.details.LogoURL}`
           this.loaded = true
         })
-      }catch(e){
-        console.log(e)
+        .catch(e => {
+          console.log(e)
+            this.details = {
+            Code: this.$props.stock.Code,
+            Name: this.$props.stock.Name
+          }
+          this.logoURL = null
+          this.loaded = true
+        })
+      }catch(error){
+        console.log(error)
       }
     }
   },

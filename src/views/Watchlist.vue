@@ -2,6 +2,7 @@
   <div class="Watchlist">
     <v-card class="pa-2">
       <v-card-title>
+        <!-- SEARCH -->
         <v-text-field
           v-model="search"
           clearable
@@ -12,28 +13,40 @@
           solo-inverted
           hide-details
         ></v-text-field>
+        <!-- END OF SEARCH -->
+        
+
+        <!-- EDIT BUTTON -->
+        <v-icon right v-if="!hideEdit" @click='editMode'>
+          mdi-pencil-off
+        </v-icon>
+        <v-icon right v-else @click='editMode'>
+          mdi-pencil-minus
+        </v-icon>
+        <!-- END OF EDIT BUTTON -->
+
       </v-card-title>
-    <!-- END OF SEARCH -->
     <!-- DATA TABLE -->
       <v-data-table
         :headers="computedHeaders"
         :items ="watchlist" 
         :search="search"
-        hide-actions
         hide-default-footer
         fixed-header
         sort-by="symbol"
         @click:row="tablerowClick"
         group-by="category"  
       >
-        <template v-slot:group.header="{items, isOpen, toggle}">
+
+      <template v-slot:group.header="{items, isOpen, toggle}">
           <th colspan=6>
             <v-icon @click="toggle">
               {{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
             </v-icon>
             {{ items[0].category }}
-        </th>
-        </template>
+      </th>
+      </template>
+
       <template v-slot:item.chg_percent="{ item }">
         <v-chip :color="getColor(item.chg_percent)" dark>
           <v-icon left v-if="item.chg_percent>'0%'">mdi-menu-up</v-icon>
@@ -61,7 +74,7 @@
       max-width="290"
     >
       <v-card>
-        <v-card-title class="headline">{{Newitem}}</v-card-title>
+        <v-card-title class="headline"></v-card-title>
   
         <v-card-text>
           Are you sure you want to delete this symbol from watchlist?
@@ -89,9 +102,6 @@
     <!-- END OF DELETE DIALOG -->
 
     <!-- ADD BUTTON -->
-
-
-
     <v-dialog v-model="dialog2" max-width="500px">
       <template v-slot:activator="{ on }">
         <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on" fixed bottom left fab dark color="primary" >
@@ -105,7 +115,7 @@
         <v-card-title>
           <span class="headline">Add (Temp)</span>
         </v-card-title>
-<!-- HARD CORDED, RETRIEVE FROM DB -->
+<!-- HARD CORDED, SHOULD RETRIEVE FROM DB -->
         <v-card-text>
           <v-container>
             <v-row>

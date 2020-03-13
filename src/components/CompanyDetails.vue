@@ -49,16 +49,14 @@ export default {
           if (response.status == 204) throw new Error(response.status)
           else return response.json()
         })
-        // .then(response => response.json())
         .then(data =>{
-          console.log(data)
           this.details = data
           if(this.details.LogoURL) this.logoURL =`https://eodhistoricaldata.com/${this.details.LogoURL}`
           this.loaded = true
         })
         .catch(e => {
-          console.log(e)
-            this.details = {
+          console.log("Response status: "+e)
+          this.details = {
             Code: this.$props.stock.Code,
             Name: this.$props.stock.Name
           }

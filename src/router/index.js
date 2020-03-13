@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Dashboard from '../views/Dashboard'
 import Markets from '../views/Markets'
 import Watchlist from '../views/Watchlist'
+import NewsFeed from '../views/News'
 
 Vue.use(VueRouter)
 
@@ -30,7 +31,7 @@ const routes = [
   {
     path: '/newsfeed',
     name: 'News Feed',
-    component: Dashboard
+    component: NewsFeed
   },
   // {
   //   path: '/about',

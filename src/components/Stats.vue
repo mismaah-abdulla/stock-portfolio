@@ -13,7 +13,7 @@
             </v-list-item>
           </v-list>
         </v-col>
-        <v-col>
+        <v-col class="flex-grow-0 flex-shrink-1">
           <v-list two-line subheader>
             <v-list-item v-for="item in overviewItems2" :key="item.data">
               <v-list-item-content>

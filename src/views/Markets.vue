@@ -36,12 +36,11 @@
       <v-divider></v-divider>
     </v-card>
     <CompanyDetails v-if="model" :key="model.Code" :stock="model"></CompanyDetails>
-    <v-tabs
+    <v-tabs 
       v-if="model" 
       v-model="tab"
       background-color="transparent"
       color="basil"
-      grow
     >
       <v-tab
         v-for="item in tabHeaders"
@@ -55,7 +54,7 @@
         <Chart v-if="model"  :key="model.Code" :stock="model"/>
       </v-tab-item>
       <v-tab-item>
-        <Stats v-if="model" :key="model.Code"></Stats>
+        <Stats v-if="model"  :key="model.Code"></Stats>
       </v-tab-item>
       <v-tab-item>
       </v-tab-item>
@@ -130,6 +129,9 @@ export default {
       if(this.model && val == this.model.Name) return
       this.fetchDebounced()
     },
-  }
+    model () {
+      this.tab = "Stats"
+    }
+  },
 }
 </script>

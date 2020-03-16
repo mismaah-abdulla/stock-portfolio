@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row v-if="!loaded" class="pt-5" justify="center">
+    <v-row v-if="!loaded" class="pt-5 pl-5">
       <v-progress-circular
         :size="50"
         :width="5"
@@ -8,7 +8,7 @@
         indeterminate
       ></v-progress-circular>
     </v-row>
-    <v-row v-else justify="center" >
+    <v-row v-else >
       <v-col class="flex-grow-0 flex-shrink-1 py-0">
         <v-list >
           <v-list-item>

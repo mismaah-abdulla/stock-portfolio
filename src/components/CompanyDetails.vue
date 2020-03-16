@@ -8,36 +8,27 @@
         indeterminate
       ></v-progress-circular>
     </v-row>
-    <v-row v-else>
-      <v-spacer></v-spacer>
-      <v-col>
-        <v-list>
+    <v-row v-else justify="center" >
+      <v-col class="flex-grow-0 flex-shrink-1 py-0">
+        <v-list >
           <v-list-item>
             <v-list-item-avatar v-if="details.LogoURL">
               <v-img :src="logoURL"></v-img>
             </v-list-item-avatar>
             <v-list-item-content class="py-0">
-              <v-list-item-title class="title" v-text="details.Code"></v-list-item-title>
-              
+              <v-list-item-title>
+                <span class="title">{{details.Code}} </span><span>  {{details.Name}}</span>
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="details.Sector"> Sector: {{ details.Sector }} </v-list-item-subtitle>
+              <v-list-item-subtitle v-else> Sector: n/a </v-list-item-subtitle>
               <v-list-item-subtitle v-if="details.Exchange" >Exchange: {{ details.Exchange }}</v-list-item-subtitle>
               <v-list-item-subtitle v-else >Exchange: n/a </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-col>
-      <v-col>
-        <v-list>
-          <v-list-item>
-            <v-list-item-content class="py-0">
-              <v-list-item-title class="title" v-text="details.Name"></v-list-item-title>
-              <v-list-item-subtitle v-if="details.Sector"> Sector: {{ details.Sector }} </v-list-item-subtitle>
-              <v-list-item-subtitle v-else> Sector: n/a </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-col>
-      <v-spacer></v-spacer> 
     </v-row>
+    <v-divider v-if="loaded"></v-divider>
   </div>
 </template>
 

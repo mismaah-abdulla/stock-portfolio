@@ -54,7 +54,7 @@
         <Chart v-if="model"  :key="model.Code" :stock="model"/>
       </v-tab-item>
       <v-tab-item>
-        <Stats v-if="model"  :key="model.Code"></Stats>
+        <Stats v-if="model"  :key="model.Code" :stock="model"></Stats>
       </v-tab-item>
       <v-tab-item>
       </v-tab-item>

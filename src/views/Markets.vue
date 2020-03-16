@@ -55,6 +55,7 @@
         <Chart v-if="model"  :key="model.Code" :stock="model"/>
       </v-tab-item>
       <v-tab-item>
+        <Stats v-if="model" :key="model.Code"></Stats>
       </v-tab-item>
       <v-tab-item>
       </v-tab-item>
@@ -66,11 +67,13 @@
 <script>
 import Chart from '../components/Chart'
 import CompanyDetails from '../components/CompanyDetails'
+import Stats from '../components/Stats'
 export default {
   name: "Search",
   components: {
     Chart,
-    CompanyDetails
+    CompanyDetails,
+    Stats
   },
   data: () => ({
     symbolsExchangesNames: [],

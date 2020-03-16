@@ -60,20 +60,6 @@ export default {
         eps: {name: "EPS", data: null},
         dividend: {name: "Dividend (Yield)", data: null},
       },
-      // overviewItems1: [
-      //   {name: "Prev Close", data: "n/a"},
-      //   {name: "Day's Range", data: "n/a"},
-      //   {name: "52 Week Range", data: "n/a"},
-      //   {name: "Average Volume (3m)", data: "n/a"},
-      //   {name: "1-Year Return", data: "n/a"},
-      // ],
-      // overviewItems2: [
-      //   {name: "Market Cap", data: "n/a"},
-      //   {name: "P/E Ratio", data: "n/a"},
-      //   {name: "Revenue", data: "n/a"},
-      //   {name: "EPS", data: "n/a"},
-      //   {name: "Dividend (Yield)", data: "n/a"},
-      // ],
     }),
     methods: {
       fetchStats () {

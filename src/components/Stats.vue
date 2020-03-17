@@ -89,14 +89,20 @@ export default {
         this.items1.prevClose.data = data.PrevClose ? data.PrevClose : "n/a"
         this.items1.dayRange.data = data.DayRange ? data.DayRange : "n/a"
         this.items1.weekRange.data =  data.WeekRange52 ? data.WeekRange52 : "n/a"
-        this.items1.avgVol.data = data.AvgVolume ? data.AvgVolume : "n/a"
+        this.items1.avgVol.data = this.formatNumber(data.AvgVolume)
         this.items1.yearReturn.data = data.YearReturn ? data.YearReturn : "n/a"
         this.items1.beta.data = data.Beta ? data.Beta : "n/a"
-        this.items2.marketCap.data = data.MarketCap ? data.MarketCap : "n/a"
+        this.items2.marketCap.data = this.formatNumber(data.MarketCap)
         this.items2.peRatio.data = data.PERatio ? data.PERatio : "n/a"
-        this.items2.revenue.data = data.Revenue ? data.Revenue : "n/a"
+        this.items2.revenue.data = this.formatNumber(data.Revenue)
         this.items2.eps.data = data.EPS ? data.EPS : "n/a"
         this.items2.dividend.data = data.Dividend ? data.Dividend : "n/a"
+      },
+      formatNumber (num) {
+        if(!num) return "n/a"
+        if(num>1000000000) return (num/1000000000).toFixed(2)+"B"
+        if(num>1000000) return (num/1000000).toFixed(2)+"M"
+        return num
       }
     },
     mounted () {

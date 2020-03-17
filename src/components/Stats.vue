@@ -31,6 +31,9 @@
             </v-list-item>
           </v-list>
         </v-col>
+        <v-col>
+          <LChart :stock="this.$props.stock"></LChart>
+        </v-col>
       </v-row>
       <v-divider v-if="loaded"></v-divider>
       <v-row v-if="loaded">
@@ -50,10 +53,14 @@
 </template>
 
 <script>
+import LChart from './LChart'
 export default {
     name: "Stats",
     props: {
       stock: Object,
+    },
+    components: {
+      LChart
     },
     data: () => ({
       loaded: false,

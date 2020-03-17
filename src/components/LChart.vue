@@ -1,5 +1,10 @@
 <template>
   <div>
+    <v-row v-if="loaded" justify="center">
+      <div class="px-1 " v-for="button in buttons" :key="button.duration">
+        <v-btn x-small outlined @click="renderChart(fetchedData, button.duration)">{{ button.text }}</v-btn>
+      </div>
+    </v-row>
     <v-row v-if="!loaded" class="pt-5 mt-5" justify="center">
         <v-progress-circular
           :size="50"
@@ -30,7 +35,8 @@ export default {
     stockData: null,
     options: null,
     fetchedData: null,
-    duration: 120
+    duration: 120,
+    buttons: [{duration: 7, text: "7D"},{duration: 20, text: "1M"},{duration: 60, text: "3M"},{duration: 120, text: "6M"},{duration: 252, text: "1Y"}]
   }),
   methods: {
     renderChart (data, duration) {

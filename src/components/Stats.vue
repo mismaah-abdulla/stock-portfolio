@@ -2,7 +2,7 @@
   <v-container>
     <v-card outlined> 
       <v-card-title>Overview</v-card-title>
-      <v-row v-if="!loaded" class="pt-5 mt-5" justify="center">
+      <v-row v-if="!loaded" class="py-5 my-5" justify="center">
         <v-progress-circular
           :size="70"
           :width="6"

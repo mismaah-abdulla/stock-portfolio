@@ -1,9 +1,19 @@
 <template>
-  <GChart v-if="loaded"
+  <div>
+    <v-row v-if="!loaded" class="pt-5 mt-5" justify="center">
+        <v-progress-circular
+          :size="50"
+          :width="5"
+          color="grey"
+          indeterminate
+        ></v-progress-circular>
+      </v-row>
+    <GChart v-else
     type="LineChart"
     :data="stockData"
     :options="options"
   />
+  </div>
 </template>
 <script>
 import { GChart } from 'vue-google-charts'
@@ -24,7 +34,7 @@ export default {
   }),
   methods: {
     renderChart (data, duration) {
-      this.stockData = [['Date', 'Low']]
+      this.stockData = [['Date', '']]
       if (duration > data.length) duration = data.length
       for(let i = data.length-duration; i < data.length; i++){
         let moment = require('moment')
@@ -36,6 +46,13 @@ export default {
       }
       this.options = {
         legend: 'none',
+        chartArea: {
+          top: 20,
+          left: 40,
+          right: 20,
+          bottom: 45
+        },
+        height: 450,
       }
     },
     getData () {

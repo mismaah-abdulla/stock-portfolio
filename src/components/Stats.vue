@@ -10,7 +10,7 @@
           indeterminate
         ></v-progress-circular>
       </v-row>
-      <v-row v-else no-gutters>
+      <v-row v-if="loaded" no-gutters>
         <v-col class="flex-grow-0 flex-shrink-1">
           <v-list two-line subheader>
             <v-list-item v-for="item in items1" :key="item.name">
@@ -24,6 +24,19 @@
         <v-col class="flex-grow-0 flex-shrink-1">
           <v-list two-line subheader>
             <v-list-item v-for="item in items2" :key="item.name">
+              <v-list-item-content>
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+                <v-list-item-subtitle> {{ item.data }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-col>
+      </v-row>
+      <v-divider v-if="loaded"></v-divider>
+      <v-row v-if="loaded">
+        <v-col v-for="item in items3" :key="item.name">
+          <v-list two-line subheader>
+            <v-list-item>
               <v-list-item-content>
                 <v-list-item-title>{{ item.name }}</v-list-item-title>
                 <v-list-item-subtitle> {{ item.data }}</v-list-item-subtitle>
@@ -60,6 +73,11 @@ export default {
         eps: {name: "EPS", data: null},
         dividend: {name: "Dividend (Yield)", data: null},
       },
+      items3: {
+        sector: {name: "Sector", data: "Stufffffff"},
+        industry: {name: "Industry", data: "Stufffffff"},
+        employees: {name: "Employees", data: "Stufffffff"},
+      }
     }),
     methods: {
       fetchStats () {

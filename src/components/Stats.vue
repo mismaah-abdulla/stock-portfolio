@@ -108,23 +108,23 @@ export default {
         }
       },
       assignStats (data) {
-        this.items1.prevClose.data = data.PrevClose ? data.PrevClose : "n/a"
-        this.items1.dayRange.data = data.DayRange ? data.DayRange : "n/a"
-        this.items1.weekRange.data =  data.WeekRange52 ? data.WeekRange52 : "n/a"
+        this.items1.prevClose.data = data.PrevClose ? data.PrevClose : "N/A"
+        this.items1.dayRange.data = data.DayRange ? data.DayRange : "N/A"
+        this.items1.weekRange.data =  data.WeekRange52 ? data.WeekRange52 : "N/A"
         this.items1.avgVol.data = this.formatNumber(data.AvgVolume)
-        this.items1.yearReturn.data = data.YearReturn ? data.YearReturn : "n/a"
-        this.items1.beta.data = data.Beta ? data.Beta : "n/a"
+        this.items1.yearReturn.data = data.YearReturn ? data.YearReturn : "N/A"
+        this.items1.beta.data = data.Beta ? data.Beta : "N/A"
         this.items2.marketCap.data = this.formatNumber(data.MarketCap)
-        this.items2.peRatio.data = data.PERatio ? data.PERatio : "n/a"
+        this.items2.peRatio.data = data.PERatio ? data.PERatio : "N/A"
         this.items2.revenue.data = this.formatNumber(data.Revenue)
-        this.items2.eps.data = data.EPS ? data.EPS : "n/a"
-        this.items2.dividend.data = data.Dividend ? data.Dividend : "n/a"
-        this.items3.sector.data = data.Sector ? data.Sector : "n/a"
-        this.items3.industry.data = data.Industry ? data.Industry : "n/a"
-        this.items3.employees.data = data.Employees ? data.Employees : "n/a"
+        this.items2.eps.data = data.EPS ? data.EPS : "N/A"
+        this.items2.dividend.data = data.Dividend ? data.Dividend : "N/A"
+        this.items3.sector.data = data.Sector ? data.Sector : "N/A"
+        this.items3.industry.data = data.Industry ? data.Industry : "N/A"
+        this.items3.employees.data = data.Employees ? data.Employees : "N/A"
       },
       formatNumber (num) {
-        if(!num) return "n/a"
+        if(!num) return "N/A"
         if(num>1000000000) return (num/1000000000).toFixed(2)+"B"
         if(num>1000000) return (num/1000000).toFixed(2)+"M"
         return num
@@ -132,10 +132,10 @@ export default {
       assignNull () {
         /* eslint-disable no-unused-vars */
         for(let [key, value] of Object.entries(this.items1)){
-          value.data = "n/a"
+          value.data = "N/A"
         }
         for(let [key, value] of Object.entries(this.items2)){
-          value.data = "n/a"
+          value.data = "N/A"
         }
         /* eslint-disable no-unused-vars */
       }

@@ -68,10 +68,7 @@ export default {
         let statsAPI = `http://${hostname}/backend/stats/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
         try{
           fetch(statsAPI)
-          .then(response =>{
-            if (response.status == 204) throw new Error(response.status)
-            else return response.json()
-          })
+          .then(response =>{return response.json()})
           .then(data =>{
             this.assignStats(data)
             this.loaded = true
@@ -81,7 +78,7 @@ export default {
             this.loaded = true
           })
         }catch(error){
-          this.assignStats(error.json())
+          this.assignNull()
           console.log(error)
         }
       },
@@ -103,6 +100,16 @@ export default {
         if(num>1000000000) return (num/1000000000).toFixed(2)+"B"
         if(num>1000000) return (num/1000000).toFixed(2)+"M"
         return num
+      },
+      assignNull () {
+        /* eslint-disable no-unused-vars */
+        for(let [key, value] of Object.entries(this.items1)){
+          value.data = "n/a"
+        }
+        for(let [key, value] of Object.entries(this.items2)){
+          value.data = "n/a"
+        }
+        /* eslint-disable no-unused-vars */
       }
     },
     mounted () {

@@ -74,9 +74,9 @@ export default {
         dividend: {name: "Dividend (Yield)", data: null},
       },
       items3: {
-        sector: {name: "Sector", data: "Stufffffff"},
-        industry: {name: "Industry", data: "Stufffffff"},
-        employees: {name: "Employees", data: "Stufffffff"},
+        sector: {name: "Sector", data: null},
+        industry: {name: "Industry", data: null},
+        employees: {name: "Employees", data: null},
       }
     }),
     methods: {
@@ -112,6 +112,9 @@ export default {
         this.items2.revenue.data = this.formatNumber(data.Revenue)
         this.items2.eps.data = data.EPS ? data.EPS : "n/a"
         this.items2.dividend.data = data.Dividend ? data.Dividend : "n/a"
+        this.items3.sector.data = data.Sector ? data.Sector : "n/a"
+        this.items3.industry.data = data.Industry ? data.Industry : "n/a"
+        this.items3.employees.data = data.Employees ? data.Employees : "n/a"
       },
       formatNumber (num) {
         if(!num) return "n/a"

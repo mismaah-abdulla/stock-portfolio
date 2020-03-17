@@ -6,18 +6,20 @@
       </div>
     </v-row>
     <v-row v-if="!loaded" class="pt-5 mt-5" justify="center">
-        <v-progress-circular
-          :size="50"
-          :width="5"
-          color="grey"
-          indeterminate
-        ></v-progress-circular>
-      </v-row>
-    <GChart v-else
-    type="LineChart"
-    :data="stockData"
-    :options="options"
-  />
+      <v-progress-circular
+        :size="50"
+        :width="5"
+        color="grey"
+        indeterminate
+      ></v-progress-circular>
+    </v-row>
+    <v-lazy>
+      <GChart v-if="loaded"
+        type="LineChart"
+        :data="stockData"
+        :options="options"
+      />
+    </v-lazy>
   </div>
 </template>
 <script>

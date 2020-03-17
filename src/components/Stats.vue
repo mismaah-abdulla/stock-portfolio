@@ -11,7 +11,7 @@
         ></v-progress-circular>
       </v-row>
       <v-row v-if="loaded" no-gutters>
-        <v-col class="flex-grow-0 flex-shrink-1">
+        <v-col cols="2">
           <v-list two-line subheader>
             <v-list-item v-for="item in items1" :key="item.name">
               <v-list-item-content>
@@ -21,7 +21,7 @@
             </v-list-item>
           </v-list>
         </v-col>
-        <v-col class="flex-grow-0 flex-shrink-1">
+        <v-col cols="2">
           <v-list two-line subheader>
             <v-list-item v-for="item in items2" :key="item.name">
               <v-list-item-content>
@@ -31,7 +31,7 @@
             </v-list-item>
           </v-list>
         </v-col>
-        <v-col>
+        <v-col cols="8">
           <LChart :stock="this.$props.stock"></LChart>
         </v-col>
       </v-row>

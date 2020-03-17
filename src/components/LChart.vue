@@ -47,7 +47,7 @@ export default {
         let date = new Date(data[i].date)
         if(date.getFullYear() >= new Date().getFullYear()-1){
           let daymonth = moment(new Date(date)).format("DD MMM")
-          this.stockData.push([daymonth, data[i].low])
+          this.stockData.push([daymonth, data[i].aclose])
         }  
       }
       this.options = {

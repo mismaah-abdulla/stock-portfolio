@@ -1,8 +1,34 @@
 <template>
   <div class="Watchlist">
-    <v-card class="pa-2">
-      <v-card-title>
-        <!-- SEARCH -->
+    <v-card  class="pa-3">
+   
+    <v-row  class="pa-2">
+
+        <v-select
+        v-model="watchlist"
+        :items="watchlist_list"
+        item-text="name"
+        @change="watchlist_filter"
+        label="Select Watchlist"
+        dense
+      ></v-select>
+  
+        <!-- EDIT BUTTON -->
+        <v-btn icon v-if="hideEdit" @click='editMode'>
+        <v-icon right>
+          mdi-pencil-minus
+        </v-icon>
+        </v-btn>
+        <v-btn icon v-else @click='editMode'>
+        <v-icon >
+          mdi-pencil-off
+        </v-icon>
+        </v-btn>
+         <!-- END OF EDIT BUTTON -->
+       
+      </v-row>
+
+      <!-- SEARCH -->
         <v-text-field
           v-model="search"
           clearable
@@ -11,32 +37,25 @@
           label="Search Symbol"
           single-line
           solo-inverted
-          hide-details
         ></v-text-field>
         <!-- END OF SEARCH -->
         
-
-        <!-- EDIT BUTTON -->
-        <v-icon right v-if="!hideEdit" @click='editMode'>
-          mdi-pencil-off
-        </v-icon>
-        <v-icon right v-else @click='editMode'>
-          mdi-pencil-minus
-        </v-icon>
-        <!-- END OF EDIT BUTTON -->
-
-      </v-card-title>
     <!-- DATA TABLE -->
-      <v-data-table
+      <v-data-table 
+        v-if="selected_watchlist"
         :headers="computedHeaders"
-        :items ="watchlist" 
-        :search="search"
+        :items ="finalarray" 
         hide-default-footer
         fixed-header
         sort-by="symbol"
         @click:row="tablerowClick"
         group-by="category"  
       >
+      <template slot="no-data">
+        <v-alert :value="true" icon="warning">
+          Sorry, nothing to display here :(
+        </v-alert>
+      </template>
 
       <template v-slot:group.header="{items, isOpen, toggle}">
           <th colspan=6>
@@ -46,7 +65,6 @@
             {{ items[0].category }}
       </th>
       </template>
-
       <template v-slot:item.chg_percent="{ item }">
         <v-chip :color="getColor(item.chg_percent)" dark>
           <v-icon left v-if="item.chg_percent>'0%'">mdi-menu-up</v-icon>
@@ -68,7 +86,7 @@
     </v-card>
   <!-- END OF DATA TABLE-->
 
-  <!-- DELETE DIALOG -->
+  <!-- DELETE SYMBOL DIALOG -->
     <v-dialog
       v-model="dialog"
       max-width="290"
@@ -99,53 +117,67 @@
           </v-card-actions>
         </v-card>
     </v-dialog>
-    <!-- END OF DELETE DIALOG -->
+    <!-- END OF DELETE SYMBOL DIALOG -->
 
     <!-- ADD BUTTON -->
-    <v-dialog v-model="dialog2" max-width="500px">
+    <v-dialog v-model="dialog_addWatchlist" max-width="500px">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on" fixed bottom left fab dark color="primary" >
+        <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom left fab dark color="primary" >
           <v-icon dark>mdi-plus</v-icon>
         </v-btn>
-        <v-btn v-if="!$vuetify.breakpoint.xsOnly && !$vuetify.breakpoint.smOnly" class="mx-2" v-on="on" fixed bottom right fab dark color="primary" >
+        <v-btn v-if="!$vuetify.breakpoint.xsOnly && !$vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom right fab dark color="primary" >
           <v-icon dark>mdi-plus</v-icon>
         </v-btn>
       </template>
+
       <v-card>
-        <v-card-title>
-          <span class="headline">Add (Temp)</span>
+        <v-card-title> 
+          <span class="headline">New Watchlist</span>
         </v-card-title>
-<!-- HARD CORDED, SHOULD RETRIEVE FROM DB -->
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-autocomplete v-model="editedItem.symbol" :items="samplesymbol" label="Symbol" ></v-autocomplete>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="editedItem.category" :rules="strRules" clearable="true" label="Category" ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="editedItem.price" :rules="intRules" clearable="true"  prefix="$ " label="Price (USD)" ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="editedItem.chg" :rules="intRules" clearable="true" prefix="$ "  label="Change" ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="editedItem.chg_percent" :rules="intRules" clearable="true"  suffix=" %" label="Change (%)" ></v-text-field>
-              </v-col>
-            </v-row>
+          <v-container> 
+            <v-text-field :rules="strRules" v-model="editedItem.name"  label="Watchlist Name" maxlength="12" :hint="check_duplicate? 'Duplicate name exists' : ''" ></v-text-field>
+    
           </v-container>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue" text @click="close">Cancel</v-btn>
-          <v-btn color="blue " text @click="save">Save</v-btn>
+          <v-btn color="default" text @click="close">Cancel</v-btn>
+          <v-btn class="white--text" color="blue"  @click="save" v-bind:disabled="editedItem.name===''||check_duplicate" >Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <!-- END OF BUTTON -->
+    <!-- END OF ADD BUTTON -->
+
+   <!-- TEMPORARY DELETE BUTTON -->
+    <v-dialog v-if="selected_watchlist" v-model="dialog_deleteWatchlist" max-width="500px">
+      <template  v-slot:activator="{ on }">
+        <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom right fab dark color="primary" >
+          <v-icon dark>mdi-minus</v-icon>
+        </v-btn>
+        <v-btn v-if="!$vuetify.breakpoint.xsOnly && !$vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom left fab dark color="primary" >
+          <v-icon dark>mdi-minus</v-icon>
+        </v-btn>
+      </template>
+
+      <v-card>
+        <v-card-title> 
+          <span class="headline">Confirm Deletion</span>
+        </v-card-title>
+        <v-card-text>
+           <span>Delete watchlist: {{watchlist}}</span>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn color="default" text @click="close">Cancel</v-btn>
+          <v-btn color="error" @click="delete_watchlist">Confirm </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog> 
+    <!-- END OF DELETE BUTTON --> 
+
   </div>
 </template>
 
@@ -157,19 +189,22 @@ export default {
   },
  data: function() {
     return{
-      search: '',
+      search: '', selected_watchlist:'',
+      filtered_watchlist:'',
+      filtersymbolarray:[],
+      finalarray:[],
       hideEdit: true,
       drawer: null,
       dialog: false, 
-      delete_clicked: false,
-      dialog2: false,
+      delete_clicked: false, dialog_deleteWatchlist: false,
+      dialog_addWatchlist: false, dialog_InvalidInput:false,
       menuItems: [
         {icon:"mdi-chart-areaspline",title:"Market", link:"/Market"},
         {icon:"mdi-binoculars",title:"Watchlist", link:"/watchlist"},
         {icon:"mdi-account-box-outline",title:"Portfolio",link:"/portfolio"},
         {icon:"mdi-newspaper",title:"News Feed", link:"/news"}
       ],
-      samplesymbol:['AAPL', 'FB', 'GOGL'],
+     
       headers: [
         {
           text: 'Symbol',
@@ -177,12 +212,13 @@ export default {
           value: 'symbol',
         },
         { filterable: false,text: 'Price (USD)', value: 'price' },
-        {  text: 'Change', value: 'chg' },
+        { text: 'Change', value: 'chg' },
         { sortable:false, filterable: false, value: 'chg_percent' },
         { value: 'action', sortable: false },
-        {text: "Category", value:"category",sortable:false, filterable: false}
+        { text: "Industry", value:"category",sortable:false, filterable: false}
       ],
-      watchlist: [{
+      
+      symbols: [{
             price: "262.33",
             high: "264.29",
             low: "249.80",
@@ -203,30 +239,50 @@ export default {
             symbol: "CVX",
             id: "2",
             category:"Energy"
+        },
+        {
+            price: "146.01",
+            high: "159.13",
+            low: "143.10",
+            chg: "−24.27",
+            chg_percent: "-14.25%",
+            dateTime: "2020-03-07 05:08:14",
+            symbol: "FB",
+            id: "3",
+            category:"Tech"
         }
       ],
+ 
+      watchlist_list:[
+      {
+        name: "My Watchlist",
+        symbol:["BA","CVX"]
+      },
+      {
+        name: "Test1",
+        symbol:["BA"]
+
+      },
+      {
+        name: "Test2",
+        symbol:["CVX"]
+
+      }],
       editedItem: {
-        symbol: "",
-        price: "",
-        chg: "",
-        chg_percent: "",
-        category: "",
+       name:"",
+        symbol:[]
       },
       defaultItem: {
-        symbol: "",
-        price: "",
-        chg: "",
-        chg_percent: "",
-        category: "",
+        name:"",
+        symbol:[]
       },
       strRules: [
         v => !!v || 'This field is required',
-        v => (v && v.length <= 10) || 'Must be less than 10 characters',
+
       ],
-      intRules: [
-        v => !!v || 'This field is required',
-        v => (v && v.length <= 10) || 'Must be less than 10 characters',
-      ],
+      
+     
+      
     }
  },
 
@@ -235,10 +291,22 @@ export default {
         this.hideEdit = !(this.hideEdit)
       },
       deleteItem (item) {
-        const index = this.watchlist.indexOf(item)
-        this.dialog=false
-        this.watchlist.splice(index, 1)
+        const index = this.finalarray.indexOf(item)
+        this.finalarray.splice(index, 1)
         this.hideEdit=true
+        this.dialog=false
+      },
+      
+      delete_watchlist(){
+       this.dialog_deleteWatchlist = false
+       for(var i=0;i<this.watchlist_list.length;i++){
+         if(this.watchlist_list[i].name===this.selected_watchlist)
+         { 
+          this.watchlist_list.splice(i, 1)
+          this.selected_watchlist=''
+          break
+         }
+       }
       },
       getColor (change) {
         if (change < '0%') return 'red'
@@ -250,27 +318,58 @@ export default {
         }
       },
       close () {
-        this.dialog2 = false
-        this.editedItem =Object.assign({}, this.defaultItem)
-        this.$refs.editedItem.reset()
+        this.dialog_addWatchlist = false
+        this.dialog_InvalidInput = false
+        this.dialog_deleteWatchlist = false
+        this.editedItem = Object.assign({}, this.defaultItem)
       },
       save () {
-        this.editedItem.chg_percent+="%"
-        this.watchlist.push(this.editedItem)
+        
+        if(this.editedItem.name===""){
+        this.dialog_InvalidInput=true
+        }
+        else{this.watchlist_list.push(this.editedItem)
         this.close()
+        }
       },
+      watchlist_filter(value){
+        this.selected_watchlist=value
+
+        this.filtered_watchlist=this.watchlist_list.filter(item=>item.name === value )
+        this.filtersymbolarray=(this.filtered_watchlist[0].symbol)
+
+        let temp_symbols=this.symbols
+        this.finalarray=[]
+        
+        for(var i=0;i<this.filtersymbolarray.length;i++){
+        Array.prototype.push.apply(this.finalarray,(temp_symbols.filter(
+        temp_symbol => temp_symbol.symbol === this.filtersymbolarray[i])
+        ))
+        }
+      }
   },
 
- computed:{
+  computed:{
       computedHeaders () {
       if(this.hideEdit){
-        return this.headers.filter(header => header.value !== "action")
+        return this.headers.filter(
+          header => header.value !== "action")
       }
       else{
       return this.headers}
       },
-
-
-  },
+     
+      check_duplicate()
+      {
+        for(var i=0;i<this.watchlist_list.length;i++){
+         if(this.watchlist_list[i].name.trim().toLowerCase()===this.editedItem.name.trim().toLowerCase())
+         { 
+          return true
+         }
+       }
+       return false
+        
+      }
+  }
 }
 </script>

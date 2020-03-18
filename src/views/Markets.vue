@@ -91,11 +91,14 @@ export default {
   methods: {
     fetchData() {
       if (this.isLoading && this.model) return
+      if (this.search == "" || this.search == ".") return
       this.isLoading = true
       this.symbolsExchangesNames = []
       let hostname = window.location.hostname
       fetch(`http://${hostname}/backend/search/${this.search}`)
-        .then(res => res.json())
+        .then(res => {
+          if(res.ok) return res.json()
+          })
         .then(res => {
           for(let i of res){
             this.symbolsExchangesNames.push({
@@ -125,7 +128,6 @@ export default {
   },
   watch: {
     search (val) {
-      if(val == null || val == "") return
       if(this.model && val == this.model.Name) return
       this.fetchDebounced()
     },

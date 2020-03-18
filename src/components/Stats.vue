@@ -49,6 +49,34 @@
         </v-col>
       </v-row>
     </v-card>
+    <v-card outlined class="mt-5" v-if="loaded">
+      <v-card-title>Financial Summary</v-card-title>
+        <v-switch class="pl-5 py-0 my-0" v-model="quarterly" label="Quarterly"></v-switch>
+        <v-tabs slider-size="1" height="30"
+        v-model="tab"
+        background-color="transparent"
+        color="basil"
+        >
+        <v-tab dense 
+          v-for="item in tabHeaders"
+          :key="item"
+          class="caption font-weight-bold"
+          
+        >
+          {{ item }}
+        </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab">
+        <v-tab-item>
+          
+        </v-tab-item>
+        <v-tab-item>
+          
+        </v-tab-item>
+        <v-tab-item>
+        </v-tab-item>
+      </v-tabs-items>
+    </v-card>
   </v-container>
 </template>
 
@@ -64,7 +92,10 @@ export default {
     },
     data: () => ({
       loaded: false,
+      tabHeaders: ["Income Statement", "Balance Sheet", "Cash Flow Statement"],
+      tab: null,
       stats: null,
+      quarterly: false,
       items1: {
         prevClose: {name: "Prev Close", data: null},
         dayRange: {name: "Day's Range", data: null},

@@ -15,6 +15,9 @@
             <v-list-item-avatar v-if="details.LogoURL">
               <v-img :src="logoURL"></v-img>
             </v-list-item-avatar>
+            <v-list-item-avatar v-else color="teal">
+              <span class="white--text title">{{getInitials(details.Name)}}</span>
+            </v-list-item-avatar>
             <v-list-item-content class="py-0">
               <v-list-item-title>
                 <span class="title">{{details.Code}} </span><span>  {{details.Name}}</span>
@@ -70,6 +73,12 @@ export default {
       }catch(error){
         console.log(error)
       }
+    },
+    getInitials(name){
+      let names = name.split(' '),
+      initials = names[0].substring(0, 1).toUpperCase()
+      if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
+      return initials
     }
   },
   mounted () {

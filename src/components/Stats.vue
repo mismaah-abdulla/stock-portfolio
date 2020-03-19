@@ -1,16 +1,16 @@
 <template>
   <v-container>
-    <v-card outlined> 
+    <v-row v-if="!loaded" class="py-5 my-5" justify="center">
+      <v-progress-circular
+        :size="70"
+        :width="6"
+        color="grey"
+        indeterminate
+      ></v-progress-circular>
+    </v-row>
+    <v-card v-if="loaded" outlined> 
       <v-card-title>Overview</v-card-title>
-      <v-row v-if="!loaded" class="py-5 my-5" justify="center">
-        <v-progress-circular
-          :size="70"
-          :width="6"
-          color="grey"
-          indeterminate
-        ></v-progress-circular>
-      </v-row>
-      <v-row v-if="loaded" no-gutters>
+      <v-row  no-gutters>
         <v-col cols="2">
           <v-list two-line subheader>
             <v-list-item v-for="item in items1" :key="item.name">

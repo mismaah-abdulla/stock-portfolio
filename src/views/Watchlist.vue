@@ -370,7 +370,10 @@ export default {
       deleteItem () {
         const index = this.finalarray.indexOf(this.selected)
         this.finalarray.splice(index, 1)
-        this.filtered_watchlist[0].symbol.pop(this.selected.symbol)
+
+        const index2=this.watchlist_list.indexOf(this.filtered_watchlist[0])
+        const index3=this.filtered_watchlist[0].symbol.indexOf(this.selected.symbol)
+        this.watchlist_list[index2].symbol.splice(index3,1)
 
         this.hideEdit=true
         this.dialog=false

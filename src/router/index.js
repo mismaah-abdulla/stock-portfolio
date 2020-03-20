@@ -9,9 +9,10 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/markets',
+    path: '/markets/:code.:exchange',
     name: 'Markets',
-    component: Markets
+    component: Markets,
+    props: true
   },
   {
     path: '/watchlist',

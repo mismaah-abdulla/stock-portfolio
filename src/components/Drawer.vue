@@ -36,12 +36,11 @@
           clearable
           item-text="Name"
           item-value="Code"
-          placeholder="Search stock symbols and names"
+          placeholder="Search markets"
           prepend-icon="search"
           return-object
-          autofocus
           dense
-          v-on:input="this.$router.push({path: '/markets'})"
+          v-on:input="goToMarkets()"
         >
           <template v-slot:item="{ item }" :to="'/markets'">
             <v-list>
@@ -62,7 +61,7 @@
       drawer: null,
       drawerItems: [
       {title: "Portfolio", icon: "recent_actors", link: '/'},
-      {title: "Markets", icon: "show_chart", link: '/markets'},
+      // {title: "Markets", icon: "show_chart", link: '/markets'},
       {title: "Watchlist", icon: "list", link: '/watchlist'},
       {title: "News Feed", icon: "dynamic_feed", link: '/newsfeed'}
       ],
@@ -117,7 +116,10 @@
       return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1
     },
     goToMarkets(){
-      this.window.location.href = '/markets'
+      this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})
+      this.symbolsExchangesNames = []
+      this.search = null
+      console.log(this.model)
     }
   },
   watch: {

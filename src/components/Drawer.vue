@@ -33,10 +33,9 @@
     data: () => ({
       drawer: null,
       drawerItems: [
-      {title: "Dashboard", icon: "dashboard", link: '/'},
+      {title: "Portfolio", icon: "recent_actors", link: '/'},
       {title: "Markets", icon: "show_chart", link: '/markets'},
       {title: "Watchlist", icon: "list", link: '/watchlist'},
-      {title: "Portfolio", icon: "recent_actors", link: '/portfolio'},
       {title: "News Feed", icon: "dynamic_feed", link: '/newsfeed'}
       ] 
     }),

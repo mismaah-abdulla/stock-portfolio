@@ -2,9 +2,9 @@
   <div>
     <v-card dense outlined color=transparent border-color=white class="px-2">
       
-    <v-row align="center" class="pa-2">
+    <v-row align="center" class="pa-1">
     <!-- Watchlist select -->  
-    <v-col cols="9">
+    <v-col cols="9.5">
         <v-select
         :items="watchlist_list"
         item-text="name"
@@ -75,6 +75,10 @@
         @click:row="tablerowClick"
         group-by="category">
 
+        <template v-slot:item.image="{ item }">
+          <img :src="require('../assets/' + item.image)" style="width: 40px; height: 40px" />
+        </template>
+
         <template slot="no-data" >
           <v-alert :value="true" icon="warning" class='pa-8'>
             Sorry, nothing to display here :(
@@ -100,17 +104,52 @@
           </v-chip>
         </template>
         
-        <template v-slot:item.action="{}">
+        <template v-slot:item.action="{item}" >
           <v-icon color='red' style="horizontal-align: middle"
-            small
-            @click="dialog=true">
+            small 
+            @click="confirmdelete(item)">
             mdi-trash-can-outline
           </v-icon>
         </template>
     </v-data-table>
-    </v-card>
     <!-- END OF DATA TABLE-->
     
+    <!-- DELETE SYMBOL DIALOG -->
+    <v-dialog
+      v-model="dialog"
+      max-width="290">
+
+      <v-card>
+        <v-card-title class="headline"></v-card-title>
+  
+        <v-card-text>
+          Are you sure you want to delete this symbol from: {{selected_watchlist}}?
+        </v-card-text>
+  
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color=primary
+              text
+              @click="dialog = false">
+              Cancel
+            </v-btn>
+
+            <v-btn
+              color="error"
+              depressed 
+              @click="deleteItem()">
+              Delete
+            </v-btn>
+
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    
+    </v-card>
+    <!-- END OF DELETE SYMBOL DIALOG -->
+
     <!--ADD MARKET BUTTON UNDER TABLE-->
     <v-dialog v-if="selected_watchlist" v-model="add_dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
@@ -137,26 +176,23 @@
             prepend-inner-icon=mdi-magnify
             color='black'
             label="Search Markets"
-            :items="symbols"
             item-text="symbol"
             single-line
+            v-model="market_search"
         ></v-text-field>
 
       <v-list two-line >
-              
               <v-list-item 
-                  v-for="(symbol,index) in symbols"
+                  v-for="(symbol) in filtered_market"
                   :key="symbol.symbol"
                   ripple>
-              <v-list-item-avatar>
+              <v-list-item-avatar @click='tablerowClick(symbol)' >
                   <v-icon size="50">mdi-circle</v-icon>
               </v-list-item-avatar>
 
-              <v-list-item-content>
+              <v-list-item-content  @click='tablerowClick(symbol)'>
                   <v-list-item-title>{{ symbol.symbol }}</v-list-item-title>
                   <v-list-item-subtitle >{{ symbol.name }}</v-list-item-subtitle>
-                  <v-divider v-if="index + 1 < symbols.length"
-                  :key="index" ></v-divider>
               </v-list-item-content>
 
               <v-list-item-action >
@@ -176,41 +212,7 @@
       </v-card>
     </v-dialog>
     <!--END OF ADD MARKET -->
-    
 
-    <!-- DELETE SYMBOL DIALOG -->
-    <v-dialog
-      v-model="dialog"
-      max-width="290">
-
-      <v-card>
-        <v-card-title class="headline"></v-card-title>
-  
-        <v-card-text>
-          Are you sure you want to delete this symbol from: {{selected_watchlist}}?
-        </v-card-text>
-  
-        <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color=primary
-              text
-              @click="dialog = false">
-              Cancel
-            </v-btn>
-
-            <v-btn
-              color="error"
-              depressed 
-              @click="deleteItem(item)">
-              Delete
-            </v-btn>
-
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <!-- END OF DELETE SYMBOL DIALOG -->
- 
     <!-- ADD BUTTON -->
     <v-dialog v-model="dialog_addWatchlist" max-width="500px">
       <template v-slot:activator="{ on }">
@@ -254,10 +256,10 @@ export default {
   },
  data: function() {
     return{
-      search: '', selected_watchlist:'',
-      filtered_watchlist:'', 
-      filtersymbolarray:[],
-      finalarray:[],
+      market_search: '', selected_watchlist:'',
+      filtered_watchlist:'', item:'', datatable:[],
+      filtersymbolarray:[],selected:[],
+      finalarray:[], filteredmarket:[],
       hideEdit: true,
       drawer: null,
       dialog: false,  add_dialog:false, list_item:false,
@@ -271,16 +273,18 @@ export default {
       ],
      
       headers: [
+        {value:"image",sortable:false,filterable:false,},
         {
           text: 'Symbol',
           align: 'start', 
           value: 'symbol',
+          
         },
-        { filterable: false,text: 'Price (USD)', value: 'price' },
-        { text: 'Change', value: 'chg' },
+        { filterable: false,text: 'Price (USD)', value: 'price',  },
+        //{ text: 'Change', value: 'chg',  },
         { sortable:false, filterable: false, value: 'chg_percent' },
-        { value: 'action', sortable: false },
-        { text: "Sector", value:"category",sortable:false, filterable: false}
+        { value: 'action', sortable: false,  width: "1%"},
+        { text: "Sector", value:"category",sortable:false, filterable: false,}
       ],
       
       symbols: [{
@@ -293,7 +297,8 @@ export default {
             symbol: "BA",
             id: "1",
             category:"Airline",
-            name:"Boeing Co"
+            name:"Boeing Co",
+            image:"logo.png"
         },
         {
             price: "95.32",
@@ -305,7 +310,8 @@ export default {
             symbol: "CVX",
             id: "2",
             category:"Energy",
-            name:"Chevron Corporation"
+            name:"Chevron Corporation",
+            image:"logo.png"
         },
         {
             price: "146.01",
@@ -317,7 +323,8 @@ export default {
             symbol: "FB",
             id: "3",
             category:"Tech",
-            name:"Facebook, Inc. "
+            name:"Facebook, Inc. ",
+            image:"logo.png"
         }
       ],
  
@@ -348,16 +355,23 @@ export default {
         v => !!v || 'This field is required',
       ],
     }
- },
+ }, 
 
  methods:{
       editMode () {
         this.hideEdit = !(this.hideEdit)
       },
 
-      deleteItem (item) {
-        const index = this.finalarray.indexOf(item)
+      confirmdelete(market){
+        this.selected=market
+        this.dialog=true
+      },
+
+      deleteItem () {
+        const index = this.finalarray.indexOf(this.selected)
         this.finalarray.splice(index, 1)
+        this.filtered_watchlist[0].symbol.pop(this.selected.symbol)
+
         this.hideEdit=true
         this.dialog=false
       },
@@ -418,21 +432,29 @@ export default {
       },
 
       addMarket(symbol){
-        this.finalarray.push(symbol)
-        console.log(this.finalarray)
+        for(var i=0;i<this.finalarray.length;i++){
+          if(this.finalarray[i].symbol===symbol.symbol){
+            var duplicate_market=true
+            break
+          }
+        }
+        if(duplicate_market!=true){
+          this.finalarray.push(symbol)
+          this.filtered_watchlist[0].symbol.push(symbol.symbol)
+        }
         this.add_dialog=false
       }
- 
   },
 
   computed:{
-      computedHeaders () {
-      if(this.hideEdit){
-        return this.headers.filter(
-          header => header.value !== "action")
-      }
-      else{
-        return this.headers}
+      computedHeaders() 
+      {
+        if(this.hideEdit){
+          return this.headers.filter(
+            header => header.value !== "action")
+        }
+        else{
+          return this.headers}
       },
      
       check_duplicate()
@@ -443,9 +465,20 @@ export default {
           return true
          }
        }
-       return false},
+       return false
+      },
 
-    },
+      filtered_market() 
+      {
+        return (this.symbols.filter(symbol=>{if (!this.market_search){return this.symbols}
+          else{ 
+            return (symbol.symbol.toLowerCase().includes(this.market_search.toLowerCase())) ||
+             (symbol.name.toLowerCase().includes(this.market_search.toLowerCase()))
+          }         
+        })) 
+      }
+
+    }
     
     
 }

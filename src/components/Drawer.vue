@@ -111,9 +111,9 @@
       const textOne = item.Name.toLowerCase()
       const textTwo = item.Code.toLowerCase()
       const textThree = item.Exchange.toLowerCase()
-      const searchText = queryText.toLowerCase()
-      console.log(textOne, textTwo, textThree)
-      return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1 || textThree.indexOf(searchText) > -1
+      const searchText = queryText.toLowerCase().split(" ")
+      return textOne.indexOf(searchText[0]) > -1 || textTwo.indexOf(searchText[0]) > -1 || textThree.indexOf(searchText[0]) > -1
+      || textOne.indexOf(searchText[1]) > -1 || textTwo.indexOf(searchText[1]) > -1 || textThree.indexOf(searchText[1]) > -1
     },
     goToMarkets(){
       this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})

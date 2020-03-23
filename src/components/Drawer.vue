@@ -107,13 +107,8 @@
         this.fetchData()
       }, 200)
     },
-    customFilter(item, queryText){
-      const textOne = item.Name.toLowerCase()
-      const textTwo = item.Code.toLowerCase()
-      const textThree = item.Exchange.toLowerCase()
-      const searchText = queryText.toLowerCase().split(" ")
-      return textOne.indexOf(searchText[0]) > -1 || textTwo.indexOf(searchText[0]) > -1 || textThree.indexOf(searchText[0]) > -1
-      || textOne.indexOf(searchText[1]) > -1 || textTwo.indexOf(searchText[1]) > -1 || textThree.indexOf(searchText[1]) > -1
+    customFilter(){
+      return true
     },
     goToMarkets(){
       this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})

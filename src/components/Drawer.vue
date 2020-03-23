@@ -34,15 +34,13 @@
           hide-no-data
           hide-selected
           clearable
-          item-text="Name"
-          item-value="Code"
           placeholder="Search markets"
           prepend-icon="search"
           return-object
           dense
           v-on:input="goToMarkets()"
         >
-          <template v-slot:item="{ item }" :to="'/markets'">
+          <template v-slot:item="{ item }">
             <v-list>
             <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
             <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
@@ -112,8 +110,10 @@
     customFilter(item, queryText){
       const textOne = item.Name.toLowerCase()
       const textTwo = item.Code.toLowerCase()
+      const textThree = item.Exchange.toLowerCase()
       const searchText = queryText.toLowerCase()
-      return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1
+      console.log(textOne, textTwo, textThree)
+      return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1 || textThree.indexOf(searchText) > -1
     },
     goToMarkets(){
       this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})

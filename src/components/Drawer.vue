@@ -41,10 +41,19 @@
           v-on:input="goToMarkets()"
         >
           <template v-slot:item="{ item }">
+            <v-list-item-avatar v-if="item.hasLogo == 0">
+              <v-img :src="`https://eodhistoricaldata.com/img/logos/${item.Exchange}/${item.Code.toLowerCase()}.png`" @error="item.hasLogo = 1"></v-img>
+            </v-list-item-avatar>
+            <v-list-item-avatar v-else-if="item.hasLogo == 1">
+              <v-img :src="`https://eodhistoricaldata.com/img/logos/${item.Exchange}/${item.Code}.png`" @error="item.hasLogo = 2"></v-img>
+            </v-list-item-avatar>
+            <v-list-item-avatar v-else color="teal">
+              <span class="white--text title">{{getInitials(item.Name)}}</span>
+            </v-list-item-avatar>
             <v-list>
-            <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
-            <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
-            <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
+                <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
+                <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
             </v-list>
           </template>
         </v-autocomplete>
@@ -67,6 +76,7 @@
       model: null,
       isLoading: false,
       symbolsExchangesNames: [],
+      logos: []
     }),
     props: {
       source: String,
@@ -93,6 +103,7 @@
                 Code: i.Symbol,
                 Exchange: i.Exchange,
                 Name: i.Name,
+                hasLogo: 0
               })
             }
           })
@@ -114,7 +125,24 @@
       this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})
       this.symbolsExchangesNames = []
       this.search = null
-    }
+    },
+    getInitials(name){
+      let names = name.split(' '),
+      initials = names[0].substring(0, 1).toUpperCase()
+      if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
+      return initials
+    },
+    // logo(item){
+    //   let hostname = window.location.hostname
+    //   let logoURL = `http://${hostname}/backend/logo/${item.Symbol}.${item.Exchange}`
+    //   fetch(logoURL)
+    //   .then(res => res.json())
+    //   .then(url => {
+    //     item.LogoURL = url
+    //     console.log(item.LogoURL)
+    //   })
+    //   .finally(() => item.loaded = true)
+    // },
   },
   watch: {
     search (val) {

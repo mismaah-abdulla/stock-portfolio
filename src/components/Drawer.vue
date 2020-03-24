@@ -41,12 +41,15 @@
           v-on:input="goToMarkets()"
         >
           <template v-slot:item="{ item }">
-            <v-list-item-avatar v-if="item.hasLogo == 0">
+            <v-list-item-avatar v-if="item.hasLogo">
+              <v-img :src="`http://localhost/backend/logo/${item.Code}.${item.Exchange}`" @error="item.hasLogo = false"></v-img>
+            </v-list-item-avatar>
+            <!-- <v-list-item-avatar v-if="item.hasLogo == 0">
               <v-img :src="`https://eodhistoricaldata.com/img/logos/${item.Exchange}/${item.Code.toLowerCase()}.png`" @error="item.hasLogo = 1"></v-img>
-            </v-list-item-avatar>
-            <v-list-item-avatar v-else-if="item.hasLogo == 1">
+            </v-list-item-avatar> -->
+            <!-- <v-list-item-avatar v-else-if="item.hasLogo == 1">
               <v-img :src="`https://eodhistoricaldata.com/img/logos/${item.Exchange}/${item.Code}.png`" @error="item.hasLogo = 2"></v-img>
-            </v-list-item-avatar>
+            </v-list-item-avatar> -->
             <v-list-item-avatar v-else color="teal">
               <span class="white--text title">{{getInitials(item.Name)}}</span>
             </v-list-item-avatar>
@@ -103,7 +106,7 @@
                 Code: i.Symbol,
                 Exchange: i.Exchange,
                 Name: i.Name,
-                hasLogo: 0
+                hasLogo: true
               })
             }
           })

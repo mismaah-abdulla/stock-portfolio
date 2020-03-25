@@ -44,15 +44,6 @@
             <v-list-item-avatar v-if="item.LogoURL">
               <v-img :src="`http://localhost/backend/logo/${item.LogoURL}`"></v-img>
             </v-list-item-avatar>
-            <!-- <v-list-item-avatar v-if="item.hasLogo">
-              <v-img :src="`http://localhost/backend/logo/${item.Code}.${item.Exchange}`" @error="item.hasLogo = false"></v-img>
-            </v-list-item-avatar> -->
-            <!-- <v-list-item-avatar v-if="item.hasLogo == 0">
-              <v-img :src="`https://eodhistoricaldata.com/img/logos/${item.Exchange}/${item.Code.toLowerCase()}.png`" @error="item.hasLogo = 1"></v-img>
-            </v-list-item-avatar> -->
-            <!-- <v-list-item-avatar v-else-if="item.hasLogo == 1">
-              <v-img :src="`https://eodhistoricaldata.com/img/logos/${item.Exchange}/${item.Code}.png`" @error="item.hasLogo = 2"></v-img>
-            </v-list-item-avatar> -->
             <v-list-item-avatar v-else color="teal">
               <span class="white--text title">{{getInitials(item.Name)}}</span>
             </v-list-item-avatar>
@@ -105,7 +96,6 @@
             })
           .then(res => {
             for(let i of res){
-              console.log(i.LogoURL)
               this.symbolsExchangesNames.push({
                 Code: i.Code,
                 Exchange: i.Exchange,
@@ -139,17 +129,6 @@
       if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
       return initials
     },
-    // logo(item){
-    //   let hostname = window.location.hostname
-    //   let logoURL = `http://${hostname}/backend/logo/${item.Symbol}.${item.Exchange}`
-    //   fetch(logoURL)
-    //   .then(res => res.json())
-    //   .then(url => {
-    //     item.LogoURL = url
-    //     console.log(item.LogoURL)
-    //   })
-    //   .finally(() => item.loaded = true)
-    // },
   },
   watch: {
     search (val) {

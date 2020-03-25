@@ -41,9 +41,12 @@
           v-on:input="goToMarkets()"
         >
           <template v-slot:item="{ item }">
-            <v-list-item-avatar v-if="item.hasLogo">
-              <v-img :src="`http://localhost/backend/logo/${item.Code}.${item.Exchange}`" @error="item.hasLogo = false"></v-img>
+            <v-list-item-avatar v-if="item.LogoURL">
+              <v-img :src="`http://localhost/backend/logo/${item.LogoURL}`"></v-img>
             </v-list-item-avatar>
+            <!-- <v-list-item-avatar v-if="item.hasLogo">
+              <v-img :src="`http://localhost/backend/logo/${item.Code}.${item.Exchange}`" @error="item.hasLogo = false"></v-img>
+            </v-list-item-avatar> -->
             <!-- <v-list-item-avatar v-if="item.hasLogo == 0">
               <v-img :src="`https://eodhistoricaldata.com/img/logos/${item.Exchange}/${item.Code.toLowerCase()}.png`" @error="item.hasLogo = 1"></v-img>
             </v-list-item-avatar> -->
@@ -102,11 +105,12 @@
             })
           .then(res => {
             for(let i of res){
+              console.log(i.LogoURL)
               this.symbolsExchangesNames.push({
-                Code: i.Symbol,
+                Code: i.Code,
                 Exchange: i.Exchange,
                 Name: i.Name,
-                hasLogo: true
+                LogoURL: i.LogoURL
               })
             }
           })

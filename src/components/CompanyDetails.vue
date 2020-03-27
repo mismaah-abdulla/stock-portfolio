@@ -22,8 +22,7 @@
               <v-list-item-title>
                 <span class="title">{{details.Code}} </span><span>  {{details.Name}}</span>
               </v-list-item-title>
-              <v-list-item-subtitle><span>USA | </span><span>Consumer Goods</span></v-list-item-subtitle>
-              
+              <v-list-item-subtitle><span v-if="details.Country">{{details.Country}}</span><span v-if="details.Sector && details.Country"> | </span><span v-if="details.Sector"> | {{details.Sector}}</span></v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
               <v-tooltip bottom>
@@ -70,7 +69,7 @@ export default {
     fetchDetails () {
       this.loaded = false
       let hostname = window.location.hostname
-      let detailsAPI = `http://${hostname}/backend/fundamentals/general/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+      let detailsAPI = `http://${hostname}/backend/general/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(detailsAPI)
         .then(response => {

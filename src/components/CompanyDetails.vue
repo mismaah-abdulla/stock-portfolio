@@ -8,10 +8,10 @@
         indeterminate
       ></v-progress-circular>
     </v-row>
-    <v-row v-else >
-      <v-col class="flex-grow-0 flex-shrink-1 py-0">
-        <v-list >
-          <v-list-item>
+    <v-row v-else class="pt-0 mt-0">
+      <v-col cols="12" class="pt-0 mt-0">
+        <v-list class="py-0 my-0">
+          <v-list-item class="py-0 my-0">
             <v-list-item-avatar v-if="details.LogoURL">
               <v-img :src="logoURL"></v-img>
             </v-list-item-avatar>
@@ -22,12 +22,35 @@
               <v-list-item-title>
                 <span class="title">{{details.Code}} </span><span>  {{details.Name}}</span>
               </v-list-item-title>
-              <v-list-item-subtitle v-if="details.Exchange" >Exchange: {{ details.Exchange }}</v-list-item-subtitle>
-              <v-list-item-subtitle v-else >Exchange: n/a </v-list-item-subtitle>
+              <!-- <v-list-item-subtitle v-if="details.Exchange" >Exchange: {{ details.Exchange }}</v-list-item-subtitle>
+              <v-list-item-subtitle v-else >Exchange: n/a </v-list-item-subtitle> -->
+              <v-list-item-subtitle><span>USA | </span><span>Consumer Goods</span></v-list-item-subtitle>
+              
             </v-list-item-content>
+            <v-list-item-action>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn color="primary" small rounded icon v-on="on"><v-icon>visibility</v-icon></v-btn>
+                </template>
+                <span>Add to watchlist</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn color="primary" small rounded icon v-on="on"><v-icon>sync_alt</v-icon></v-btn>
+                </template>
+                <span>Trade</span>
+              </v-tooltip>
+            </v-list-item-action>
           </v-list-item>
         </v-list>
+        <v-list-item-subtitle>
+                <span class="font-weight-light pl-3">Return</span><span class="font-weight-bold pr-3"> 10% </span>
+                <span class="font-weight-light">Volatility</span><span class="font-weight-bold pr-3"> 30% </span>
+                <span class="font-weight-light">Sharpe</span><span class="font-weight-bold"> 15.5%</span>
+                <v-spacer></v-spacer>
+              </v-list-item-subtitle>
       </v-col>
+      
     </v-row>
     <v-divider v-if="loaded"></v-divider>
   </div>

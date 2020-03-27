@@ -22,8 +22,6 @@
               <v-list-item-title>
                 <span class="title">{{details.Code}} </span><span>  {{details.Name}}</span>
               </v-list-item-title>
-              <!-- <v-list-item-subtitle v-if="details.Exchange" >Exchange: {{ details.Exchange }}</v-list-item-subtitle>
-              <v-list-item-subtitle v-else >Exchange: n/a </v-list-item-subtitle> -->
               <v-list-item-subtitle><span>USA | </span><span>Consumer Goods</span></v-list-item-subtitle>
               
             </v-list-item-content>

@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid>
+    <v-container fluid fill-height>
       <v-row v-if="$vuetify.breakpoint.xsOnly" justify="center">
         <div class="px-1" v-for="button in buttons" :key="button.duration">
           <v-btn small outlined @click="renderChart(fetchedData, button.duration)">{{ button.text }}</v-btn>
@@ -18,11 +18,15 @@
           indeterminate
         ></v-progress-circular>
       </v-row>
-      <GChart v-if="loaded"
-      type="CandlestickChart"
-      :data="stockData"
-      :options="options"
-      />
+      <v-row v-if="loaded">
+        <v-col cols="12">
+        <GChart 
+        type="CandlestickChart"
+        :data="stockData"
+        :options="options"
+        />
+        </v-col>
+      </v-row>
     </v-container>
 </template>
 <script>

@@ -16,7 +16,7 @@
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
-        <ChartYD v-if="stock" :key="stock.Code" :stock="stock"/>
+        <ChartYD v-if="stock" :key="stock.Code" :stock="stock" :tab="tab"/>
       </v-tab-item>
       <v-tab-item>
         <Stats v-if="stock"  :key="stock.Code" :stock="stock"></Stats>

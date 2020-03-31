@@ -87,6 +87,7 @@ export default {
   },
   props: {
     stock: Object,
+    tab: Number,
   },
   data: () => ({
     loaded: false,
@@ -146,6 +147,13 @@ export default {
   },
   mounted(){
     this.getData()
+  },
+  watch: {
+    tab: function(){
+      if(this.fetchedData){
+        this.year = 1
+      }
+    }
   }
 }
 </script>

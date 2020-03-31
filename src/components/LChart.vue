@@ -5,7 +5,7 @@
         <v-btn x-small outlined @click="renderChart(fetchedData, button.duration)">{{ button.text }}</v-btn>
       </div>
     </v-row>
-    <v-row v-if="!loaded" class="pt-5 mt-5" justify="center">
+    <v-row v-if="!loaded" class="py-5 mt-5" justify="center">
       <v-progress-circular
         :size="50"
         :width="5"

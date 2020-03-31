@@ -11,7 +11,7 @@
     <v-card v-if="loaded" outlined> 
       <v-card-title>Overview</v-card-title>
       <v-row  no-gutters>
-        <v-col xs="6" lg="2">
+        <v-col xs="6" md="2">
           <v-list two-line subheader>
             <v-list-item v-for="item in items1" :key="item.name">
               <v-list-item-content>
@@ -21,7 +21,7 @@
             </v-list-item>
           </v-list>
         </v-col>
-        <v-col xs="6" lg="2">
+        <v-col xs="6" md="2">
           <v-list two-line subheader>
             <v-list-item v-for="item in items2" :key="item.name">
               <v-list-item-content>
@@ -31,15 +31,15 @@
             </v-list-item>
           </v-list>
         </v-col>
-        <v-col xs="11" lg="8" class="pr-2">
+        <v-col v-if="$vuetify.breakpoint.mdAndUp" md="8" class="pr-2">
           <LChart :stock="this.$props.stock"></LChart>
         </v-col>
       </v-row>
-      <!-- <v-row v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.xsOnly" class="pr-1">
+      <v-row v-if="$vuetify.breakpoint.smAndDown" class="pr-1">
         <v-col cols="12">
           <LChart :stock="this.$props.stock"></LChart>
         </v-col>
-      </v-row> -->
+      </v-row>
       <v-divider v-if="loaded"></v-divider>
       <v-row v-if="loaded">
         <v-col v-for="item in items3" :key="item.name">

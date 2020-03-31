@@ -69,7 +69,7 @@ export default {
     fetchDetails () {
       this.loaded = false
       let hostname = window.location.hostname
-      let detailsAPI = `http://${hostname}/backend/general/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+      let detailsAPI = `http://${hostname}:5000/general/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(detailsAPI)
         .then(response => {

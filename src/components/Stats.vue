@@ -126,7 +126,7 @@ export default {
       fetchStats () {
         this.loaded = false
         let hostname = window.location.hostname
-        let statsAPI = `http://${hostname}/backend/stats/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+        let statsAPI = `http://${hostname}:5000/stats/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
         try{
           fetch(statsAPI)
           .then(response =>{return response.json()})

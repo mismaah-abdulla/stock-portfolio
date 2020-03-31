@@ -66,7 +66,7 @@ export default {
     getData () {
       this.loaded = false
       let hostname = window.location.hostname
-      let eodlAPI = `http://${hostname}/backend/eodl/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+      let eodlAPI = `http://${hostname}:5000/eodl/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(eodlAPI)
         .then(response => response.json())

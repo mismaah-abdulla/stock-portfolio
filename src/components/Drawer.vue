@@ -42,7 +42,7 @@
         >
           <template v-slot:item="{ item }">
             <v-list-item-avatar v-if="item.LogoURL">
-              <v-img :src="`http://localhost/backend/logo/${item.LogoURL}`"></v-img>
+              <v-img :src="`http://localhost:5000/logo/${item.LogoURL}`"></v-img>
             </v-list-item-avatar>
             <v-list-item-avatar v-else color="teal">
               <span class="white--text title">{{getInitials(item.Name)}}</span>
@@ -90,7 +90,7 @@
         this.isLoading = true
         this.symbolsExchangesNames = []
         let hostname = window.location.hostname
-        fetch(`http://${hostname}/backend/search/${this.search}`)
+        fetch(`http://${hostname}:5000/search/${this.search}`)
           .then(res => {
             if(res.ok) return res.json()
             })

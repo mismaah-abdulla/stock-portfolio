@@ -111,7 +111,7 @@ export default {
     getData () {
       this.loaded = false
       let hostname = window.location.hostname
-      let ydAPI = `http://${hostname}/backend/yd/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+      let ydAPI = `http://${hostname}:5000/yd/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(ydAPI)
         .then(response => response.json())

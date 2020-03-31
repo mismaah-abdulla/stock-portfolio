@@ -79,7 +79,7 @@ export default {
     getData(){
       this.loaded = false
       let hostname = window.location.hostname
-      let eodAPI = `http://${hostname}/backend/eod/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+      let eodAPI = `http://${hostname}:5000/eod/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(eodAPI)
         .then(response => response.json())

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="app">
   <v-card dense outlined color=transparent border-color=white class="px-3">  
     <v-row align="center" class="pa-1">
       <!-- Watchlist select -->  
@@ -15,25 +15,13 @@
         </v-col>
       <!-- END OF watchlist select-->  
 
-      <!-- EDIT BUTTON -->
-        <v-btn icon v-if="hideEdit && selected_watchlist" @click='editMode'>
-          <v-icon right>
-              mdi-playlist-edit
-          </v-icon>
-        </v-btn>
-        <v-btn icon v-else-if="selected_watchlist" @click='editMode'>
-          <v-icon >
-              mdi-playlist-check
-          </v-icon>
-        </v-btn>
-        <v-btn icon v-else disabled >
+      <!-- DELETE WATCHLIST BUTTON -->  
+        <v-btn icon v-if="!(hideEdit && selected_watchlist)" disabled>
           <v-icon >
             mdi-playlist-star
           </v-icon>
-        </v-btn>
-      <!-- END OF EDIT BUTTON -->
+        </v-btn> 
 
-      <!-- DELETE WATCHLIST BUTTON -->   
         <v-dialog v-if="hideEdit && selected_watchlist" v-model="dialog_deleteWatchlist" max-width="500px">
           <template  v-slot:activator="{ on }">
               <v-btn icon v-on="on">
@@ -53,16 +41,16 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                   <v-btn color="default" text @click="close_dialog_deleteWatchlist">Cancel</v-btn>
-                  <v-btn color="error">Confirm </v-btn>
+                  <v-btn color="error" @click="deleteWatchlist">Confirm </v-btn>
               </v-card-actions>
           </v-card>
         </v-dialog> 
       <!-- END OF DELETE WATCHLIST BUTTON -->  
     </v-row>
   </v-card>
-
-  <!-- WATCHLIST DETAILS LIST -->
-  <v-card outlined color=transparent border-color=white >
+  
+  <!-- INFO LIST -->
+  <v-card outlined color=transparent border-color=white height=50% >
     <v-container class="grey lighten-5">
       <v-row
         align="center"
@@ -73,213 +61,263 @@
         <v-col cols=6>  
           MARKETS 
         </v-col>
-        <v-col  cols=3 class="text-center" @click="temp_change">
+        <v-col  class="text-center" @click="temp_change">
           SELL
         </v-col>
-        <v-col  cols=3 class="text-center">
+        <v-col  class="text-center">
           BUY
         </v-col>
       </v-row>
     </v-container>
+  
+    <template>
+		<swipe-list
+			ref="list"
+			:items="securitydetails"
+			item-key="code"
+		>
+			<template v-slot="{ item }">
+				<div ref="content" class="card-content" >
+					<v-row justify="center">
+          <v-col cols=2 >
+            <img class=pa-1 :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 45px; height: 45px" />
+          </v-col>
 
-    <v-container v-for="(item) in securitydetails" v-bind:key='item.code'>
-      <v-row align='center' justify="center">
-        <v-col cols=2>
-          <img :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 45px; height: 45px" />
-        </v-col>
-        <v-col cols=4 > 
-          <span>{{item.code}}</span>
-          <br>
-          <span v-if="item.change < 0" class="red--text">{{item.change.toFixed(2)}} ({{item.change_p.toFixed(2)}}%)</span>
-          <span v-else class="green--text">{{item.change.toFixed(2)}} ({{item.change_p.toFixed(2)}}%)</span>
-        </v-col> 
+          <v-col cols=4> 
+            <v-row><span class="font-weight-bold">{{item.display_code}}</span></v-row>
+            <v-row>
+            <span v-if="item.change < 0" class="red--text body-2 font-weight-medium">{{item.change.toFixed(2)}} ({{item.change_p.toFixed(2)}}%)</span>
+            <span v-else class="green--text body-2 font-weight-medium">{{item.change.toFixed(2)}} ({{item.change_p.toFixed(2)}}%)</span>
+            </v-row>
+          </v-col> 
+          
+          <!-- SELL/BUY COLUMN -->
+            <v-col v-if="simulated_change" cols=2.5 @click="sell(item)" class="px-0 mt-2">
+              <v-card class="green white--text text-center pa-1" >{{item.low.toFixed(2)}}</v-card>
+            </v-col>
+            <v-col v-else dense cols=2.5  @click="sell(item)" class="px-0 mt-2">
+              <v-card class="grey lighten-2 text-center pa-1" >{{item.low.toFixed(2)}}</v-card>
+            </v-col>
+           
+            <v-col v-if="simulated_change" cols=2.5 @click="buy(item)" class="px-1 mt-2">
+              <v-card class="red white--text text-center pa-1" >{{item.high.toFixed(2)}}</v-card>
+            </v-col>
+            <v-col v-else dense cols=2.5  @click="buy(item)" class="px-1 mt-2">
+              <v-card class="grey lighten-2 text-center pa-1" >{{item.high.toFixed(2)}}</v-card>
+            </v-col>
+          <!-- END OF SELL/BUY COLUMN -->
 
-        <!-- SELL/BUY COLUMN -->
-        <template>
-          <v-col v-if="simulated_change" dense cols=3 class="green white--text text-center" @click="sell(item)">
-            {{item.low.toFixed(2)}}
-          </v-col>
-          <v-col v-else dense cols=3 class="grey lighten-2 text-center"  @click="sell(item)">
-            {{item.low.toFixed(2)}}
-          </v-col>
-        </template>
-       
-        <template>
-          <v-col v-if="simulated_change" dense cols=3 class="red white--text text-center"  @click="buy(item)">
-            {{item.high.toFixed(2)}}
-          </v-col>
-          <v-col v-else dense cols=3 class="grey lighten-2 text-center"  @click="buy(item)">
-            {{item.high.toFixed(2)}}
-          </v-col>
-        </template>
-        <!-- END OF SELL/BUY COLUMN -->
+          <!-- SELL PAGE -->
+          <v-dialog v-model="sellbuy_screen"  hide-overlay fullscreen :retain-focus="false" transition="dialog-bottom-transition" >  
+            <v-card >
+              <v-toolbar dark color="primary">
+                  <v-btn icon dark @click="close_dialog_sellbuy">
+                  <v-icon >mdi-close</v-icon>
+                  </v-btn>
+                  <v-toolbar-title v-if="buysell_status==='sell'">Sell </v-toolbar-title>
+                  <v-toolbar-title v-else>Buy </v-toolbar-title>
+                  <v-spacer></v-spacer> 
+                  <v-toolbar-title class="grey--text" v-if="buysell_status==='sell'" @click='sellbuy_change'>Buy</v-toolbar-title>
+                  <v-toolbar-title class="grey--text" v-else @click='sellbuy_change'>Sell </v-toolbar-title>
+              </v-toolbar> 
+              <v-card outlined>
+                <v-container>
+                  <v-row no-gutters>
+                    <v-col cols=2> 
+                      <img :src="('https://eodhistoricaldata.com'+selected_security.logo)" style="width: 50px; height: 50px" />
+                    </v-col>
+                    <v-col class=px-3> 
+                      <v-row no-gutters>
+                        <v-col v-if="buysell_status==='sell'" cols=2>SELL</v-col>
+                        <v-col v-else cols=2>BUY</v-col>
+                        <span class="font-weight-black">{{selected_security.display_code}}</span>
+                      </v-row>
+                      <v-row no-gutters > 
+                        <v-col cols=4><h2 class="font-weight-black">{{selected_security.close}} </h2></v-col>
+                        <v-col class=pt-2><span v-if="selected_security.change_p < 0" class="red--text"> {{selected_security.change}} ({{selected_security.change_p}}%)</span>
+                        <span v-else class="green--text">{{selected_security.change}} ({{selected_security.change_p}}%)</span></v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card>
 
-        <!-- SELL PAGE -->
-        <v-dialog v-model="sellbuy_screen" fullscreen hide-overlay persistent :retain-focus="false" transition="dialog-bottom-transition">  
+              <!-- SET RATE -->
+              <v-row class=pl-6>  
+                <v-col cols=8 v-if="selected_rate==='at_market'" class="font-weight-black">Set Rate</v-col>
+                <v-col cols=8 v-else class="font-weight-black">Rate</v-col>
+
+                <v-col>
+                  <v-icon color=blue @click="change_rate_unit">mdi-swap-horizontal</v-icon>
+                  <span v-if="selected_rate==='at_market'" class="font-weight-black" @click="change_rate_unit">Rate</span>
+                  <span v-else class="font-weight-black" @click="change_rate_unit">Market</span>
+                </v-col>
+
+              </v-row>
+          
+              <v-row class=px-12>
+                <v-text-field v-if="selected_rate==='at_market'"
+                 disabled
+                 value="At Market"
+                 outlined
+                 filled
+                 class="font-weight-black centered-input"
+                ></v-text-field>
+              </v-row>
+
+              <v-row class=px-4>
+                <v-text-field v-if="selected_rate!='at_market'"
+                  v-model.number='current_rate'
+                  type="number"
+                  append-outer-icon="mdi-plus"
+                  prepend-icon="mdi-minus"
+                  @click:append-outer="inc_rate"
+                  @click:prepend="dec_rate"
+                  outlined
+                  class="font-weight-black centered-input"
+                ></v-text-field>
+              </v-row>
+              <!-- END OF SET RATE -->
+
+              <!-- AMOUNT -->
+              <v-row class=pl-6>  
+                <v-col cols=8 v-if="selected_unit==='amount'" class="font-weight-black">Amount</v-col>
+                <v-col cols=8 v-else class="font-weight-black">Units</v-col>
+
+                <v-col>
+                  <v-icon color=blue @click="change_unit">mdi-swap-horizontal</v-icon>
+                  <span v-if="selected_unit==='amount'" class="font-weight-black" @click="change_unit">Units</span>
+                  <span v-else class="font-weight-black" @click="change_unit">Amount</span>
+                </v-col>
+
+              </v-row>
+              <v-row class=px-4>
+                <v-text-field
+                  v-model.number='amountunit'
+                  type="number"
+                  append-outer-icon="mdi-plus"
+                  prepend-icon="mdi-minus"
+                  @click:append-outer="inc_amountunit"
+                  @click:prepend="dec_amountunit"
+                  outlined
+                  class="font-weight-black centered-input"
+                ></v-text-field>
+              </v-row>
+              <!-- END OF AMOUNT -->
+
+              <!-- TABS -->
+              <v-card>
+                <v-tabs flat background-color="transparent" grow mobile-break-point="0"
+                  color="blue" center-active centered height="80" >
+                  <v-tab v-if='stoploss<0'>$ {{stoploss}} <br> STOP<br>LOSS<br></v-tab>
+                  <v-tab v-else>$ 0 <br> STOP<br>LOSS<br></v-tab>
+
+                  <v-tab v-if='takeprofit>0'>$ {{takeprofit}}<br>TAKE<br>PROFIT<br></v-tab>
+                  <v-tab v-else>NO TP<br>TAKE<br>PROFIT<br></v-tab>
+                  <v-tab-item v-for="n in 2" :key="n" >
+                    <v-container fluid>
+                        <!-- STOP LOSS -->
+                        <div v-if="n==1">
+                          <v-card>
+                          <v-row class=pl-6>  
+                            <v-col cols=8 v-if="selected_unit_stoploss==='amount'" class="font-weight-black">Amount</v-col>
+                            <v-col cols=8 v-else class="font-weight-black">Rate</v-col>
+                            <v-col>
+                              <v-icon color=blue @click="change_unit_stoploss">mdi-swap-horizontal</v-icon>
+                              <span v-if="selected_unit_stoploss==='amount'" class="font-weight-black" @click="change_unit_stoploss">Rate</span>
+                              <span v-else class="font-weight-black" @click="change_unit_stoploss">Amount</span>
+                            </v-col>
+
+                          </v-row>
+                          <v-row class=px-4>
+                          <v-text-field
+                            v-model.number='stoploss'
+                            type="number"
+                            append-outer-icon="mdi-plus"
+                            prepend-icon="mdi-minus"
+                            @click:append-outer="inc_stoploss"
+                            @click:prepend="dec_stoploss"
+                            outlined
+                            class="font-weight-black centered-input"
+                          ></v-text-field>
+                          </v-row>
+                          </v-card>
+                        </div> 
+
+                        <!-- TAKE PROFIT  -->  
+                        <div v-if="n==2">
+                          <v-card>
+                          <v-row class=pl-6>  
+                            <v-col cols=8 v-if="selected_unit_takeprofit==='amount'" class="font-weight-black">Amount</v-col>
+                            <v-col cols=8 v-else class="font-weight-black">Rate</v-col>
+
+                            <v-col>
+                              <v-icon color=blue @click="change_unit_takeprofit">mdi-swap-horizontal</v-icon>
+                              <span v-if="selected_unit_takeprofit==='amount'" class="font-weight-black" @click="change_unit_takeprofit">Rate</span>
+                              <span v-else class="font-weight-black" @click="change_unit_takeprofit">Amount</span>
+                            </v-col>
+
+                          </v-row>
+                          <v-row class=px-4>
+                          <v-text-field
+                            v-model.number='takeprofit'
+                            type="number"
+                            append-outer-icon="mdi-plus"
+                            prepend-icon="mdi-minus"
+                            @click:append-outer="inc_takeprofit"
+                            @click:prepend="dec_takeprofit"
+                            outlined
+                            class="font-weight-black centered-input"
+                          ></v-text-field>
+                          </v-row>
+                          </v-card>
+                        </div> 
+                    </v-container>
+                  </v-tab-item>
+                </v-tabs>
+              </v-card>
+              <!-- END OF TABS -->
+
+              <v-card>  
+                <v-btn x-large block color="blue" dark >Open Trade</v-btn>
+              </v-card>
+
+            </v-card>
+          </v-dialog>
+          <!-- END OF SELL PAGE --> 
+
+          </v-row>
+				</div>
+			</template>
+
+      <!-- DELETE SECURITY -->
+			<template v-slot:right="{ item }">
+				<div class="swipeout-action red" @click="open_dialog_deletesecurity(item)">
+					<v-icon color=white>mdi-delete</v-icon>
+				</div>
+
+        <v-dialog v-model="dialog_deleteSecurity" max-width="500px" :retain-focus="false">
           <v-card>
-            <v-toolbar dark color="primary">
-                <v-btn icon dark @click="close_dialog_sellbuy">
-                <v-icon >mdi-close</v-icon>
-                </v-btn>
-                <v-toolbar-title v-if="buysell_status==='sell'">Sell </v-toolbar-title>
-                <v-toolbar-title v-else>Buy </v-toolbar-title>
-                <v-spacer></v-spacer> 
-                <v-toolbar-title class="grey--text" v-if="buysell_status==='sell'" @click='sellbuy_change'>Buy</v-toolbar-title>
-                <v-toolbar-title class="grey--text" v-else @click='sellbuy_change'>Sell </v-toolbar-title>
-            </v-toolbar> 
-            <v-card outlined>
-              <v-container>
-                <v-row no-gutters>
-                  <v-col cols=2> 
-                    <img :src="('https://eodhistoricaldata.com'+selected_security.logo)" style="width: 50px; height: 50px" />
-                  </v-col>
-                  <v-col class=px-3> 
-                    <v-row no-gutters>
-                      <v-col cols=2>SELL</v-col>
-                      <span class="font-weight-black">{{selected_security.code}}</span>
-                    </v-row>
-                    <v-row no-gutters > 
-                      <v-col cols=4><h2 class="font-weight-black">{{selected_security.close}} </h2></v-col>
-                      <v-col class=pt-2><span v-if="selected_security.change_p < 0" class="red--text"> {{selected_security.change}} ({{selected_security.change_p}}%)</span>
-                      <span v-else class="green--text">{{selected_security.change}} ({{selected_security.change_p}}%)</span></v-col>
-                    </v-row>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card>
+              <v-card-title> 
+                <span class="headline">Confirm Deletion</span>
+              </v-card-title>
+              <v-card-text>
+                <span>Delete security: {{todelete_security_display}}</span>
+              </v-card-text>
 
-            <!-- AMOUNT -->
-            <v-row class=pl-6>  
-              <v-col cols=8 v-if="selected_unit==='amount'" class="font-weight-black">Amount</v-col>
-              <v-col cols=8 v-else class="font-weight-black">Units</v-col>
-
-              <v-col>
-                <v-icon color=blue @click="change_unit">mdi-swap-horizontal</v-icon>
-                <span v-if="selected_unit==='amount'" class="font-weight-black" @click="change_unit">Units</span>
-                <span v-else class="font-weight-black" @click="change_unit">Amount</span>
-              </v-col>
-
-            </v-row>
-            <v-row class=px-4>
-              
-              <v-text-field
-                v-model.number='amountunit'
-                type="number"
-                append-outer-icon="mdi-plus"
-                prepend-icon="mdi-minus"
-                @click:append-outer="inc_amountunit"
-                @click:prepend="dec_amountunit"
-                outlined
-              ></v-text-field>
-            </v-row>
-            <!-- END OF AMOUNT -->
-
-            <!-- TABS -->
-            <v-card flat>
-              <v-tabs flat background-color="transparent" grow mobile-break-point="0"
-                color="blue" center-active centered height="80" >
-                <v-tab v-if='stoploss<0'>$ {{stoploss}} <br> STOP<br>LOSS<br></v-tab>
-                <v-tab v-else>$ 0 <br> STOP<br>LOSS<br></v-tab>
-
-                <v-tab>{{leverage}}<br>LEVERAGE<br></v-tab>
-
-                <v-tab v-if='takeprofit>0'>$ {{takeprofit}}<br>TAKE<br>PROFIT<br></v-tab>
-                <v-tab v-else>$ 0<br>TAKE<br>PROFIT<br></v-tab>
-                <v-tab-item v-for="n in 3" :key="n" >
-                  <v-container fluid>
-                      <!-- STOP LOSS -->
-                      <div v-if="n==1">
-                        <v-card>
-                        <v-row class=pl-6>  
-                          <v-col cols=8 v-if="selected_unit_stoploss==='amount'" class="font-weight-black">Amount</v-col>
-                          <v-col cols=8 v-else class="font-weight-black">Rate</v-col>
-                          <v-col>
-                            <v-icon color=blue @click="change_unit_stoploss">mdi-swap-horizontal</v-icon>
-                            <span v-if="selected_unit_stoploss==='amount'" class="font-weight-black" @click="change_unit_stoploss">Rate</span>
-                            <span v-else class="font-weight-black" @click="change_unit_stoploss">Amount</span>
-                          </v-col>
-
-                        </v-row>
-                        <v-row class=px-4>
-                        <v-text-field
-                          v-model.number='stoploss'
-                          type="number"
-                          append-outer-icon="mdi-plus"
-                          prepend-icon="mdi-minus"
-                          @click:append-outer="inc_stoploss"
-                          @click:prepend="dec_stoploss"
-                          outlined
-                        ></v-text-field>
-                        </v-row>
-                        </v-card>
-                      </div> 
-
-                      <!-- LEVERAGE   -->
-                      <div v-if="n==2" >
-                        <v-card class="text-center">
-      
-                          <v-btn-toggle 
-                            mandatory
-                            class="pa-5"
-                            color="blue">
-                            <v-btn color="white" x-large @click="leverage1">
-                              X1
-                            </v-btn>
-                            <v-btn color="white" x-large @click="leverage2">
-                              X2
-                            </v-btn>
-                          </v-btn-toggle>
-
-                          <v-row justify="center">CFD TRADE<br></v-row>
-                          <v-row justify="center">HIGHER LEVERAGE MEANS HIGHER RISK</v-row>
-                        </v-card>
-                      </div>
-
-                      <!-- TAKE PROFIT  -->  
-                      <div v-if="n==3">
-                        <v-card>
-                        <v-row class=pl-6>  
-                          <v-col cols=8 v-if="selected_unit_takeprofit==='amount'" class="font-weight-black">Amount</v-col>
-                          <v-col cols=8 v-else class="font-weight-black">Rate</v-col>
-
-                          <v-col>
-                            <v-icon color=blue @click="change_unit_takeprofit">mdi-swap-horizontal</v-icon>
-                            <span v-if="selected_unit_takeprofit==='amount'" class="font-weight-black" @click="change_unit_takeprofit">Rate</span>
-                            <span v-else class="font-weight-black" @click="change_unit_takeprofit">Amount</span>
-                          </v-col>
-
-                        </v-row>
-                        <v-row class=px-4>
-                        <v-text-field
-                          v-model.number='takeprofit'
-                          type="number"
-                          append-outer-icon="mdi-plus"
-                          prepend-icon="mdi-minus"
-                          @click:append-outer="inc_takeprofit"
-                          @click:prepend="dec_takeprofit"
-                          outlined
-                        ></v-text-field>
-                        </v-row>
-                        </v-card>
-                      </div> 
-                  </v-container>
-                </v-tab-item>
-              </v-tabs>
-            </v-card>
-            <!-- END OF TABS -->
-
-            <v-card>  
-              <v-btn x-large block color="blue" dark >Open Trade</v-btn>
-            </v-card>
-
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                  <v-btn color="default" text @click="close_dialog_deleteSecurity">Cancel</v-btn>
+                  <v-btn color="error" @click="deletesecurity">Confirm </v-btn>
+              </v-card-actions>
           </v-card>
-        </v-dialog>
-        <!-- END OF SELL PAGE -->
-      </v-row>
-    </v-container>
-  </v-card>
-  <!-- END OF WATCHLIST DETAILS LIST -->
+        </v-dialog> 
+			</template>
 
+		</swipe-list>
+    </template>
+  <!-- END OF INFO LIST -->
+  
   <!--ADD MARKET BUTTON-->
     <template v-if="selected_watchlist">
         <v-card 
@@ -367,39 +405,45 @@
 
         <v-card-text>
           <v-container> 
-            <v-text-field :rules="strRules" label="Watchlist Name" :hint="check_duplicate? 'Duplicate name exists' : ''" ></v-text-field>
+            <v-text-field v-model='new_watchlistname' :rules="strRules" label="Watchlist Name" :hint="check_duplicate? 'Duplicate name exists' : ''" ></v-text-field>
           </v-container>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="default" text @click="close_dialog_addWatchlist">Cancel</v-btn>
-          <v-btn class="white--text" color="blue" v-bind:disabled="check_duplicate" >Save</v-btn>
+          <v-btn class="white--text" @click='addWatchlist' color="blue" v-bind:disabled="new_watchlistname.trim()==''||check_duplicate" >Save</v-btn>
         </v-card-actions>  
       </v-card>
   </v-dialog>
   <!-- END OF ADD WATCHLIST BUTTON -->
+  </v-card>
 </div>
 </template>
 
 <script>
-
+import { SwipeList } from 'vue-swipe-actions';
+import 'vue-swipe-actions/dist/vue-swipe-actions.css';
 export default {
   name: 'Watchlist',
+  components: {
+			SwipeList,
+		},
   data: function() {
     return{
+      new_watchlistname:'',
       hideEdit:true,
       selected_watchlist:'',        //Keep track if a watchlist is selected 
       dialog_deleteWatchlist:false,
+      todelete_security:'',todelete_security_display:'',
+      dialog_deleteSecurity:false,
       watchlistLoaded:false, 
       listofWatchlist:[],           //User's watchlist list w/o security
-      listofWatchlist_security:[],  //User's watchlist list w/ security
-      filteredWatchlist:[],         //Filtered selected watchlist
       securitydetails:[],           //Security details from selected watchlist
       securitydetailloaded:false,
       dialog_addWatchlist:false,
       close_addwatchlist:true,
-      simulated_change:false,
+      simulated_change:true,
       sellbuy_screen:false,
       buyscreen:false,
       selected_security:[],         //Selected security to buy/sell
@@ -409,8 +453,9 @@ export default {
       selected_unit_takeprofit:"amount",
       amountunit:1000,
       stoploss:-1000, 
-      leverage:'X1', 
       takeprofit:1000,
+      selected_rate:'at_market',
+      current_rate:0,
 
       strRules: [
         v => !!v || 'This field is required',
@@ -423,19 +468,113 @@ export default {
       this.hideEdit = !(this.hideEdit)
     },
 
+    addWatchlist(){
+      var action = 'add'
+      let hostname = window.location.hostname
+      let addwatchlistAPI = `http://${hostname}:5000/watchlist/1001/${this.new_watchlistname}/${action}`
+      try
+      {
+        fetch(addwatchlistAPI)
+        .then(response =>{return response.json()})
+        .then(data =>{
+        console.log(data)
+        
+        })
+        .catch(e => {
+        console.log("Response status: "+e)
+        })
+      }
+      catch(error)
+      {
+        this.assignNull()
+        console.log(error)
+      }
+      this.fetchWatchlist_func()
+      this.close_dialog_addWatchlist()
+    },
+
+    deleteWatchlist(){
+      var action = 'delete'
+      let hostname = window.location.hostname
+      let addwatchlistAPI = `http://${hostname}:5000/watchlist/1001/${this.selected_watchlist}/${action}`
+      try
+      {
+        fetch(addwatchlistAPI)
+        .then(response =>{return response.json()})
+        .then(data =>{
+        console.log(data)
+        
+        })
+        .catch(e => {
+        console.log("Response status: "+e)
+        })
+      }
+      catch(error)
+      {
+        this.assignNull()
+        console.log(error)
+      }
+      this.fetchWatchlist_func()
+      this.dialog_deleteWatchlist=false
+    },
+
+    deletesecurity(){
+      //Post delete api
+      var action = 'delete'
+      let hostname = window.location.hostname
+      let addwatchlistAPI = `http://${hostname}:5000/watchlist/1001/${this.selected_watchlist}/${this.todelete_security}/${action}`
+      try
+      {
+        fetch(addwatchlistAPI)
+        .then(response =>{return response.json()})
+        .then(data =>{
+        console.log(data)
+        
+        })
+        .catch(e => {
+        console.log("Response status: "+e)
+        })
+      }
+      catch(error)
+      {
+        this.assignNull()
+        console.log(error)
+      }
+
+      //Delete from security details (local)
+      for(var i=0;i<this.securitydetails.length;i++){
+        if(this.securitydetails[i].code===this.todelete_security) {
+          this.securitydetails.splice(i,1)
+          break
+        }
+      }
+      this.close_dialog_deleteSecurity()
+    },
+
+    open_dialog_deletesecurity(security){
+      this.todelete_security=security.code
+      this.todelete_security_display= this.todelete_security.split('.')[0]
+      this.dialog_deleteSecurity=true
+    },
+
+    close_dialog_deleteSecurity(){
+      this.dialog_deleteSecurity = !this.dialog_deleteSecurity
+      this.todelete_security=''
+    },
+
     close_dialog_deleteWatchlist(){
       this.dialog_deleteWatchlist = false
     },
 
     close_dialog_addWatchlist(){
       this.dialog_addWatchlist = false
+      this.new_watchlistname=''
     },
 
     close_dialog_sellbuy(){
       this.sellbuy_screen=false
       this.amountunit=1000,
       this.stoploss=-1000, 
-      this.leverage='X1', 
       this.takeprofit=1000
     },
 
@@ -453,7 +592,7 @@ export default {
       this.sellbuy_screen = true
     },
 
-    fetchWatchlist () {
+    fetchWatchlist_func () {
       this.watchlistLoaded = false
       let hostname = window.location.hostname
       let watchlist_listAPI = `http://${hostname}:5000/watchlist/1001`
@@ -462,7 +601,11 @@ export default {
         fetch(watchlist_listAPI)
         .then(response =>{return response.json()})
         .then(data =>{
-        this.listofWatchlist=(data[0].Watchlist_Name)
+        this.listofWatchlist=[]
+        for(var i=0;i<data.length;i++){
+          this.listofWatchlist.push(data[i].Name)
+        }
+        console.log(this.listofWatchlist)
         this.watchlistLoaded = true
         })
         .catch(e => {
@@ -493,14 +636,12 @@ export default {
         fetch(list_symbol_API)
         .then(response =>{return response.json()})
         .then(data =>{
-        this.listofWatchlist_security=data
-        this.filteredWatchlist = (this.listofWatchlist_security.Watchlist.filter(item=>item.Name === this.selected_watchlist))[0].Security
         this.securitydetails=[]
-        for(var i=0;i<this.filteredWatchlist.length;i++){
-          this.fetchrealtime (this.filteredWatchlist[i])
+        for(var i=0;i<data.length;i++){
+          this.fetchrealtime (data[i]) 
         }
         console.log(this.securitydetails) //Log security details
-        this.securitydetails.sort((a, b) => a.code - b.code )
+        if(data.length==0){this.watchlistLoaded = true}
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -563,38 +704,84 @@ export default {
 
     inc_takeprofit(){this.takeprofit+=25},
     dec_takeprofit(){if(this.takeprofit>25){this.takeprofit-=25}else{this.takeprofit=0}},
-
-    leverage1(){
-        this.leverage="X1"
-        this.takeprofit=this.amountunit*1
+    
+    change_rate_unit(){
+      if(this.selected_rate==='at_market'){
+        this.selected_rate='rate'
+        this.current_rate=this.selected_security.close}
+      else 
+        {this.selected_rate='at_market'}
+    },
+    inc_rate(){
+      this.current_rate+=0.01
     },
 
-    leverage2(){
-        this.leverage="X2"
-        this.takeprofit=this.amountunit*2
-    }, 
-    
+    dec_rate(){
+      this.current_rate+=0.01
+    },
   },
 
   computed:{
+   
     check_duplicate()
     {
-      // for(var i=0;i<this.watchlist_list_backup.length;i++){
-      //    if(this.watchlist_list_backup[i].name.trim().toLowerCase()===this.editedItem.name.trim().toLowerCase())
-      //    { 
-      //     return true
-      //    }
-      // }
-      return false
+      for(var i=0;i<this.listofWatchlist.length;i++){
+         if(this.listofWatchlist[i].trim().toLowerCase()===this.new_watchlistname.trim().toLowerCase())
+         { 
+          return true
+         }
+       }
+       return false
     },
   },
 
   mounted () {
-    this.fetchWatchlist ()
+    this.fetchWatchlist_func()
+  },
+
+  fetchWatchlist(){
+    this.fetchWatchlist_func()
   }
 }
 </script>
 
 <style>
+.swipeout-action {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  cursor: pointer;
+  left: 0;
+}
 
+.swipeout-action.red {
+  color: white;
+  background-color: rgb(255, 59, 48);
+}
+
+.swipeout-action.red:hover {
+  background-color: darken(rgb(255, 59, 48), 5%);
+}
+
+.swipeout-list-item {
+  flex: 1;
+  border-bottom: 1px solid lightgray;
+}
+
+.swipeout-list-item:last-of-type {
+  border-bottom: none;
+}
+
+.card-content {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.transition-left {
+	transform: translate3d(-100%, 0 ,0) !important;
+}
+
+.centered-input input {
+  text-align: center
+}
 </style>

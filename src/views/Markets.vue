@@ -1,7 +1,7 @@
 <template>
   <div class="px-3 pt-3">
     <CompanyDetails v-if="stock" :key="stock.Code" :stock="stock"></CompanyDetails>
-    <v-tabs 
+    <v-tabs grow
       v-if="stock" 
       v-model="tab"
       background-color="transparent"

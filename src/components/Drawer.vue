@@ -119,9 +119,11 @@
       return true
     },
     goToMarkets(){
-      this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})
-      this.symbolsExchangesNames = []
-      this.search = null
+      if (this.model){
+        this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})
+        this.symbolsExchangesNames = []
+        this.search = null
+      }
     },
     getInitials(name){
       let names = name.split(' '),

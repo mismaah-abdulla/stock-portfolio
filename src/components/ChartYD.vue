@@ -11,13 +11,13 @@
     <v-row v-if="loaded" class="pt-0 mt-0">
       <v-col cols="2" v-if="year==0">
         <v-row justify="end"  class="pb-0 mb-0 pt-3 mt-3">
-          <span class="subtitle-1 font-weight-bold">{{fetchedData.WeekHigh52}}</span>
+          <span class="subtitle-1 font-weight-bold">{{fetchedData.WeekHigh52.toFixed(2)}}</span>
         </v-row>
         <v-row justify="end" class="pt-0 mt-0 pb-4">
           <span class="caption font-weight-light">52Wk Hi</span>
         </v-row>
         <v-row justify="end" class="pt-4 pb-0 mb-0">
-          <span class="subtitle-1 font-weight-bold">{{fetchedData.WeekLow52}}</span>
+          <span class="subtitle-1 font-weight-bold">{{fetchedData.WeekLow52.toFixed(2)}}</span>
         </v-row>
         <v-row justify="end" class="pt-0 mt-0">
           <span class="caption font-weight-light">52Wk Lo</span>
@@ -25,22 +25,22 @@
       </v-col>
       <v-col cols="2" v-if="year==1">
         <v-row justify="end"  class="pb-0 mb-0 pt-2 mt-2">
-          <span class="subtitle-1 font-weight-bold">{{fetchedData.high}}</span>
+          <span class="subtitle-1 font-weight-bold">{{fetchedData.high.toFixed(2)}}</span>
         </v-row>
         <v-row justify="end" class="pt-0 mt-0 pb-2">
-          <span class="body-2 font-weight-light">Day Hi</span>
+          <span class="caption font-weight-light">Day Hi</span>
         </v-row>
         <v-row justify="end" class="pt-2 pb-0 mb-0">
-          <span class="subtitle-1 font-weight-bold">{{fetchedData.open}}</span>
+          <span class="subtitle-1 font-weight-bold">{{fetchedData.open.toFixed(2)}}</span>
         </v-row>
         <v-row justify="end" class="pt-0 mt-0 pb-2">
-          <span class="body-2 font-weight-light">Day Open</span>
+          <span class="caption font-weight-light">Day Open</span>
         </v-row>
         <v-row justify="end" class="pt-2 pb-0 mb-0">
-          <span class="subtitle-1 font-weight-bold">{{fetchedData.low}}</span>
+          <span class="subtitle-1 font-weight-bold">{{fetchedData.low.toFixed(2)}}</span>
         </v-row>
         <v-row justify="end" class="pt-0 mt-0">
-          <span class="body-2 font-weight-light">Day Lo</span>
+          <span class="caption font-weight-light">Day Lo</span>
         </v-row>
       </v-col>
       <v-col cols="7" v-if="year==0">
@@ -59,7 +59,7 @@
       </v-col>
       <v-col cols="3">
         <v-row justify="start"  class="pb-0 mb-0 pt-5 mt-5">
-          <span class="display-1">{{fetchedData.close}}</span>
+          <span class="headline">{{fetchedData.close.toFixed(2)}}</span>
         </v-row>
         <v-row justify="start" class="py-0 my-0">
           <span class="caption font-weight-light">Current price (USD)</span>

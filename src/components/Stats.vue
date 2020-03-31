@@ -41,13 +41,13 @@
         </v-col>
       </v-row>
       <v-divider v-if="loaded"></v-divider>
-      <v-row v-if="loaded">
-        <v-col v-for="item in items3" :key="item.name">
+      <v-row v-if="loaded" no-gutters>
+        <v-col v-for="item in items3" :key="item.name" cols="4">
           <v-list two-line subheader>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ item.name }}</v-list-item-title>
-                <v-list-item-subtitle> {{ item.data }}</v-list-item-subtitle>
+                <v-list-item-title class="text-wrap">{{ item.name }}</v-list-item-title>
+                <v-list-item-subtitle class="text-wrap"> {{ item.data }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>

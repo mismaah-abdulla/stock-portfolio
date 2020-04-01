@@ -14,7 +14,7 @@
         {{ item }}
       </v-tab>
     </v-tabs>
-    <v-tabs-items v-model="tab">
+    <v-tabs-items v-model="tab" touchless>
       <v-tab-item>
         <ChartYD v-if="stock" :key="stock.Code" :stock="stock" :tab="tab"/>
       </v-tab-item>

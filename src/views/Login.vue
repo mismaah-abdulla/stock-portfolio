@@ -1,4 +1,3 @@
-
 <template>
 <div id="app2">
   <v-card dense outlined color=transparent border-color=white class="px-3">

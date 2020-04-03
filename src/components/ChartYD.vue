@@ -140,7 +140,8 @@ export default {
       this.dayData = [['Date', '']]
       for(let i in data){
         let moment = require('moment')
-        let time = moment(data[i].datetime, "HH:mm:ss").format("hh:mm A")
+        // let time = moment(data[i].datetime, "HH:mm:ss").format("hh:mm A")
+        let time = moment(data[i].timestamp).local().format("hh:mm A")
         this.dayData.push([time, data[i].close])
       }
     },

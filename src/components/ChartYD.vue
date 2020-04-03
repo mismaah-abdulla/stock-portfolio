@@ -62,7 +62,7 @@
           <span class="headline">{{fetchedData.close.toFixed(2)}}</span>
         </v-row>
         <v-row justify="start" class="py-0 my-0">
-          <span class="caption font-weight-light">Current price (USD)</span>
+          <span class="caption font-weight-light">Current price ({{fetchedData.currency}})</span>
         </v-row>
         <v-row justify="start" class="py-0 my-0">
           <span class="caption font-weight-light"><v-icon>arrow_drop_up</v-icon>+ 0.15 + 1.00%</span>

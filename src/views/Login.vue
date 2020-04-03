@@ -34,7 +34,7 @@
     <v-row align="center" justify="center">    
         <v-col class="text-center" cols="12" sm="4">
         <div class="px-2 py-0 mx-10">
-            <v-btn color="light-blue lighten-1" block="true" rounded="true" class="white--text">Login</v-btn>
+            <v-btn @click="logIn()" color="light-blue lighten-1" block="true" rounded="true" class="white--text">Login</v-btn>
         </div>
         </v-col>
     </v-row>
@@ -103,8 +103,10 @@ export default {
       }
     },
     methods: {
-
-    }
+      logIn () {
+        this.$emit('loggedIn')
+      }
+    },
 }
 </script>
 

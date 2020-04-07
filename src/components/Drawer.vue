@@ -42,7 +42,7 @@
         >
           <template v-slot:item="{ item }">
             <v-list-item-avatar v-if="item.LogoURL">
-              <v-img :src="`http://localhost:5000/logo/${item.LogoURL}`"></v-img>
+              <v-img :src=item.LogoURL></v-img>
             </v-list-item-avatar>
             <v-list-item-avatar v-else color="teal">
               <span class="white--text title">{{getInitials(item.Name)}}</span>

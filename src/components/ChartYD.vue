@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row v-if="!loaded" class="pt-5 mt-5" justify="center">
+    <v-row v-if="!loadedY || !loadedD" class="pt-5 mt-5" justify="center">
       <v-progress-circular
         :size="50"
         :width="5"
@@ -8,7 +8,7 @@
         indeterminate>
       </v-progress-circular>
     </v-row>
-    <v-row v-if="loaded" class="pt-0 mt-0">
+    <v-row v-if="loadedY && loadedD" class="pt-0 mt-0">
       <v-col cols="2" v-if="year==0">
         <v-row justify="end"  class="pb-0 mb-0 pt-3 mt-3">
           <span class="subtitle-1 font-weight-bold">{{fetchedData.WeekHigh52.toFixed(2)}}</span>
@@ -69,7 +69,7 @@
         </v-row>
       </v-col>
     </v-row>  
-    <v-row v-if="loaded" justify="center">
+    <v-row v-if="loadedY && loadedD" justify="center">
       <v-btn-toggle mandatory v-model="year">
         <v-btn x-small outlined>Year</v-btn>
         <v-btn x-small outlined>Day</v-btn>
@@ -90,10 +90,12 @@ export default {
     tab: Number,
   },
   data: () => ({
-    loaded: false,
+    loadedY: false,
+    loadedD: false,
     stockData: null,
     dayData: null,
     fetchedData: null,
+    fetchedDay: null,
     options: {
         legend: 'none',
         vAxis: {
@@ -110,7 +112,8 @@ export default {
   }),
   methods: {
     getData () {
-      this.loaded = false
+      this.loadedY = false
+      this.loadedD = false
       let hostname = window.location.hostname
       let ydAPI = `http://${hostname}:5000/yd/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
@@ -119,8 +122,22 @@ export default {
         .then(data => {
           this.fetchedData = data
           this.renderChartY(data.pastYear)
-          this.renderChartD(data.pastDay)
-          this.loaded = true
+          this.loadedY = true
+        })
+      }
+      catch(e){
+        console.log(e)
+      }
+      let dayAPI = `http://${hostname}:5000/intraday/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+      try{
+        fetch(dayAPI)
+        .then(response => response.json())
+        .then(data => {
+          this.fetchedDay = data
+          
+          this.renderChartD(data)
+          
+          this.loadedD = true
         })
       }
       catch(e){
@@ -138,10 +155,12 @@ export default {
     },
     renderChartD (data){
       this.dayData = [['Date', '']]
+      // let duration = data.length < 400 ? data.length : 400
       for(let i in data){
         let moment = require('moment')
         // let time = moment(data[i].datetime, "HH:mm:ss").format("hh:mm A")
-        let time = moment(data[i].timestamp).local().format("hh:mm A")
+        let time = moment.unix(data[i].timestamp).format("hh:mm A")
+        // let time = moment(data[i].timestamp).format("hh:mm A")
         this.dayData.push([time, data[i].close])
       }
     },

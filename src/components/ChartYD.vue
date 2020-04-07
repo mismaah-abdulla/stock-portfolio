@@ -155,12 +155,9 @@ export default {
     },
     renderChartD (data){
       this.dayData = [['Date', '']]
-      // let duration = data.length < 400 ? data.length : 400
       for(let i in data){
         let moment = require('moment')
-        // let time = moment(data[i].datetime, "HH:mm:ss").format("hh:mm A")
         let time = moment.unix(data[i].timestamp).format("hh:mm A")
-        // let time = moment(data[i].timestamp).format("hh:mm A")
         this.dayData.push([time, data[i].close])
       }
     },

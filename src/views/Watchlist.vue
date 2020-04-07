@@ -1,33 +1,57 @@
 <template>
 <div id="app">
-  <v-card dense outlined color=transparent border-color=white class="px-3">  
-    <v-row align="center" class="pa-1">
-      <!-- Watchlist select -->  
-        <v-col cols="9.5">
-            <v-select
-              v-model="selected_watchlist"
-              :items="listofWatchlist"
-              item-text="name"
-              :loading="!watchlistLoaded"
-              label="Select Watchlist"
-              dense
-              @input="watchlist_clicked"
-            ></v-select>
-        </v-col>
-      <!-- END OF watchlist select-->  
-
-      <!-- DELETE WATCHLIST BUTTON -->  
-        <v-dialog v-model="dialog_deleteWatchlist" max-width="500px">
+  <v-app-bar color=primary>
+    <!-- Watchlist select --> 
+    <v-menu v-if='watchlistLoaded'
+      bottom
+      origin="center center"
+      transition="scale-transition"
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn
+          color="white"
+          v-on="on"
+        >
+        <v-icon>
+            mdi-chevron-down
+        </v-icon>
+        {{selected_watchlist}}  
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, i) in listofWatchlist"
+          :key="i"
+          @click="watchlist_clicked(item)"
+        >
+        <v-list-item-title color=primary>{{ item }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-menu v-else>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          color="white"
+          v-on="on"
+        >
+        <v-icon>
+            mdi-chevron-down
+        </v-icon>
+        {{selected_watchlist}}  
+        </v-btn>
+      </template>
+    </v-menu>
+    <!-- END OF watchlist select-->  
+    
+    <!-- DELETE WATCHLIST BUTTON -->  
+    <v-dialog v-if='watchlistLoaded' v-model="dialog_deleteWatchlist" max-width="500px">
           <template  v-slot:activator="{ on }">
-              <v-btn v-if ="selected_watchlist!= 'My Watchlist'" icon v-on="on">
-                <v-icon>
+              <v-btn v-if="selected_watchlist!= 'My Watchlist'" icon v-on="on">
+                <v-icon color=white>
                   mdi-playlist-remove
                 </v-icon>
               </v-btn>
               <v-btn v-else icon disabled>
-                <v-icon>
-                  mdi-playlist-remove
-                </v-icon>
               </v-btn>
           </template>
           <v-card>
@@ -44,28 +68,125 @@
                   <v-btn color="error" @click="deleteWatchlist">Confirm </v-btn>
               </v-card-actions>
           </v-card>
-        </v-dialog> 
-      <!-- END OF DELETE WATCHLIST BUTTON -->  
-    </v-row>
-  </v-card>
-  
-  <!-- INFO LIST -->
-  <v-card outlined color=transparent border-color=white height=50% >
-    <v-container class="grey lighten-5">
+    </v-dialog> 
+    <!-- END OF DELETE WATCHLIST BUTTON -->  
+    
+    <v-spacer></v-spacer> 
+     
+    <!--ADD MARKET-->
+    <v-dialog v-if='watchlistLoaded' v-model="addmarket_screen" fullscreen hide-overlay :retain-focus="false" transition="dialog-bottom-transition">
+      <template  v-slot:activator="{ on }">
+        <v-btn icon v-on="on">
+          <v-icon color=white>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+
+      <v-card>
+          <v-toolbar dark color="primary">
+              <v-btn icon dark @click="addmarket_screen = false">
+              <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <v-toolbar-title>Add Markets</v-toolbar-title>
+              <v-spacer></v-spacer>
+          </v-toolbar>
+          <v-progress-linear
+            :active="isLoading"
+            :indeterminate="isLoading"
+            top
+            color="primary"
+          ></v-progress-linear>
+          <v-col>
+              <v-autocomplete
+                v-model="model"
+                spellcheck="false"
+                :search-input.sync="search"
+                hide-no-data
+                hide-selected
+                clearable
+                placeholder="Search markets"
+                prepend-icon="search"
+                return-object
+                dense
+              >
+              </v-autocomplete>
+              
+              <v-list>
+                <v-list-item v-for="(item,i) in items" :key=i @click="addsecurity(item.Code,item.Exchange)">
+                  <v-list-item-avatar v-if="item.LogoURL">
+                    <v-img :src="`http://localhost:5000/logo/${item.LogoURL}`"></v-img>
+                  </v-list-item-avatar>
+                  <v-list-item-avatar v-else color="teal">
+                    <span class="white--text title">{{getInitials(item.Name)}}</span>
+                  </v-list-item-avatar>
+                  <v-list>
+                      <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
+                      <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
+                      <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
+                  </v-list>
+                </v-list-item>
+              </v-list>
+            </v-col>
+      </v-card>
+    </v-dialog>
+    <!--END OF ADD MARKET-->
+
+    <v-btn icon>
+      <v-icon color=white>mdi-facebook-messenger</v-icon>
+    </v-btn>
+  </v-app-bar>
+
+  <v-progress-linear
+          :active="!watchlistLoaded"
+          :indeterminate="!watchlistLoaded"
+          top
+          color="primary"
+  ></v-progress-linear>
+
+  <!-- MARKET PEOPLE SWITCH -->
+  <v-container class="grey lighten-5">
       <v-row
+        v-touch="{
+          left: () => swipe('Left'),
+          right: () => swipe('Right'),
+        }"
         align="center"
         justify="center"
         no-gutters
         class="subtitle-2 font-weight-medium"
         >
-        <v-col cols=7>  
-          MARKETS 
+        
+        <v-col v-if="asset_peopleSwitch!=='people'" cols=5 class="text-right" >
+          ASSETS
         </v-col>
-        <v-col  class="text-center" @click="temp_change">
-          SELL
+        <v-col v-else cols=5 class="text-right grey--text" @click="asset_peopleSwitch='asset'">
+          ASSETS
         </v-col>
-        <v-col  class="text-center">
-          BUY
+        <v-col cols=1></v-col>
+        <v-col v-if="asset_peopleSwitch=='people'" cols=5 class="text-left" >
+          PEOPLE
+        </v-col>
+        <v-col v-else cols=5 class="text-left grey--text" @click="asset_peopleSwitch='people'">
+          PEOPLE
+        </v-col>
+        
+      </v-row>
+  </v-container>
+
+  <!-- ASSET INFO LIST -->
+  <v-card outlined color=transparent border-color=white height=50% v-if="asset_peopleSwitch=='asset'">
+    <v-container class="grey lighten-5">
+      <v-row
+        no-gutters
+        class="subtitle-2 font-weight-medium"
+        >
+        <v-col cols=2>  
+          SYMBOL 
+        </v-col>
+        <v-col cols=7 class="text-center" @click="temp_change">
+          CHANGE
+        </v-col>
+        <v-col cols=3 class="text-right">
+          PRICE
         </v-col>
       </v-row>
     </v-container>
@@ -78,29 +199,65 @@
 		>
 			<template v-slot="{ item }">
 				<div ref="content" class="card-content" >
-					<v-row justify="center">
+					<v-row>
 
-          <v-col cols=3 @click="goToMarkets(item)" v-if="item.logo">
+          <v-col class="px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
             <v-avatar color="transparent">
-              <img :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 45px; height: 45px" />
+              <img :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 40px; height: 40px" />
             </v-avatar>
           </v-col>
-          <v-col cols=3 v-else>
-            <v-avatar color="teal" size=45>
+          <v-col v-else class=px-0 cols=1 @click="goToMarkets(item)">
+            <v-avatar color="teal" size=40>
               <span class="white--text title">{{getInitials(item.name)}}</span>
             </v-avatar>
           </v-col>
 
-          <v-col cols=4> 
-            <v-row  @click="goToMarkets(item)"><span class="font-weight-bold">{{item.display_code}} </span></v-row>
-            <v-row>
-            <span v-if="item.change < 0" class="red--text body-2 font-weight-medium">{{item.change.toFixed(2)}} ({{item.change_p.toFixed(2)}}%)</span>
-            <span v-else class="green--text body-2 font-weight-medium">{{item.change.toFixed(2)}} ({{item.change_p.toFixed(2)}}%)</span>
-            </v-row>
+          <v-col class="pl-8 pr-0 ma-0" > 
+            <v-row  @click="goToMarkets(item)"><span class="font-weight-bold px-0">{{item.display_code}} </span></v-row>
+            <v-row v-if="item.name.length<14"  @click="goToMarkets(item)"><span class="caption px-0" style="font-size:10px">{{item.name}} </span></v-row>
+            <v-row v-else  @click="goToMarkets(item)"><span class="caption px-0" style="font-size:10px">{{item.name.substring(0,14)+".."}} </span></v-row>
           </v-col> 
-          
+
+          <!-- CHANGE -->
+          <v-col cols=2 class="pl-1" @click="goToMarkets(item)"> 
+            <v-row justify=start>
+            <span v-if="item.change < 0" class="red--text font-weight-bold">{{item.change_p.toFixed(2)}}%</span>
+            <span v-else class="green--text font-weight-bold">+{{item.change_p.toFixed(2)}}%</span>
+            </v-row>
+            <v-row justify=center>
+            <span v-if="item.change < 0" class="red--text caption ">{{item.change.toFixed(2)}}</span>
+            <span v-else class="green--text caption">+{{item.change.toFixed(2)}}</span>
+            </v-row>
+          </v-col>
+
+          <!-- INTRADAY -->
+          <v-col cols=3 class=pl-1 @click="goToMarkets(item)">
+            <GChart v-if='item.change>=0'
+              type="AreaChart"
+              :data="item.Intra"
+              :options="options_positive"
+            />
+            <GChart v-else
+              type="AreaChart"
+              :data="item.Intra"
+              :options="options_negative"
+            />
+          </v-col>
+
+          <!-- PRICE -->
+          <v-col cols=2 class="pr-3 pl-0" @click="buy(item)">
+            <v-row justify ="end">
+            <span class="font-weight-bold">{{item.close.toFixed(2)}}</span>
+            </v-row>
+
+            <v-row justify ="end">
+            <span class="caption">{{item.last_update}}</span>
+            </v-row>
+          </v-col>
+
+
           <!-- SELL/BUY COLUMN -->
-            <v-col v-if="simulated_change" cols=2.5 @click="sell(item)" class="px-0 mt-2">
+            <!-- <v-col v-if="simulated_change" cols=2.5 @click="sell(item)" class="px-0 mt-2">
               <v-card class="green white--text text-center pa-1" >{{item.low.toFixed(2)}}</v-card>
             </v-col>
             <v-col v-else dense cols=2.5  @click="sell(item)" class="px-0 mt-2">
@@ -112,10 +269,10 @@
             </v-col>
             <v-col v-else dense cols=2.5  @click="buy(item)" class="px-1 mt-2">
               <v-card class="grey lighten-2 text-center pa-1" >{{item.high.toFixed(2)}}</v-card>
-            </v-col>
+            </v-col> -->
           <!-- END OF SELL/BUY COLUMN -->
 
-          <!-- SELL PAGE -->
+          <!-- TRADE PAGE -->
           <v-dialog v-model="sellbuy_screen"  hide-overlay fullscreen persistent :retain-focus="false" transition="dialog-bottom-transition" >  
             <v-card>       
               <v-toolbar dark color="primary">
@@ -298,7 +455,7 @@
             </v-col>
             </v-card>
           </v-dialog>
-          <!-- END OF SELL PAGE --> 
+          <!-- END OF TRADE PAGE --> 
 
           </v-row>
 				</div>
@@ -332,71 +489,9 @@
     </template>
   <!-- END OF INFO LIST -->
   
-  <!--ADD MARKET-->
-  <v-dialog v-model="addmarket_screen" fullscreen hide-overlay :retain-focus="false" transition="dialog-bottom-transition">
-    <template  v-slot:activator="{ on }">
-        <v-card 
-            class="pa-3" color=transparent 
-            v-on="on">
-            <v-row align="center" 
-            justify="center">
-            <v-col cols=3 class="text-right"><v-icon  color='blue' >mdi-clipboard-plus</v-icon>  </v-col>
-            <v-col cols=6 class="text-left">ADD MARKETS</v-col>
-            </v-row>
-        </v-card> 
-    </template>
 
-    <v-card>
-        <v-toolbar dark color="primary">
-            <v-btn icon dark @click="addmarket_screen = false">
-            <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>Add Markets</v-toolbar-title>
-            <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-progress-linear
-          :active="isLoading"
-          :indeterminate="isLoading"
-          top
-          color="primary"
-        ></v-progress-linear>
-        <v-col>
-            <v-autocomplete
-              v-model="model"
-              spellcheck="false"
-              :search-input.sync="search"
-              hide-no-data
-              hide-selected
-              clearable
-              placeholder="Search markets"
-              prepend-icon="search"
-              return-object
-              dense
-            >
-            </v-autocomplete>
-            
-            <v-list>
-              <v-list-item v-for="(item,i) in items" :key=i @click="addsecurity(item.Code,item.Exchange)">
-                <v-list-item-avatar v-if="item.LogoURL">
-                  <v-img :src="`http://localhost:5000/logo/${item.LogoURL}`"></v-img>
-                </v-list-item-avatar>
-                <v-list-item-avatar v-else color="teal">
-                  <span class="white--text title">{{getInitials(item.Name)}}</span>
-                </v-list-item-avatar>
-                <v-list>
-                    <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
-                    <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
-                    <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
-                </v-list>
-              </v-list-item>
-            </v-list>
-          </v-col>
-    </v-card>
-  </v-dialog>
-  <!--END OF ADD MARKET-->
-
-  <!--PEOPLE LIST-->
-  <v-card outlined color=transparent border-color=white >
+  <!-- PEOPLE LIST-->
+  <!-- <v-card outlined color=transparent border-color=white >
     <v-container class="grey lighten-5">
       <v-row
         align="center"
@@ -415,11 +510,11 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-card>
+  </v-card> -->
   <!--END OF PEOPLE LIST-->
     
   <!--DISCOVER PEOPLE BUTTON-->
-  <template>
+  <!-- <template>
     <v-card 
       class="pa-3" color=transparent >
       <v-row align="center" 
@@ -428,17 +523,17 @@
         <v-col cols=6 class="text-left">DISCOVER PEOPLE</v-col>
       </v-row>
     </v-card>  
-  </template>
-  <!--END OF DISCOVER PEOPLE BUTTON-->
+  </template> -->
+  <!--END OF DISCOVER PEOPLE BUTTON -->
 
   <!-- ADD WATCHLIST BUTTON -->
   <v-dialog v-model="dialog_addWatchlist" max-width="500px">
       <template v-slot:activator="{ on }">
         <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom left fab dark color="primary" >
-          <v-icon dark>mdi-plus</v-icon>
+          <v-icon dark>mdi-playlist-plus</v-icon>
         </v-btn>
         <v-btn v-if="!$vuetify.breakpoint.xsOnly && !$vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom right fab dark color="primary" >
-          <v-icon dark>mdi-plus</v-icon>
+          <v-icon dark>mdi-playlist-plus</v-icon>
         </v-btn>
       </template>
 
@@ -474,16 +569,21 @@
 
 <script>
 import { SwipeList } from 'vue-swipe-actions';
+import Touch from 'vuetify/es5/directives/touch'
 import 'vue-swipe-actions/dist/vue-swipe-actions.css';
+import { GChart } from 'vue-google-charts'
 export default {
   name: 'Watchlist',
   components: {
-			SwipeList,
-		},
+			SwipeList, GChart
+    },
+  directives: {
+    Touch
+  },
   data: function() {
     return{
+      asset_peopleSwitch:'asset',
       new_watchlistname:'',
-      hideEdit:true,
       default_watchlist:"My Watchlist",
       selected_watchlist:'',        //Keep track if a watchlist is selected 
       dialog_deleteWatchlist:false,
@@ -519,12 +619,52 @@ export default {
       strRules: [
         v => !!v || 'This field is required',
       ],
+
+      // CHART
+      dayData: null,
+      options_positive:{
+        legend: 'none',
+        areaOpacity:'0.1',
+        chartArea: {
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        },
+        colors: ['#00ff00'],
+        width:'100%',
+        height: 50,
+        vAxis: {
+          gridlines: {
+          color: 'transparent'
+          }
+        },
+      },
+      options_negative:{
+        legend: 'none',
+        areaOpacity:'0.1',
+        chartArea: {
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        },
+        colors: ['#FF0000'],
+        width:'100%',
+        height: 50,
+        vAxis: {
+          gridlines: {
+          color: 'transparent'
+          }
+        },
+      }
     }
   },
 
   methods:{
-    editMode () {
-      this.hideEdit = !(this.hideEdit)
+
+    swipe (direction) {
+        (direction=='Left') ? this.asset_peopleSwitch='people':this.asset_peopleSwitch='asset'
     },
 
     addWatchlist(){
@@ -533,11 +673,10 @@ export default {
       let addwatchlistAPI = `http://${hostname}:5000/1001/watchlist/${this.new_watchlistname}/${action}`
       try
       {
-        fetch(addwatchlistAPI,{method: 'post'})
+        fetch(addwatchlistAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
         console.log(data)
-        
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -548,9 +687,10 @@ export default {
         this.assignNull()
         console.log(error)
       }
-      
+      this.selected_watchlist=this.new_watchlistname
+      this.new_watchlistname=''
+      this.fetchWatchlistsymbol(this.selected_watchlist)
       this.close_dialog_addWatchlist()
-
     },
 
     deleteWatchlist(){
@@ -559,11 +699,10 @@ export default {
       let addwatchlistAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${action}`
       try
       {
-        fetch(addwatchlistAPI,{method: 'post'})
+        fetch(addwatchlistAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
-        console.log(data)
-        
+        console.log(data) 
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -576,8 +715,8 @@ export default {
       }
       this.dialog_deleteWatchlist=false
       this.selected_watchlist=this.default_watchlist
-      this.fetchWatchlist_func()
       this.fetchWatchlistsymbol (this.selected_watchlist)
+      this.fetchWatchlist_func()
     },
 
     addsecurity(code,exchange){
@@ -587,7 +726,7 @@ export default {
       let addsecurityAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${security}/${action}`
       try
       {
-        fetch(addsecurityAPI)
+        fetch(addsecurityAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
         console.log(data)
@@ -616,11 +755,10 @@ export default {
       let deletesecurityAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${this.todelete_security}/${action}`
       try
       {
-        fetch(deletesecurityAPI)
+        fetch(deletesecurityAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
-        console.log(data)
-        
+        console.log(data) 
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -662,9 +800,6 @@ export default {
 
     close_dialog_addWatchlist(){
       this.fetchWatchlist_func()
-      this.selected_watchlist=this.new_watchlistname
-      this.new_watchlistname=''
-      this.fetchWatchlistsymbol(this.selected_watchlist)
       this.dialog_addWatchlist = false
     },
 
@@ -691,18 +826,19 @@ export default {
 
     fetchWatchlist_func () {
       this.watchlistLoaded = false
+      this.listofWatchlist=[]
       let hostname = window.location.hostname
       let watchlist_listAPI = `http://${hostname}:5000/1001/watchlist`
       try
       {
-        fetch(watchlist_listAPI,{method: 'post'})
+        fetch(watchlist_listAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
         this.listofWatchlist=[]
         for(var i=0;i<data.length;i++){
           this.listofWatchlist.push(data[i].Name)
         }
-        console.log(this.listofWatchlist)
+        //console.log(this.listofWatchlist)
         this.watchlistLoaded = true
         })
         .catch(e => {
@@ -722,7 +858,10 @@ export default {
       this.fetchWatchlistsymbol (selection)
     },
 
-    temp_change(){this.simulated_change=!this.simulated_change},
+    temp_change(){
+      this.simulated_change=!this.simulated_change
+      this.asset_peopleSwitch='asset'
+    },
 
     fetchWatchlistsymbol (value) {
       this.watchlistLoaded = false
@@ -730,14 +869,14 @@ export default {
       let list_symbol_API = `http://${hostname}:5000/1001/watchlist/${value}`
       try
       {
-        fetch(list_symbol_API,{method: 'post'})
+        fetch(list_symbol_API,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
         this.securitydetails=[]
         for(var i=0;i<data.length;i++){
           this.fetchrealtime (data[i]) 
         }
-        console.log(this.securitydetails) //Log security details
+        //console.log(this.securitydetails) //Log security details
         if(data.length==0){this.watchlistLoaded = true}
         })
         .catch(e => {
@@ -758,7 +897,7 @@ export default {
       let realtimeAPI = `http://${hostname}:5000/rt/${security}`
       try
       {
-        fetch(realtimeAPI,{method: 'post'})
+        fetch(realtimeAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
         this.watchlistLoaded = true
@@ -776,7 +915,33 @@ export default {
         console.log(error)
       }
     },
-
+    
+    // fetchIntraday (security) {
+    //   this.loaded = false
+    //   let hostname = window.location.hostname
+    //   let API = `http://${hostname}:5000/intra/${security}`
+    //   try{
+    //     fetch(API)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       this.renderChartD(data)
+    //       this.loaded = true
+    //     })
+    //   }
+    //   catch(e){
+    //     console.log(e)
+    //   }
+    // },
+   
+    // renderChartD (data){
+    //   this.dayData = [['Date', '']]
+    //   for(let i in data){
+    //     let moment = require('moment')
+    //     let time = moment(data[i].datetime, "HH:mm:ss").format("hh:mm A")
+    //     this.dayData.push([time, data[i].close])
+    //   }
+    // },
+    
     sellbuy_change(){
       this.buysell_status==='buy'? this.buysell_status='sell':this.buysell_status='buy'
     },
@@ -924,9 +1089,9 @@ export default {
   border-bottom: 1px solid lightgray;
 }
 
-.swipeout-list-item:last-of-type {
+/* .swipeout-list-item:last-of-type {
   border-bottom: none;
-}
+} */
 
 .card-content {
   padding-left: 20px;

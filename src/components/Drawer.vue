@@ -26,6 +26,7 @@
         <v-spacer/>
         <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
       </v-row>
+      <v-scroll-x-reverse-transition hide-on-leave>
       <v-row v-show="searchExpand">
         <v-col :cols="12">
           <v-autocomplete
@@ -46,11 +47,11 @@
             return-object
             dense
             @blur="searchExpand = false"
-            @input="$refs.autocomplete.blur(); goToMarkets(); searchExpand = false"
+            @input="goToMarkets();"
           >
             <template v-slot:item="{ item }">
               <v-list-item-avatar v-if="item.LogoURL">
-                <v-img :src=item.LogoURL></v-img>
+                <v-img :src=item.LogoURL contain></v-img>
               </v-list-item-avatar>
               <v-list-item-avatar v-else color="teal">
                 <span class="white--text title">{{getInitials(item.Name)}}</span>
@@ -64,16 +65,8 @@
           </v-autocomplete>
         </v-col>
       </v-row>
+      </v-scroll-x-reverse-transition>
     </v-app-bar>
-    <!-- <v-app-bar
-        app
-        bottom
-        dense
-      >
-        <v-spacer/>
-        <v-toolbar-title>{{ this.$route.name }}</v-toolbar-title>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-    </v-app-bar> -->
   </div>
 </template>
 
@@ -134,11 +127,9 @@
         this.fetchData()
       }, 200)
     },
-    customFilter(){
-      return true
-    },
     goToMarkets(){
       if (this.model){
+        this.$refs.autocomplete.blur()
         this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})
         this.symbolsExchangesNames = []
         this.search = null

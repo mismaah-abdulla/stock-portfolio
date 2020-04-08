@@ -66,7 +66,7 @@
           v-for="item in tabHeaders"
           :key="item"
           class="caption font-weight-bold"
-          
+          fixed
         >
           {{ item }}
         </v-tab>

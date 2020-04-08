@@ -113,7 +113,7 @@
               <v-list>
                 <v-list-item v-for="(item,i) in items" :key=i @click="addsecurity(item.Code,item.Exchange)">
                   <v-list-item-avatar v-if="item.LogoURL">
-                    <v-img :src="`http://localhost:5000/logo/${item.LogoURL}`"></v-img>
+                    <v-img :src="item.LogoURL"></v-img>
                   </v-list-item-avatar>
                   <v-list-item-avatar v-else color="teal">
                     <span class="white--text title">{{getInitials(item.Name)}}</span>
@@ -203,7 +203,7 @@
 
           <v-col class="px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
             <v-avatar color="transparent">
-              <img :src="item.logo" style="width: 40px; height: 40px" />
+              <img :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 40px; height: 40px" />
             </v-avatar>
           </v-col>
           <v-col v-else class=px-0 cols=1 @click="goToMarkets(item)">

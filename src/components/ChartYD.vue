@@ -134,9 +134,7 @@ export default {
         .then(response => response.json())
         .then(data => {
           this.fetchedDay = data
-          
           this.renderChartD(data)
-          
           this.loadedD = true
         })
       }

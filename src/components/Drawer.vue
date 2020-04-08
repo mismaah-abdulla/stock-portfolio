@@ -50,7 +50,7 @@
             @input="goToMarkets();"
           >
             <template v-slot:item="{ item }">
-              <v-list-item-avatar v-if="item.LogoURL">
+              <v-list-item-avatar v-if="item.LogoURL" tile>
                 <v-img :src=item.LogoURL contain></v-img>
               </v-list-item-avatar>
               <v-list-item-avatar v-else color="teal">

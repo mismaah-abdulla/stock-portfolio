@@ -12,7 +12,7 @@
       <v-col cols="12" class="pt-0 mt-0">
         <v-list class="py-0 my-0">
           <v-list-item class="py-0 my-0">
-            <v-list-item-avatar v-if="details.LogoURL">
+            <v-list-item-avatar v-if="details.LogoURL" tile>
               <v-img :src="logoURL" contain></v-img>
             </v-list-item-avatar>
             <v-list-item-avatar v-else color="teal">

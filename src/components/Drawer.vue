@@ -1,11 +1,8 @@
 <template>
   <div>
     <v-navigation-drawer
-      right
       v-model="drawer"
       app
-      bottom
-      temporary
     >
       <v-list dense>
         <v-list-item link v-for="item in drawerItems" :key="item.title" :to="item.link">
@@ -22,29 +19,34 @@
         app
         dense
       >
-        <img src="@/assets/logo.png" style="height:40px">
+      <v-row v-if="!searchExpand">
+        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+        <v-toolbar-title v-if="this.$route.name == 'Markets' && model" class="pt-2">{{ this.model.Code }}:{{ this.model.Exchange }}</v-toolbar-title>
+        <v-toolbar-title v-else class="pt-2 ">{{ this.$route.name }}</v-toolbar-title>
         <v-spacer/>
-        <p class="pt-3 caption" v-if="searchCols == 2">Search markets</p>
-        <v-col :cols="searchCols">
+        <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
+      </v-row>
+      <v-row v-show="searchExpand">
+        <v-col :cols="12">
           <v-autocomplete
+            autofocus
             ref="autocomplete"
-            class="pt-2"
+            class="pt-3"
             spellcheck="false"
             v-model="model"
             :items="items"
             :loading="isLoading"
             :search-input.sync="search"
+            placeholder="Search markets"
             no-filter
             hide-no-data
             hide-selected
             clearable
-            prepend-inner-icon="search"
+            prepend-icon="search"
             return-object
             dense
-            @focus="searchCols = 7"
-            @blur="searchCols = 2"
-            v-on:input="goToMarkets()"
-            @input="$refs.autocomplete.blur()"
+            @blur="searchExpand = false"
+            @input="$refs.autocomplete.blur(); goToMarkets(); searchExpand = false"
           >
             <template v-slot:item="{ item }">
               <v-list-item-avatar v-if="item.LogoURL">
@@ -61,8 +63,9 @@
             </template>
           </v-autocomplete>
         </v-col>
+      </v-row>
     </v-app-bar>
-    <v-app-bar
+    <!-- <v-app-bar
         app
         bottom
         dense
@@ -70,7 +73,7 @@
         <v-spacer/>
         <v-toolbar-title>{{ this.$route.name }}</v-toolbar-title>
         <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-    </v-app-bar>
+    </v-app-bar> -->
   </div>
 </template>
 
@@ -85,7 +88,7 @@
       {title: "News Feed", icon: "dynamic_feed", link: '/newsfeed'}
       ],
       search: null,
-      searchCols: 2,
+      searchExpand: false,
       model: null,
       isLoading: false,
       symbolsExchangesNames: [],
@@ -147,6 +150,10 @@
       if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
       return initials
     },
+    searchBtn(){
+      this.$refs.autocomplete.focus()
+      this.searchExpand = true
+    }
   },
   watch: {
     search (val) {

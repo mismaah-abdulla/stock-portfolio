@@ -21,7 +21,7 @@
       >
       <v-row v-if="!searchExpand">
         <v-app-bar-nav-icon @click.stop="drawerMain = !drawerMain" />
-        <v-toolbar-title v-if="this.$route.name == 'Markets' && model" class="pt-2">{{ headerIfMarkets() }}</v-toolbar-title>
+        <v-toolbar-title v-if="this.$route.name == 'Markets'" class="pt-2">{{ headerIfMarkets() }}</v-toolbar-title>
         <v-toolbar-title v-else class="pt-2 ">{{ this.$route.name }}</v-toolbar-title>
         <v-spacer/>
         <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>

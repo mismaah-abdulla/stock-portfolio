@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div v-touch="{
+    down: () => swipe()
+    }"
+  >
     <v-row v-if="!loadedY || !loadedD" class="pt-5 mt-5" justify="center">
       <v-progress-circular
         :size="50"
@@ -80,6 +83,7 @@
 
 <script>
 import { GChart } from 'vue-google-charts'
+import Touch from 'vuetify/es5/directives/touch'
 export default {
   name: "ChartYD",
   components: {
@@ -88,6 +92,9 @@ export default {
   props: {
     stock: Object,
     tab: Number,
+  },
+  directives: {
+    Touch
   },
   data: () => ({
     loadedY: false,
@@ -158,6 +165,9 @@ export default {
         let time = moment.unix(data[i].timestamp).format("hh:mm A")
         this.dayData.push([time, data[i].close])
       }
+    },
+    swipe () {
+      this.getData()
     },
   },
   mounted(){

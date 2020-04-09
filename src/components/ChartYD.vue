@@ -202,7 +202,9 @@ export default {
       }
     },
     loadedY: function(){
-      console.log(this.loadedY+" "+this.loadedD)
+      if (this.loadedY && this.loadedD) this.refresh = false
+    },
+    loadedD: function(){
       if (this.loadedY && this.loadedD) this.refresh = false
     }
   }

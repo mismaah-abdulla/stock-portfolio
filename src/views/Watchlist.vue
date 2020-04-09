@@ -1,11 +1,10 @@
 <template>
 <div id="app">
-  <v-app-bar color=primary>
+  <v-app-bar app color=primary elevation=1 >
     <!-- Watchlist select --> 
     <v-menu v-if='watchlistLoaded'
       bottom
-      origin="center center"
-      transition="scale-transition"
+      transition="slide-y-transition"
     >
       <template v-slot:activator="{ on }">
         <v-btn
@@ -13,12 +12,12 @@
           v-on="on"
         >
         <v-icon>
-            mdi-chevron-down
+          mdi-chevron-down
         </v-icon>
-        {{selected_watchlist}}  
+        <div class="text-capitalize">{{selected_watchlist}}</div>
         </v-btn>
       </template>
-      <v-list>
+      <v-list class=py-0>
         <v-list-item
           v-for="(item, i) in listofWatchlist"
           :key="i"
@@ -26,6 +25,15 @@
         >
         <v-list-item-title color=primary>{{ item }}</v-list-item-title>
         </v-list-item>
+
+        <v-list-item class="tile pa-0" color="blue" @click="dialog_addWatchlist=true">
+          <v-row justify=center>
+            <v-icon>
+              mdi-playlist-plus
+            </v-icon>
+          </v-row>
+        </v-list-item>
+
       </v-list>
     </v-menu>
     <v-menu v-else>
@@ -37,24 +45,39 @@
         <v-icon>
             mdi-chevron-down
         </v-icon>
-        {{selected_watchlist}}  
+        <div class="text-capitalize">{{selected_watchlist}}</div> 
         </v-btn>
       </template>
     </v-menu>
     <!-- END OF watchlist select-->  
     
-    <!-- DELETE WATCHLIST BUTTON -->  
-    <v-dialog v-if='watchlistLoaded' v-model="dialog_deleteWatchlist" max-width="500px">
-          <template  v-slot:activator="{ on }">
-              <v-btn v-if="selected_watchlist!= 'My Watchlist'" icon v-on="on">
+    <!-- EDIT WATCHLIST BUTTON -->  
+    <v-bottom-sheet v-if='watchlistLoaded'>
+      <template v-slot:activator="{ on }">
+        <v-btn v-if="selected_watchlist!= 'My Watchlist'" icon v-on="on">
                 <v-icon color=white>
-                  mdi-playlist-remove
+                  mdi-playlist-edit
                 </v-icon>
+                
               </v-btn>
               <v-btn v-else icon disabled>
               </v-btn>
-          </template>
-          <v-card>
+      </template>
+      <v-list class=pa-0>
+          <v-list-item class=py-5
+            v-for="(item, i) in watchlist_action"
+            :key="i"
+            @click="editwatchlist(item)"
+          >
+          <v-list-item-title v-if="item=='Delete Watchlist'" class="text-center red--text">{{ item }}</v-list-item-title>
+          <v-list-item-title v-else class="text-center primary--text">{{ item }}</v-list-item-title>
+          </v-list-item>
+      </v-list>
+    </v-bottom-sheet>
+
+    <!-- DELETE -->
+    <v-dialog v-if='watchlistLoaded' v-model="dialog_deleteWatchlist" max-width="500px">
+        <v-card>
               <v-card-title> 
                 <span class="headline">Confirm Deletion</span>
               </v-card-title>
@@ -67,12 +90,50 @@
                   <v-btn color="default" text @click="close_dialog_deleteWatchlist">Cancel</v-btn>
                   <v-btn color="error" @click="deleteWatchlist">Confirm </v-btn>
               </v-card-actions>
-          </v-card>
+         </v-card>
     </v-dialog> 
-    <!-- END OF DELETE WATCHLIST BUTTON -->  
+
+    <!-- RENAME -->
+    <v-dialog v-if='watchlistLoaded' v-model="dialog_renameWatchlist" max-width="500px">
+        <v-card>
+          <v-card-title> 
+            <span class="headline">Rename Watchlist</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container> 
+              <v-text-field v-model='edited_watchlistname' :rules="strRules" label="Watchlist Name" :hint="check_duplicate? 'Duplicate name exists' : ''" ></v-text-field>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="default" text @click="dialog_renameWatchlist=false">Cancel</v-btn>
+            <v-btn class="white--text" @click='renameWatchlist' color="blue" v-bind:disabled="edited_watchlistname.trim()==''||check_duplicate" >Save</v-btn>
+          </v-card-actions>  
+        </v-card>
+    </v-dialog> 
+    <!-- END OF EDIT WATCHLIST BUTTON -->  
     
     <v-spacer></v-spacer> 
-     
+
+    <v-btn icon @click="asset_peopleSwitch='asset'">
+      <v-icon v-if="asset_peopleSwitch=='asset'" color=white>
+        mdi-currency-usd-circle-outline
+      </v-icon>
+      <v-icon v-else color=grey >
+        mdi-currency-usd-circle-outline
+      </v-icon>
+    </v-btn> 
+    <v-btn icon  @click="asset_peopleSwitch='people'">
+      <v-icon v-if="asset_peopleSwitch=='people'" color=white>
+        mdi-account-multiple
+      </v-icon>
+      <v-icon v-else color=grey >
+        mdi-account-multiple
+      </v-icon>
+    </v-btn>
+
     <!--ADD MARKET-->
     <v-dialog v-if='watchlistLoaded' v-model="addmarket_screen" fullscreen hide-overlay :retain-focus="false" transition="dialog-bottom-transition">
       <template  v-slot:activator="{ on }">
@@ -112,10 +173,10 @@
               
               <v-list>
                 <v-list-item v-for="(item,i) in items" :key=i @click="addsecurity(item.Code,item.Exchange)">
-                  <v-list-item-avatar v-if="item.LogoURL">
-                    <v-img :src="item.LogoURL"></v-img>
+                  <v-list-item-avatar tile v-if="item.LogoURL">
+                    <v-img :src="`http://localhost:5000/logo/${item.LogoURL}`"></v-img>
                   </v-list-item-avatar>
-                  <v-list-item-avatar v-else color="teal">
+                  <v-list-item-avatar tile v-else color="teal">
                     <span class="white--text title">{{getInitials(item.Name)}}</span>
                   </v-list-item-avatar>
                   <v-list>
@@ -129,10 +190,6 @@
       </v-card>
     </v-dialog>
     <!--END OF ADD MARKET-->
-
-    <v-btn icon>
-      <v-icon color=white>mdi-facebook-messenger</v-icon>
-    </v-btn>
   </v-app-bar>
 
   <v-progress-linear
@@ -143,7 +200,7 @@
   ></v-progress-linear>
 
   <!-- MARKET PEOPLE SWITCH -->
-  <v-container class="grey lighten-5">
+  <!-- <v-container class="grey lighten-5">
       <v-row
         v-touch="{
           left: () => swipe('Left'),
@@ -156,43 +213,60 @@
         >
         
         <v-col v-if="asset_peopleSwitch!=='people'" cols=5 class="text-right" >
-          ASSETS
+          Assets
         </v-col>
         <v-col v-else cols=5 class="text-right grey--text" @click="asset_peopleSwitch='asset'">
-          ASSETS
+          Assets
         </v-col>
         <v-col cols=1></v-col>
         <v-col v-if="asset_peopleSwitch=='people'" cols=5 class="text-left" >
-          PEOPLE
+          People
         </v-col>
         <v-col v-else cols=5 class="text-left grey--text" @click="asset_peopleSwitch='people'">
-          PEOPLE
+          People
         </v-col>
         
       </v-row>
-  </v-container>
+  </v-container> -->
 
   <!-- ASSET INFO LIST -->
-  <v-card outlined color=transparent border-color=white height=50% v-if="asset_peopleSwitch=='asset'">
-    <v-container class="grey lighten-5">
-      <v-row
-        no-gutters
+
+  <v-card class="grey lighten-5 header" v-if="asset_peopleSwitch=='asset'" elevation=1 absolute style="border-radius: 0px;" >  
+    <v-row
+        justify=center
         class="subtitle-2 font-weight-medium"
-        >
-        <v-col cols=2>  
-          SYMBOL 
-        </v-col>
-        <v-col cols=7 class="text-center" @click="temp_change">
-          CHANGE
-        </v-col>
-        <v-col cols=3 class="text-right">
-          PRICE
-        </v-col>
-      </v-row>
-    </v-container>
+    >
+      <v-col cols=3 class="text-left pl-1">  
+          Symbol 
+      </v-col>
+      <v-col cols=4 class="text-center pr-0" @click="temp_change">
+          Change
+      </v-col>
+      <v-col cols=4 class="text-right pr-1">
+          Price
+      </v-col>
+    </v-row>   
+  </v-card>
+  <v-card class="grey lighten-5 header" v-else elevation=1 absolute style="border-radius: 0px;" >  
+    <v-row
+        justify=center
+        class="subtitle-2 font-weight-medium"
+    >
+      <v-col cols=3 class="text-left pl-1">  
+          People 
+      </v-col>
+      <v-col cols=4 class="text-center pr-0" @click="temp_change">
+          Risk Score
+      </v-col>
+      <v-col cols=4 class="text-right pr-1">
+          Change
+      </v-col>
+    </v-row>   
+  </v-card>
   
+  <v-card outlined color=transparent border-color=white height=50% v-if="asset_peopleSwitch=='asset'">
     <template>
-		<swipe-list
+		<swipe-list 
 			ref="list"
 			:items="securitydetails"
 			item-key="code"
@@ -202,12 +276,12 @@
 					<v-row>
 
           <v-col class="px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
-            <v-avatar color="transparent">
+            <v-avatar tile  color="transparent">
               <img :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 40px; height: 40px" />
             </v-avatar>
           </v-col>
           <v-col v-else class=px-0 cols=1 @click="goToMarkets(item)">
-            <v-avatar color="teal" size=40>
+            <v-avatar tile color="teal" size=40>
               <span class="white--text title">{{getInitials(item.name)}}</span>
             </v-avatar>
           </v-col>
@@ -292,15 +366,15 @@
                         <img :src="('https://eodhistoricaldata.com'+selected_security.logo)" style="width: 50px; height: 50px" />
                       </v-col>
                       <v-col cols=2 v-else>
-                        <v-avatar color="teal">
+                        <v-avatar first-list-item color="teal">
                           <span class="white--text title">{{getInitials(item.name)}}</span>
                         </v-avatar>
                       </v-col>
 
                       <v-col class=px-3> 
                         <v-row no-gutters>
-                          <v-col v-if="buysell_status==='sell'" cols=2>SELL</v-col>
-                          <v-col v-else cols=2>BUY</v-col>
+                          <v-col v-if="buysell_status==='sell'" cols=2>Sell</v-col>
+                          <v-col v-else cols=2>Buy</v-col>
                           <span class="font-weight-black">{{selected_security.display_code}}</span>
                         </v-row>
                         <v-row no-gutters > 
@@ -380,11 +454,11 @@
               <v-card>
                 <v-tabs flat background-color="transparent" grow mobile-break-point="0"
                   color="blue" center-active centered height="80" >
-                  <v-tab v-if='stoploss<0'>$ {{stoploss}} <br> STOP<br>LOSS<br></v-tab>
-                  <v-tab v-else>$ 0 <br> STOP<br>LOSS<br></v-tab>
+                  <v-tab v-if='stoploss<0'>$ {{stoploss}} <br> Stop<br>Loss<br></v-tab>
+                  <v-tab v-else>$ 0 <br> Stop<br>Loss<br></v-tab>
 
-                  <v-tab v-if='takeprofit>0'>$ {{takeprofit}}<br>TAKE<br>PROFIT<br></v-tab>
-                  <v-tab v-else>NO TP<br>TAKE<br>PROFIT<br></v-tab>
+                  <v-tab v-if='takeprofit>0'>$ {{takeprofit}}<br>Take<br>Profit<br></v-tab>
+                  <v-tab v-else>NO TP<br>Take<br>Profit<br></v-tab>
                   <v-tab-item v-for="n in 2" :key="n" >
                     <v-container fluid>
                         <!-- STOP LOSS -->
@@ -486,6 +560,7 @@
 			</template>
 
 		</swipe-list>
+    
     </template>
   <!-- END OF INFO LIST -->
   
@@ -528,14 +603,14 @@
 
   <!-- ADD WATCHLIST BUTTON -->
   <v-dialog v-model="dialog_addWatchlist" max-width="500px">
-      <template v-slot:activator="{ on }">
+      <!-- <template v-slot:activator="{ on }">
         <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom left fab dark color="primary" >
           <v-icon dark>mdi-playlist-plus</v-icon>
         </v-btn>
         <v-btn v-if="!$vuetify.breakpoint.xsOnly && !$vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom right fab dark color="primary" >
           <v-icon dark>mdi-playlist-plus</v-icon>
         </v-btn>
-      </template>
+      </template> -->
 
       <v-card>
         <v-card-title> 
@@ -563,11 +638,15 @@
       :timeout="2000"
     >
       {{ snackbar_text }}
-    </v-snackbar>
+  </v-snackbar>
 </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import VueScroller from 'vue-scroller'
+Vue.use(VueScroller)
+
 import { SwipeList } from 'vue-swipe-actions';
 import Touch from 'vuetify/es5/directives/touch'
 import 'vue-swipe-actions/dist/vue-swipe-actions.css';
@@ -584,12 +663,15 @@ export default {
     return{
       asset_peopleSwitch:'asset',
       new_watchlistname:'',
+      edited_watchlistname:'',
       default_watchlist:"My Watchlist",
       selected_watchlist:'',        //Keep track if a watchlist is selected 
       dialog_deleteWatchlist:false,
+      dialog_renameWatchlist:false,
       todelete_security:'',todelete_security_display:'',
       dialog_deleteSecurity:false,
       watchlistLoaded:false, 
+      watchlist_action:["Rename Watchlist","Delete Watchlist"],
       listofWatchlist:[],           //User's watchlist list w/o security
       securitydetails:[],           //Security details from selected watchlist
       securitydetailloaded:false,
@@ -662,9 +744,18 @@ export default {
   },
 
   methods:{
-
+  
     swipe (direction) {
         (direction=='Left') ? this.asset_peopleSwitch='people':this.asset_peopleSwitch='asset'
+    },
+
+    editwatchlist(action){
+      if(action=='Delete Watchlist'){
+        this.dialog_deleteWatchlist=true
+      }else{
+        this.edited_watchlistname=this.selected_watchlist
+        this.dialog_renameWatchlist=true
+      }
     },
 
     addWatchlist(){
@@ -691,6 +782,32 @@ export default {
       this.new_watchlistname=''
       this.fetchWatchlistsymbol(this.selected_watchlist)
       this.close_dialog_addWatchlist()
+    },
+
+    renameWatchlist(){
+      let hostname = window.location.hostname
+      let renamewatchlistAPI = `http://${hostname}:5000/1001/watchlist/rename/${this.selected_watchlist}/${this.edited_watchlistname}`
+      try
+      {
+        fetch(renamewatchlistAPI,{method: "get"})
+        .then(response =>{return response.json()})
+        .then(data =>{
+        console.log(data)
+        })
+        .catch(e => {
+        console.log("Response status: "+e)
+        })
+      }
+      catch(error)
+      {
+        this.assignNull()
+        console.log(error)
+      }
+      this.selected_watchlist=this.edited_watchlistname
+      this.edited_watchlistname=''
+      this.fetchWatchlist_func () 
+      this.fetchWatchlistsymbol(this.selected_watchlist)
+      this.dialog_renameWatchlist=false
     },
 
     deleteWatchlist(){
@@ -721,6 +838,7 @@ export default {
 
     addsecurity(code,exchange){
       var action = 'add'
+      var getdata =  ''
       let hostname = window.location.hostname
       let security = code+'.'+exchange
       let addsecurityAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${security}/${action}`
@@ -729,7 +847,17 @@ export default {
         fetch(addsecurityAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
-        console.log(data)
+        getdata=data.status
+        console.log("Status: "+getdata)
+        
+        if(getdata.toLowerCase().includes("fail")){
+          this.snackbar_text=security+" is already in "+this.selected_watchlist
+          this.snackbar=true
+        }else{
+          this.snackbar_text=security+" added to "+this.selected_watchlist
+          this.snackbar=true
+        }
+
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -740,12 +868,10 @@ export default {
         this.assignNull()
         console.log(error)
       }
-      this.fetchWatchlistsymbol (this.selected_watchlist)
       this.search = null
       this.symbolsExchangesNames = []
       this.addmarket_screen=false
-      this.snackbar_text=security+" added to watchlist"
-      this.snackbar=true
+      this.fetchWatchlistsymbol (this.selected_watchlist)
     },
 
     deletesecurity(){
@@ -836,7 +962,7 @@ export default {
         .then(data =>{
         this.listofWatchlist=[]
         for(var i=0;i<data.length;i++){
-          this.listofWatchlist.push(data[i].Name)
+          this.listofWatchlist.push(data[i])
         }
         //console.log(this.listofWatchlist)
         this.watchlistLoaded = true
@@ -1038,11 +1164,19 @@ export default {
     check_duplicate()
     {
       for(var i=0;i<this.listofWatchlist.length;i++){
-         if(this.listofWatchlist[i].trim().toLowerCase()===this.new_watchlistname.trim().toLowerCase())
-         { 
-          return true
-         }
-       }
+        if(this.dialog_addWatchlist==true){
+          if(this.listofWatchlist[i].trim().toLowerCase()===this.new_watchlistname.trim().toLowerCase())
+          { 
+            return true
+          }
+        }
+        else if(this.dialog_renameWatchlist==true){
+          if(this.listofWatchlist[i].trim().toLowerCase()===this.edited_watchlistname.trim().toLowerCase())
+          { 
+            return true
+          }
+        }
+      }
       return false
     },
 
@@ -1089,9 +1223,14 @@ export default {
   border-bottom: 1px solid lightgray;
 }
 
-/* .swipeout-list-item:last-of-type {
+.swipeout-list-item:last-of-type {
   border-bottom: none;
-} */
+}
+
+.swipeout-list-item:first-of-type {
+  border-top: none;
+  border-top: 40px solid lightgray;
+}
 
 .card-content {
   padding-left: 20px;
@@ -1105,4 +1244,21 @@ export default {
 .centered-input input {
   text-align: center
 }
+
+.first-list-item{
+  background: #E8E8E8;
+  border-top-style: solid;
+  border-top-width: 0px;
+  border-top-color: grey;
+}
+
+.header {
+  position:fixed;      
+  width:100vw; 
+  z-index:1;  
+  height:40px;     
+}
+
+
+
 </style>

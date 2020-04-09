@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-navigation-drawer
-      v-model="drawer"
+      v-model="drawerMain"
       app
     >
       <v-list dense>
@@ -20,7 +20,7 @@
         dense
       >
       <v-row v-if="!searchExpand">
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+        <v-app-bar-nav-icon @click.stop="drawerMain = !drawerMain" />
         <v-toolbar-title v-if="this.$route.name == 'Markets' && model" class="pt-2">{{ headerIfMarkets() }}</v-toolbar-title>
         <v-toolbar-title v-else class="pt-2 ">{{ this.$route.name }}</v-toolbar-title>
         <v-spacer/>
@@ -75,7 +75,7 @@
   export default {
     name: 'Drawer',
     data: () => ({
-      drawer: null,
+      drawerMain: null,
       drawerItems: [
       {title: "Portfolio", icon: "recent_actors", link: '/'},
       {title: "Watchlist", icon: "list", link: '/watchlist'},
@@ -89,11 +89,12 @@
     }),
     props: {
       source: String,
+      drawer: Boolean
     },
     computed: {
       items () {
         return this.symbolsExchangesNames
-      }
+      },
     },
     methods: {
       fetchData() {
@@ -154,6 +155,9 @@
       if(this.model && val == this.model.Name) return
       this.fetchDebounced()
     },
+    drawer: function(){
+      this.drawerMain = !this.drawerMain
+    }
   }
 } 
 </script>

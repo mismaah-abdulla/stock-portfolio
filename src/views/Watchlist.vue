@@ -1,6 +1,7 @@
 <template>
 <div id="app">
-  <v-app-bar app color=primary elevation=1 >
+  <v-app-bar app dense>
+    <v-app-bar-nav-icon @click.stop="drawer()"/>
     <!-- Watchlist select --> 
     <v-menu v-if='watchlistLoaded'
       bottom
@@ -118,7 +119,7 @@
     <v-spacer></v-spacer> 
 
     <v-btn icon @click="asset_peopleSwitch='asset'">
-      <v-icon v-if="asset_peopleSwitch=='asset'" color=white>
+      <v-icon v-if="asset_peopleSwitch=='asset'">
         mdi-currency-usd-circle-outline
       </v-icon>
       <v-icon v-else color=grey >
@@ -126,7 +127,7 @@
       </v-icon>
     </v-btn> 
     <v-btn icon  @click="asset_peopleSwitch='people'">
-      <v-icon v-if="asset_peopleSwitch=='people'" color=white>
+      <v-icon v-if="asset_peopleSwitch=='people'">
         mdi-account-multiple
       </v-icon>
       <v-icon v-else color=grey >
@@ -138,7 +139,7 @@
     <v-dialog v-if='watchlistLoaded' v-model="addmarket_screen" fullscreen hide-overlay :retain-focus="false" transition="dialog-bottom-transition">
       <template  v-slot:activator="{ on }">
         <v-btn icon v-on="on">
-          <v-icon color=white>mdi-plus</v-icon>
+          <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
 
@@ -744,7 +745,9 @@ export default {
   },
 
   methods:{
-  
+    drawer(){
+      this.$emit('drawer')
+    },
     swipe (direction) {
         (direction=='Left') ? this.asset_peopleSwitch='people':this.asset_peopleSwitch='asset'
     },

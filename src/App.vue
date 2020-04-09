@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <Login @loggedIn="loggedIn = true" v-if="!loggedIn"/>
-    <Drawer v-if="loggedIn"></Drawer>
+    <Drawer v-if="loggedIn" :drawer="drawer"></Drawer>
     <v-content v-if="loggedIn">
-      <router-view :key="$route.fullPath"/>
+      <router-view :key="$route.fullPath" @drawer="drawer = !drawer"/>
     </v-content>
   </v-app>
 </template>
@@ -18,6 +18,7 @@ export default {
   },
   data: () => ({
     loggedIn: false,
+    drawer: null
   })
 }
 </script>

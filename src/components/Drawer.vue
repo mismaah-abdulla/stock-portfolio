@@ -21,10 +21,11 @@
       >
       <v-row v-if="!searchExpand">
         <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-        <v-toolbar-title v-if="this.$route.name == 'Markets' && model" class="pt-2">{{ this.model.Code }}:{{ this.model.Exchange }}</v-toolbar-title>
+        <v-toolbar-title v-if="this.$route.name == 'Markets' && model" class="pt-2">{{ headerIfMarkets() }}</v-toolbar-title>
         <v-toolbar-title v-else class="pt-2 ">{{ this.$route.name }}</v-toolbar-title>
         <v-spacer/>
         <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
+        <v-btn icon><v-icon>mdi-facebook-messenger</v-icon></v-btn>
       </v-row>
       <v-scroll-x-reverse-transition hide-on-leave>
       <v-row v-show="searchExpand">
@@ -85,7 +86,6 @@
       model: null,
       isLoading: false,
       symbolsExchangesNames: [],
-      logos: []
     }),
     props: {
       source: String,
@@ -144,6 +144,9 @@
     searchBtn(){
       this.$refs.autocomplete.focus()
       this.searchExpand = true
+    },
+    headerIfMarkets(){
+      return this.$route.path.split('/')[2]+":"+this.$route.path.split('/')[3]
     }
   },
   watch: {

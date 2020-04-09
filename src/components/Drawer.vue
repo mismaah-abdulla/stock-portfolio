@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer
+    <v-navigation-drawer 
       v-model="drawerMain"
       app
     >
@@ -15,7 +15,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
+    <v-app-bar v-if="this.$route.name != 'Watchlist'"
         app
         dense
       >

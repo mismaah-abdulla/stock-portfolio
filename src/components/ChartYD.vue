@@ -1,15 +1,27 @@
 <template>
   <div v-touch="{
-    down: () => swipe()
+    down: () => swipe('down'),
+    right: () => swipe('right'),
+    left: () => swipe('left')
     }"
   >
-    <v-row v-if="!loadedY || !loadedD" class="pt-5 mt-5" justify="center">
-      <v-progress-circular
-        :size="50"
-        :width="5"
-        color="grey"
-        indeterminate>
-      </v-progress-circular>
+    <transition name="slide">
+    <v-row v-if="refresh" class="pt-5 mt-5" justify="center">
+        <v-progress-circular
+          :size="50"
+          :width="5"
+          color="grey"
+          indeterminate>
+        </v-progress-circular>
+    </v-row>
+    </transition>
+    <v-row v-if="(!loadedY || !loadedD) && !refresh" class="pt-5 mt-5" justify="center">
+        <v-progress-circular
+          :size="50"
+          :width="5"
+          color="grey"
+          indeterminate>
+        </v-progress-circular>
     </v-row>
     <v-row v-if="loadedY && loadedD" class="pt-0 mt-0">
       <v-col cols="2" v-if="year==0">
@@ -116,6 +128,7 @@ export default {
         height: '200',
       },
     year: 0,
+    refresh: false
   }),
   methods: {
     getData () {
@@ -166,8 +179,17 @@ export default {
         this.dayData.push([time, data[i].close])
       }
     },
-    swipe () {
-      this.getData()
+    swipe (direction) {
+      if (direction == 'down') {
+        this.getData()
+        this.refresh = true
+      }
+      if (direction == 'left') {
+        if (this.year != 1) this.year = 1
+      }
+      if (direction == 'right') {
+        if (this.year != 0) this.year = 0
+      }
     },
   },
   mounted(){
@@ -178,7 +200,24 @@ export default {
       if(this.fetchedData){
         this.year = 1
       }
+    },
+    loadedY: function(){
+      console.log(this.loadedY+" "+this.loadedD)
+      if (this.loadedY && this.loadedD) this.refresh = false
     }
   }
 }
 </script>
+
+<style>
+.slide-enter-active {
+  transition: all .3s cubic-bezier(1,1,.5,.5);
+}
+/* .slide-leave-active {
+  transition: all .3s cubic-bezier(1,1,.5,.5);
+} */
+.slide-enter{
+  transform: translateY(-30px);
+  /* opacity: 0; */
+}
+</style>

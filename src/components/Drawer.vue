@@ -146,7 +146,7 @@
       this.searchExpand = true
     },
     headerIfMarkets(){
-      return this.$route.path.split('/')[2]+":"+this.$route.path.split('/')[3]
+      return this.$route.path.split('/')[3]+":"+this.$route.path.split('/')[2]
     }
   },
   watch: {

@@ -18,25 +18,40 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
         <v-tab-item>
-          <v-row justify="center">
-            <v-simple-table>
-              <template v-slot:default>
-                <tbody>
-                  <tr>
-                    <td>Gross Margin</td>
-                    <td class="text--secondary">44.42%</td>
-                    <td>Net Profit</td>
-                    <td class="text--secondary">27.01%</td>
-                  </tr>
-                  <tr>
-                    <td>Operating Margin</td>
-                    <td class="text--secondary">44.42%</td>
-                    <td>Return On Investment</td>
-                    <td class="text--secondary">27.01%</td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
+          <v-row justify="center" class="px-5">
+            <v-col cols="6">
+              <v-simple-table>
+                <template v-slot:default>
+                  <tbody>
+                    <tr>
+                      <td>Gross Margin</td>
+                      <td class="text--secondary title">44.42%</td>
+                    </tr>
+                    <tr>
+                      <td>Net Profit</td>
+                      <td class="text--secondary title">27.01%</td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+            </v-col>
+            <v-col cols="6">
+              <v-simple-table>
+                <template v-slot:default>
+                  <tbody>
+                    <tr>
+                      <td>Operating Margin</td>
+                      <td class="text--secondary title">44.42%</td>
+                    </tr>
+                    <tr>
+                      <td>Return On Investment</td>
+                      <td class="text--secondary title">27.01%</td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+            </v-col>
+            
           </v-row>
           <v-divider></v-divider>
           <v-simple-table>

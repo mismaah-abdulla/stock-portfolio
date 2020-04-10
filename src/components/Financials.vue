@@ -8,7 +8,6 @@
         background-color="transparent"
         color="basil"
         center-active
-        right
         grow>
         <v-tab
           v-for="item in tabHeaders"

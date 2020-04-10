@@ -12,28 +12,16 @@
       <v-col xs="12" md="4">
         <v-card outlined>
           <v-card-title>Overview</v-card-title>
-          <v-row no-gutters>
-            <v-col>
-              <v-list two-line subheader>
-                <v-list-item v-for="item in items1" :key="item.name">
-                  <v-list-item-content class="my-0 py-0">
-                    <span class="body-2 font-weight-medium">{{ item.name }}</span>
-                    <span class="body-2 text--secondary"> {{ item.data }}</span>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
-            <v-col>
-              <v-list two-line subheader>
-                <v-list-item v-for="item in items2" :key="item.name">
-                  <v-list-item-content class="my-0 py-0">
-                    <span class="body-2 font-weight-medium">{{ item.name }}</span>
-                    <span class="body-2 text--secondary"> {{ item.data }}</span>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
-          </v-row>
+          <v-simple-table dense>
+            <template v-slot:default>
+              <tbody>
+                <tr v-for="item in items" :key="item.name">
+                  <td>{{ item.name }}</td>
+                  <td class="text--secondary subtitle-1">{{ item.data }}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
         </v-card>
       </v-col>
       <v-col md="8" v-if="$vuetify.breakpoint.mdAndUp">
@@ -74,15 +62,13 @@ export default {
       loaded: false,
       stats: null,
       financials: null,
-      items1: {
+      items: {
         prevClose: {name: "Prev Close", data: null},
         dayRange: {name: "Day's Range", data: null},
         weekRange: {name: "52 Week Range", data: null},
         eps: {name: "EPS", data: null},
         yearReturn: {name: "1-Year Return", data: null},
-        beta: {name: "Beta", data: null}
-      },
-      items2: {
+        beta: {name: "Beta", data: null},
         marketCap: {name: "Market Cap", data: null},
         peRatio: {name: "P/E Ratio", data: null},
         revenue: {name: "Revenue", data: null},
@@ -118,17 +104,17 @@ export default {
         }
       },
       assignStats (data) {
-        this.items1.prevClose.data = data.PrevClose ? data.PrevClose : "N/A"
-        this.items1.dayRange.data = data.DayRange ? data.DayRange : "N/A"
-        this.items1.weekRange.data =  data.WeekRange52 ? data.WeekRange52 : "N/A"
-        this.items1.eps.data = data.EPS ? data.EPS : "N/A"
-        this.items1.yearReturn.data = data.YearReturn ? data.YearReturn : "N/A"
-        this.items1.beta.data = data.Beta ? data.Beta : "N/A"
-        this.items2.marketCap.data = this.formatNumber(data.MarketCap)
-        this.items2.peRatio.data = data.PERatio ? data.PERatio : "N/A"
-        this.items2.revenue.data = this.formatNumber(data.Revenue)
-        this.items2.avgVol.data = this.formatNumber(data.AvgVolume)
-        this.items2.dividend.data = data.Dividend ? data.Dividend : "N/A"
+        this.items.prevClose.data = data.PrevClose ? data.PrevClose : "N/A"
+        this.items.dayRange.data = data.DayRange ? data.DayRange : "N/A"
+        this.items.weekRange.data =  data.WeekRange52 ? data.WeekRange52 : "N/A"
+        this.items.eps.data = data.EPS ? data.EPS : "N/A"
+        this.items.yearReturn.data = data.YearReturn ? data.YearReturn : "N/A"
+        this.items.beta.data = data.Beta ? data.Beta : "N/A"
+        this.items.marketCap.data = this.formatNumber(data.MarketCap)
+        this.items.peRatio.data = data.PERatio ? data.PERatio : "N/A"
+        this.items.revenue.data = this.formatNumber(data.Revenue)
+        this.items.avgVol.data = this.formatNumber(data.AvgVolume)
+        this.items.dividend.data = data.Dividend ? data.Dividend : "N/A"
         this.items3.sector.data = data.Sector ? data.Sector : "N/A"
         this.items3.industry.data = data.Industry ? data.Industry : "N/A"
         this.items3.employees.data = data.Employees ? data.Employees : "N/A"

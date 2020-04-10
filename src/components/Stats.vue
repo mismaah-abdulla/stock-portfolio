@@ -16,7 +16,7 @@
             <v-col>
               <v-list two-line subheader>
                 <v-list-item v-for="item in items1" :key="item.name">
-                  <v-list-item-content>
+                  <v-list-item-content class="my-0 py-0">
                     <span class="body-2 font-weight-medium">{{ item.name }}</span>
                     <span class="body-2 text--secondary"> {{ item.data }}</span>
                   </v-list-item-content>
@@ -26,7 +26,7 @@
             <v-col>
               <v-list two-line subheader>
                 <v-list-item v-for="item in items2" :key="item.name">
-                  <v-list-item-content>
+                  <v-list-item-content class="my-0 py-0">
                     <span class="body-2 font-weight-medium">{{ item.name }}</span>
                     <span class="body-2 text--secondary"> {{ item.data }}</span>
                   </v-list-item-content>
@@ -40,8 +40,8 @@
         <Financials :financials="financials"/>
       </v-col>
     </v-row>
-      <v-divider v-if="loaded"></v-divider>
-      <v-row v-if="loaded" no-gutters>
+    <v-card v-if="loaded" outlined class="mt-3">
+      <v-row no-gutters>
         <v-col v-for="item in items3" :key="item.name" cols="4">
           <v-list two-line subheader>
             <v-list-item>
@@ -53,7 +53,8 @@
           </v-list>
         </v-col>
       </v-row>
-    <v-row v-if="loaded && $vuetify.breakpoint.smAndDown" class="mt-5">
+    </v-card>
+    <v-row v-if="loaded && $vuetify.breakpoint.smAndDown" class="mt-3">
       <Financials :financials="financials"/>
     </v-row>
   </v-container>

@@ -8,38 +8,38 @@
         indeterminate
       ></v-progress-circular>
     </v-row>
-    <v-card v-if="loaded" outlined> 
-      <v-card-title>Overview</v-card-title>
-      <v-row  no-gutters>
-        <v-col xs="6" md="2">
-          <v-list two-line subheader>
-            <v-list-item v-for="item in items1" :key="item.name">
-              <v-list-item-content>
-                <v-list-item-title>{{ item.name }}</v-list-item-title>
-                <v-list-item-subtitle> {{ item.data }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-col>
-        <v-col xs="6" md="2">
-          <v-list two-line subheader>
-            <v-list-item v-for="item in items2" :key="item.name">
-              <v-list-item-content>
-                <v-list-item-title>{{ item.name }}</v-list-item-title>
-                <v-list-item-subtitle> {{ item.data }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-col>
-        <v-col v-if="$vuetify.breakpoint.mdAndUp" md="8" class="pr-2">
-          <LChart :stock="this.$props.stock"></LChart>
-        </v-col>
-      </v-row>
-      <v-row v-if="$vuetify.breakpoint.smAndDown" class="pr-1">
-        <v-col cols="12">
-          <LChart :stock="this.$props.stock"></LChart>
-        </v-col>
-      </v-row>
+    <v-row v-if="loaded" no-gutters>
+      <v-col xs="12" md="4">
+        <v-card outlined>
+          <v-card-title>Overview</v-card-title>
+          <v-row no-gutters>
+            <v-col>
+              <v-list two-line subheader>
+                <v-list-item v-for="item in items1" :key="item.name">
+                  <v-list-item-content>
+                    <span class="body-2 font-weight-medium">{{ item.name }}</span>
+                    <span class="body-2"> {{ item.data }}</span>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-col>
+            <v-col>
+              <v-list two-line subheader>
+                <v-list-item v-for="item in items2" :key="item.name">
+                  <v-list-item-content>
+                    <span class="body-2 font-weight-medium">{{ item.name }}</span>
+                    <span class="body-2"> {{ item.data }}</span>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+      <v-col md="8" v-if="$vuetify.breakpoint.mdAndUp">
+        <Financials/>
+      </v-col>
+    </v-row>
       <v-divider v-if="loaded"></v-divider>
       <v-row v-if="loaded" no-gutters>
         <v-col v-for="item in items3" :key="item.name" cols="4">
@@ -53,54 +53,25 @@
           </v-list>
         </v-col>
       </v-row>
-    </v-card>
-    <v-card outlined class="mt-5" v-if="loaded">
-      <v-card-title>Financial Summary</v-card-title>
-        <v-switch class="pl-5 py-0 my-0" v-model="quarterly" label="Quarterly"></v-switch>
-        <v-tabs slider-size="1" height="30"
-        v-model="tab"
-        background-color="transparent"
-        color="basil"
-        >
-        <v-tab dense 
-          v-for="item in tabHeaders"
-          :key="item"
-          class="caption font-weight-bold"
-          fixed
-        >
-          {{ item }}
-        </v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab">
-        <v-tab-item>
-          
-        </v-tab-item>
-        <v-tab-item>
-          
-        </v-tab-item>
-        <v-tab-item>
-        </v-tab-item>
-      </v-tabs-items>
-    </v-card>
+    <v-row v-if="loaded && $vuetify.breakpoint.smAndDown" class="mt-5">
+      <Financials/>
+    </v-row>
   </v-container>
 </template>
 
 <script>
-import LChart from './LChart'
+import Financials from './Financials'
 export default {
     name: "Stats",
     props: {
       stock: Object,
     },
     components: {
-      LChart
+      Financials
     },
     data: () => ({
       loaded: false,
-      tabHeaders: ["Income Statement", "Balance Sheet", "Cash Flow Statement"],
-      tab: null,
       stats: null,
-      quarterly: false,
       items1: {
         prevClose: {name: "Prev Close", data: null},
         dayRange: {name: "Day's Range", data: null},

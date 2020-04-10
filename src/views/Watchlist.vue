@@ -1,234 +1,200 @@
 <template>
 <div id="app">
-  <v-app-bar app dense>
-    <v-app-bar-nav-icon @click.stop="drawer()"/>
-    <!-- Watchlist select --> 
-    <v-menu v-if='watchlistLoaded'
-      bottom
-      transition="slide-y-transition"
-    >
-      <template v-slot:activator="{ on }">
-        <v-btn
-          color="white"
-          v-on="on"
+  <v-app-bar app >
+    <v-row v-if="!searchExpand" align=center >
+      <v-app-bar-nav-icon @click.stop="drawer()"/>
+      <!-- Watchlist select --> 
+      <v-col>
+        <v-menu v-if='watchlistLoaded'
+          bottom
+          transition="slide-y-transition"
         >
-        <v-icon>
-          mdi-chevron-down
-        </v-icon>
-        <div class="text-capitalize">{{selected_watchlist}}</div>
-        </v-btn>
-      </template>
-      <v-list class=py-0>
-        <v-list-item
-          v-for="(item, i) in listofWatchlist"
-          :key="i"
-          @click="watchlist_clicked(item)"
-        >
-        <v-list-item-title color=primary>{{ item }}</v-list-item-title>
-        </v-list-item>
-
-        <v-list-item class="tile pa-0" color="blue" @click="dialog_addWatchlist=true">
-          <v-row justify=center>
-            <v-icon>
-              mdi-playlist-plus
+        
+          <template v-slot:activator="{ on }">
+            <v-btn
+              color="white"
+              v-on="on"
+            >
+            <v-icon color="#00E676">
+              mdi-chevron-down
             </v-icon>
-          </v-row>
-        </v-list-item>
+            <div class="text-capitalize">{{selected_watchlist}}</div>
+            </v-btn>
+          </template>
+          
+          <v-list class=py-0>
+            <v-list-item
+              v-for="(item, i) in listofWatchlist"
+              :key="i"
+              @click="watchlist_clicked(item)"
+            >
+            <v-list-item-title color=primary>{{ item }}</v-list-item-title>
+            </v-list-item>
 
-      </v-list>
-    </v-menu>
-    <v-menu v-else>
-      <template v-slot:activator="{ on }">
-        <v-btn
-          color="white"
-          v-on="on"
-        >
-        <v-icon>
-            mdi-chevron-down
-        </v-icon>
-        <div class="text-capitalize">{{selected_watchlist}}</div> 
-        </v-btn>
-      </template>
-    </v-menu>
-    <!-- END OF watchlist select-->  
-    
-    <!-- EDIT WATCHLIST BUTTON -->  
-    <v-bottom-sheet v-if='watchlistLoaded'>
-      <template v-slot:activator="{ on }">
-        <v-btn v-if="selected_watchlist!= 'My Watchlist'" icon v-on="on">
-                <v-icon color=white>
-                  mdi-playlist-edit
+            <v-list-item class="tile pa-0" color="blue" @click="dialog_addWatchlist=true">
+              <v-row justify=center>
+                <v-icon color="#00E676">
+                  mdi-playlist-plus
                 </v-icon>
-                
-              </v-btn>
-              <v-btn v-else icon disabled>
-              </v-btn>
-      </template>
-      <v-list class=pa-0>
-          <v-list-item class=py-5
-            v-for="(item, i) in watchlist_action"
-            :key="i"
-            @click="editwatchlist(item)"
-          >
-          <v-list-item-title v-if="item=='Delete Watchlist'" class="text-center red--text">{{ item }}</v-list-item-title>
-          <v-list-item-title v-else class="text-center primary--text">{{ item }}</v-list-item-title>
-          </v-list-item>
-      </v-list>
-    </v-bottom-sheet>
+              </v-row>
+            </v-list-item>
 
-    <!-- DELETE -->
-    <v-dialog v-if='watchlistLoaded' v-model="dialog_deleteWatchlist" max-width="500px">
-        <v-card>
-              <v-card-title> 
-                <span class="headline">Confirm Deletion</span>
-              </v-card-title>
-              <v-card-text>
-                <span>Delete watchlist: {{ selected_watchlist }}</span>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                  <v-btn color="default" text @click="close_dialog_deleteWatchlist">Cancel</v-btn>
-                  <v-btn color="error" @click="deleteWatchlist">Confirm </v-btn>
-              </v-card-actions>
-         </v-card>
-    </v-dialog> 
-
-    <!-- RENAME -->
-    <v-dialog v-if='watchlistLoaded' v-model="dialog_renameWatchlist" max-width="500px">
-        <v-card>
-          <v-card-title> 
-            <span class="headline">Rename Watchlist</span>
-          </v-card-title>
-
-          <v-card-text>
-            <v-container> 
-              <v-text-field v-model='edited_watchlistname' :rules="strRules" label="Watchlist Name" :hint="check_duplicate? 'Duplicate name exists' : ''" ></v-text-field>
-            </v-container>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="default" text @click="dialog_renameWatchlist=false">Cancel</v-btn>
-            <v-btn class="white--text" @click='renameWatchlist' color="blue" v-bind:disabled="edited_watchlistname.trim()==''||check_duplicate" >Save</v-btn>
-          </v-card-actions>  
-        </v-card>
-    </v-dialog> 
-    <!-- END OF EDIT WATCHLIST BUTTON -->  
-    
-    <v-spacer></v-spacer> 
-
-    <v-btn icon @click="asset_peopleSwitch='asset'">
-      <v-icon v-if="asset_peopleSwitch=='asset'">
-        mdi-currency-usd-circle-outline
-      </v-icon>
-      <v-icon v-else color=grey >
-        mdi-currency-usd-circle-outline
-      </v-icon>
-    </v-btn> 
-    <v-btn icon  @click="asset_peopleSwitch='people'">
-      <v-icon v-if="asset_peopleSwitch=='people'">
-        mdi-account-multiple
-      </v-icon>
-      <v-icon v-else color=grey >
-        mdi-account-multiple
-      </v-icon>
-    </v-btn>
-
-    <!--ADD MARKET-->
-    <v-dialog v-if='watchlistLoaded' v-model="addmarket_screen" fullscreen hide-overlay :retain-focus="false" transition="dialog-bottom-transition">
-      <template  v-slot:activator="{ on }">
-        <v-btn icon v-on="on">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </template>
-
-      <v-card>
-          <v-toolbar dark color="primary">
-              <v-btn icon dark @click="addmarket_screen = false">
-              <v-icon>mdi-close</v-icon>
-              </v-btn>
-              <v-toolbar-title>Add Markets</v-toolbar-title>
-              <v-spacer></v-spacer>
-          </v-toolbar>
-          <v-progress-linear
-            :active="isLoading"
-            :indeterminate="isLoading"
-            top
-            color="primary"
-          ></v-progress-linear>
-          <v-col>
-              <v-autocomplete
-                v-model="model"
-                spellcheck="false"
-                :search-input.sync="search"
-                hide-no-data
-                hide-selected
-                clearable
-                placeholder="Search markets"
-                prepend-icon="search"
-                return-object
-                dense
+          </v-list>
+        </v-menu>
+      
+        <v-menu v-else>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              color="white"
+              v-on="on"
+            >
+            <v-icon>
+                mdi-chevron-down
+            </v-icon>
+            <div class="text-capitalize">{{selected_watchlist}}</div> 
+            </v-btn>
+          </template>
+        </v-menu>
+      </v-col>
+      <!-- END OF watchlist select-->  
+  
+      <!-- EDIT WATCHLIST BUTTON --> 
+      
+        <v-bottom-sheet >
+          <template v-slot:activator="{ on }">
+            <v-btn small  v-if="(watchlistLoaded&&selected_watchlist!= 'My Watchlist')" icon v-on="on">
+                    <v-icon>
+                      mdi-playlist-edit
+                    </v-icon> 
+                  </v-btn>
+                  <v-btn v-else icon disabled>
+                  </v-btn>
+          </template>
+          <v-list class=pa-0>
+              <v-list-item class=py-5
+                v-for="(item, i) in watchlist_action"
+                :key="i"
+                @click="editwatchlist(item)"
               >
-              </v-autocomplete>
-              
-              <v-list>
-                <v-list-item v-for="(item,i) in items" :key=i @click="addsecurity(item.Code,item.Exchange)">
-                  <v-list-item-avatar tile v-if="item.LogoURL">
-                    <v-img :src="item.LogoURL"></v-img>
-                  </v-list-item-avatar>
-                  <v-list-item-avatar tile v-else color="teal">
-                    <span class="white--text title">{{getInitials(item.Name)}}</span>
-                  </v-list-item-avatar>
-                  <v-list>
-                      <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
-                      <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
-                      <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
-                  </v-list>
-                </v-list-item>
+              <v-list-item-title v-if="item=='Delete Watchlist'" class="text-center red--text">{{ item }}</v-list-item-title>
+              <v-list-item-title v-else class="text-center primary--text">{{ item }}</v-list-item-title>
+              </v-list-item>
+          </v-list>
+        </v-bottom-sheet>
+
+      <!-- DELETE -->
+      <v-dialog v-if="(watchlistLoaded&&selected_watchlist!= 'My Watchlist')" v-model="dialog_deleteWatchlist" max-width="500px">
+          <v-card>
+                <v-card-title> 
+                  <span class="headline">Confirm Deletion</span>
+                </v-card-title>
+                <v-card-text>
+                  <span>Delete watchlist: {{ selected_watchlist }}</span>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                    <v-btn color="default" text @click="close_dialog_deleteWatchlist">Cancel</v-btn>
+                    <v-btn color="error" @click="deleteWatchlist">Confirm </v-btn>
+                </v-card-actions>
+          </v-card>
+      </v-dialog> 
+
+      <!-- RENAME -->
+      <v-dialog v-if="(watchlistLoaded&&selected_watchlist!= 'My Watchlist')" v-model="dialog_renameWatchlist" max-width="500px">
+          <v-card>
+            <v-card-title> 
+              <span class="headline">Rename Watchlist</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container> 
+                <v-text-field v-model='edited_watchlistname' :rules="strRules" label="Watchlist Name" :hint="check_duplicate? 'Duplicate name exists' : ''" ></v-text-field>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="default" text @click="dialog_renameWatchlist=false">Cancel</v-btn>
+              <v-btn class="white--text" @click='renameWatchlist' color="#00E676" v-bind:disabled="edited_watchlistname.trim()==''||check_duplicate" >Save</v-btn>
+            </v-card-actions>  
+          </v-card>
+      </v-dialog> 
+      <!-- END OF EDIT WATCHLIST BUTTON -->  
+      <v-spacer/>
+        <v-btn icon @click="asset_peopleSwitch='asset'" small >
+          <v-icon v-if="asset_peopleSwitch=='asset'" color="#00E676">
+            mdi-currency-usd-circle-outline
+          </v-icon>
+          <v-icon v-else color=#E0E0E0  >
+            mdi-currency-usd-circle-outline
+          </v-icon>
+        </v-btn> 
+        
+        <v-btn icon  @click="asset_peopleSwitch='people'" small > 
+          <v-icon v-if="asset_peopleSwitch=='people'" color="#00E676">
+            mdi-account-multiple
+          </v-icon>
+          <v-icon v-else color=#E0E0E0>
+            mdi-account-multiple
+          </v-icon>
+        </v-btn>
+
+        <v-btn icon small  @click="searchBtn">
+          <v-icon >mdi-plus</v-icon>
+        </v-btn>
+
+    </v-row>
+    
+    <!--ADD MARKET-->
+    <v-scroll-x-reverse-transition hide-on-leave>
+      <v-row v-show="searchExpand" class=pa-2>
+        <v-autocomplete
+            autofocus
+            ref="autocomplete"
+            class="pt-3"
+            spellcheck="false"
+            v-model="model"
+            :items="items"
+            :loading="isLoading"
+            :search-input.sync="search"
+            placeholder="Search market to add"
+            no-filter
+            hide-no-data
+            hide-selected
+            clearable
+            prepend-icon="mdi-plus"
+            return-object
+            dense
+            @blur="searchExpand = false"
+            @input="addsecurity()"
+        >
+           <template v-slot:item="{ item }" >
+               <v-list-item-avatar tile v-if="item.LogoURL">
+                <v-img :src="item.LogoURL"></v-img>
+               </v-list-item-avatar>
+              <v-list-item-avatar tile v-else color="teal">
+                <span class="white--text title">{{getInitials(item.Name)}}</span>
+               </v-list-item-avatar>
+               <v-list>
+                  <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
+                  <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
               </v-list>
-            </v-col>
-      </v-card>
-    </v-dialog>
+            </template>
+        </v-autocomplete>
+      </v-row>
+    </v-scroll-x-reverse-transition>
     <!--END OF ADD MARKET-->
+
   </v-app-bar>
 
   <v-progress-linear
-          :active="!watchlistLoaded"
-          :indeterminate="!watchlistLoaded"
-          top
-          color="primary"
+      :active="!watchlistLoaded"
+      :indeterminate="!watchlistLoaded"
+      top
+      color="#00C853"
   ></v-progress-linear>
-
-  <!-- MARKET PEOPLE SWITCH -->
-  <!-- <v-container class="grey lighten-5">
-      <v-row
-        v-touch="{
-          left: () => swipe('Left'),
-          right: () => swipe('Right'),
-        }"
-        align="center"
-        justify="center"
-        no-gutters
-        class="subtitle-2 font-weight-medium"
-        >
-        
-        <v-col v-if="asset_peopleSwitch!=='people'" cols=5 class="text-right" >
-          Assets
-        </v-col>
-        <v-col v-else cols=5 class="text-right grey--text" @click="asset_peopleSwitch='asset'">
-          Assets
-        </v-col>
-        <v-col cols=1></v-col>
-        <v-col v-if="asset_peopleSwitch=='people'" cols=5 class="text-left" >
-          People
-        </v-col>
-        <v-col v-else cols=5 class="text-left grey--text" @click="asset_peopleSwitch='people'">
-          People
-        </v-col>
-        
-      </v-row>
-  </v-container> -->
 
   <!-- ASSET INFO LIST -->
 
@@ -296,8 +262,8 @@
           <!-- CHANGE -->
           <v-col cols=2 class="pl-1" @click="goToMarkets(item)"> 
             <v-row justify=start>
-            <span v-if="item.change < 0" class="red--text font-weight-bold">{{item.change_p.toFixed(2)}}%</span>
-            <span v-else class="green--text font-weight-bold">+{{item.change_p.toFixed(2)}}%</span>
+            <span v-if="item.change < 0" class="red--text font-weight-bold">{{parseFloat(item.change_p).toFixed(2)}}%</span>
+            <span v-else class="green--text font-weight-bold">+{{parseFloat(item.change_p).toFixed(2)}}%</span>
             </v-row>
             <v-row justify=center>
             <span v-if="item.change < 0" class="red--text caption ">{{item.change.toFixed(2)}}</span>
@@ -329,23 +295,6 @@
             <span class="caption">{{item.last_update}}</span>
             </v-row>
           </v-col>
-
-
-          <!-- SELL/BUY COLUMN -->
-            <!-- <v-col v-if="simulated_change" cols=2.5 @click="sell(item)" class="px-0 mt-2">
-              <v-card class="green white--text text-center pa-1" >{{item.low.toFixed(2)}}</v-card>
-            </v-col>
-            <v-col v-else dense cols=2.5  @click="sell(item)" class="px-0 mt-2">
-              <v-card class="grey lighten-2 text-center pa-1" >{{item.low.toFixed(2)}}</v-card>
-            </v-col>
-           
-            <v-col v-if="simulated_change" cols=2.5 @click="buy(item)" class="px-1 mt-2">
-              <v-card class="red white--text text-center pa-1" >{{item.high.toFixed(2)}}</v-card>
-            </v-col>
-            <v-col v-else dense cols=2.5  @click="buy(item)" class="px-1 mt-2">
-              <v-card class="grey lighten-2 text-center pa-1" >{{item.high.toFixed(2)}}</v-card>
-            </v-col> -->
-          <!-- END OF SELL/BUY COLUMN -->
 
           <!-- TRADE PAGE -->
           <v-dialog v-model="sellbuy_screen"  hide-overlay fullscreen persistent :retain-focus="false" transition="dialog-bottom-transition" >  
@@ -565,54 +514,8 @@
     </template>
   <!-- END OF INFO LIST -->
   
-
-  <!-- PEOPLE LIST-->
-  <!-- <v-card outlined color=transparent border-color=white >
-    <v-container class="grey lighten-5">
-      <v-row
-        align="center"
-        justify="center"
-        no-gutters
-        class="subtitle-2 font-weight-medium"
-      >
-        <v-col cols=6>  
-          PEOPLE 
-        </v-col>
-        <v-col  cols=3 class="text-center">
-          SCORE
-        </v-col>
-        <v-col  cols=3 class="text-center">
-          CHANGE
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card> -->
-  <!--END OF PEOPLE LIST-->
-    
-  <!--DISCOVER PEOPLE BUTTON-->
-  <!-- <template>
-    <v-card 
-      class="pa-3" color=transparent >
-      <v-row align="center" 
-        justify="center">
-        <v-col cols=3 class="text-right"><v-icon  color='blue' >mdi-account-multiple-plus</v-icon>  </v-col>
-        <v-col cols=6 class="text-left">DISCOVER PEOPLE</v-col>
-      </v-row>
-    </v-card>  
-  </template> -->
-  <!--END OF DISCOVER PEOPLE BUTTON -->
-
   <!-- ADD WATCHLIST BUTTON -->
   <v-dialog v-model="dialog_addWatchlist" max-width="500px">
-      <!-- <template v-slot:activator="{ on }">
-        <v-btn v-if="$vuetify.breakpoint.xsOnly || $vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom left fab dark color="primary" >
-          <v-icon dark>mdi-playlist-plus</v-icon>
-        </v-btn>
-        <v-btn v-if="!$vuetify.breakpoint.xsOnly && !$vuetify.breakpoint.smOnly" class="mx-2" v-on="on"  fixed bottom right fab dark color="primary" >
-          <v-icon dark>mdi-playlist-plus</v-icon>
-        </v-btn>
-      </template> -->
-
       <v-card>
         <v-card-title> 
           <span class="headline">New Watchlist</span>
@@ -632,6 +535,7 @@
       </v-card>
   </v-dialog>
   <!-- END OF ADD WATCHLIST BUTTON -->
+
   </v-card>
 
   <v-snackbar
@@ -662,6 +566,7 @@ export default {
   },
   data: function() {
     return{
+      searchExpand: false,
       asset_peopleSwitch:'asset',
       new_watchlistname:'',
       edited_watchlistname:'',
@@ -745,6 +650,11 @@ export default {
   },
 
   methods:{
+    searchBtn(){
+      this.$refs.autocomplete.focus()
+      this.searchExpand = true
+    },
+
     drawer(){
       this.$emit('drawer')
     },
@@ -839,12 +749,13 @@ export default {
       this.fetchWatchlist_func()
     },
 
-    addsecurity(code,exchange){
+    addsecurity(){
       var action = 'add'
       var getdata =  ''
       let hostname = window.location.hostname
-      let security = code+'.'+exchange
+      let security = this.model.Code+'.'+this.model.Exchange
       let addsecurityAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${security}/${action}`
+      this.$refs.autocomplete.blur()
       try
       {
         fetch(addsecurityAPI,{method: "get"})
@@ -1044,33 +955,7 @@ export default {
         console.log(error)
       }
     },
-    
-    // fetchIntraday (security) {
-    //   this.loaded = false
-    //   let hostname = window.location.hostname
-    //   let API = `http://${hostname}:5000/intra/${security}`
-    //   try{
-    //     fetch(API)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //       this.renderChartD(data)
-    //       this.loaded = true
-    //     })
-    //   }
-    //   catch(e){
-    //     console.log(e)
-    //   }
-    // },
-   
-    // renderChartD (data){
-    //   this.dayData = [['Date', '']]
-    //   for(let i in data){
-    //     let moment = require('moment')
-    //     let time = moment(data[i].datetime, "HH:mm:ss").format("hh:mm A")
-    //     this.dayData.push([time, data[i].close])
-    //   }
-    // },
-    
+
     sellbuy_change(){
       this.buysell_status==='buy'? this.buysell_status='sell':this.buysell_status='buy'
     },
@@ -1112,9 +997,11 @@ export default {
     },
 
     goToMarkets(item){
+  
       var model_code = item.code.split('.')[0]
       var model_exchange = item.code.split('.')[1] 
       this.$router.push({name: 'Markets', params: {code: model_code, exchange: model_exchange}})
+ 
     },
 
     fetchData() {
@@ -1226,9 +1113,9 @@ export default {
   border-bottom: 1px solid lightgray;
 }
 
-.swipeout-list-item:last-of-type {
-  border-bottom: none;
-}
+/* .swipeout-list-item:last-of-type {
+  
+} */
 
 .swipeout-list-item:first-of-type {
   border-top: none;

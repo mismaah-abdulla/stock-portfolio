@@ -3,17 +3,17 @@
     <v-card outlined>
       <v-card-title>Financial Summary</v-card-title>
         <v-switch class="pl-5 py-0 my-0" v-model="quarterly" label="Quarterly"></v-switch>
-        <v-tabs slider-size="1" height="30"
+        <v-tabs height="30"
         v-model="tab"
         background-color="transparent"
         color="basil"
-        >
-        <v-tab dense 
+        center-active
+        right
+        grow>
+        <v-tab
           v-for="item in tabHeaders"
           :key="item"
-          class="caption font-weight-bold"
-          fixed
-        >
+          class="caption font-weight-bold">
           {{ item }}
         </v-tab>
         </v-tabs>
@@ -37,6 +37,15 @@ export default {
     tabHeaders: ["Income Statement", "Balance Sheet", "Cash Flow Statement"],
     tab: null,
     quarterly: false,
-  })
+  }),
+  props: {
+    financials: Object
+  }
 }
 </script>
+
+<style>
+.v-slide-group__prev {
+display: none !important;
+}
+</style>

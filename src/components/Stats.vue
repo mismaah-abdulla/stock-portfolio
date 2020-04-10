@@ -18,7 +18,7 @@
                 <v-list-item v-for="item in items1" :key="item.name">
                   <v-list-item-content>
                     <span class="body-2 font-weight-medium">{{ item.name }}</span>
-                    <span class="body-2"> {{ item.data }}</span>
+                    <span class="body-2 text--secondary"> {{ item.data }}</span>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -28,7 +28,7 @@
                 <v-list-item v-for="item in items2" :key="item.name">
                   <v-list-item-content>
                     <span class="body-2 font-weight-medium">{{ item.name }}</span>
-                    <span class="body-2"> {{ item.data }}</span>
+                    <span class="body-2 text--secondary"> {{ item.data }}</span>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -37,7 +37,7 @@
         </v-card>
       </v-col>
       <v-col md="8" v-if="$vuetify.breakpoint.mdAndUp">
-        <Financials/>
+        <Financials :financials="financials"/>
       </v-col>
     </v-row>
       <v-divider v-if="loaded"></v-divider>
@@ -54,7 +54,7 @@
         </v-col>
       </v-row>
     <v-row v-if="loaded && $vuetify.breakpoint.smAndDown" class="mt-5">
-      <Financials/>
+      <Financials :financials="financials"/>
     </v-row>
   </v-container>
 </template>
@@ -72,11 +72,12 @@ export default {
     data: () => ({
       loaded: false,
       stats: null,
+      financials: null,
       items1: {
         prevClose: {name: "Prev Close", data: null},
         dayRange: {name: "Day's Range", data: null},
         weekRange: {name: "52 Week Range", data: null},
-        avgVol: {name: "Average Volume (3m)", data: null},
+        eps: {name: "EPS", data: null},
         yearReturn: {name: "1-Year Return", data: null},
         beta: {name: "Beta", data: null}
       },
@@ -84,7 +85,7 @@ export default {
         marketCap: {name: "Market Cap", data: null},
         peRatio: {name: "P/E Ratio", data: null},
         revenue: {name: "Revenue", data: null},
-        eps: {name: "EPS", data: null},
+        avgVol: {name: "Average Volume (3m)", data: null},
         dividend: {name: "Dividend (Yield)", data: null},
       },
       items3: {
@@ -103,6 +104,7 @@ export default {
           .then(response =>{return response.json()})
           .then(data =>{
             this.assignStats(data)
+            this.financials = data.Financials
             this.loaded = true
           })
           .catch(e => {
@@ -118,13 +120,13 @@ export default {
         this.items1.prevClose.data = data.PrevClose ? data.PrevClose : "N/A"
         this.items1.dayRange.data = data.DayRange ? data.DayRange : "N/A"
         this.items1.weekRange.data =  data.WeekRange52 ? data.WeekRange52 : "N/A"
-        this.items1.avgVol.data = this.formatNumber(data.AvgVolume)
+        this.items1.eps.data = data.EPS ? data.EPS : "N/A"
         this.items1.yearReturn.data = data.YearReturn ? data.YearReturn : "N/A"
         this.items1.beta.data = data.Beta ? data.Beta : "N/A"
         this.items2.marketCap.data = this.formatNumber(data.MarketCap)
         this.items2.peRatio.data = data.PERatio ? data.PERatio : "N/A"
         this.items2.revenue.data = this.formatNumber(data.Revenue)
-        this.items2.eps.data = data.EPS ? data.EPS : "N/A"
+        this.items2.avgVol.data = this.formatNumber(data.AvgVolume)
         this.items2.dividend.data = data.Dividend ? data.Dividend : "N/A"
         this.items3.sector.data = data.Sector ? data.Sector : "N/A"
         this.items3.industry.data = data.Industry ? data.Industry : "N/A"
@@ -150,6 +152,5 @@ export default {
     mounted () {
       this.fetchStats()
     }
-    
 }
 </script>

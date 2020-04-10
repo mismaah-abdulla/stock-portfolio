@@ -18,7 +18,7 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
         <v-tab-item>
-          <v-row justify="center">
+          <v-row justify="center" no-gutters>
             <v-col cols="6">
               <v-simple-table>
                 <template v-slot:default>

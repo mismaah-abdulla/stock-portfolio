@@ -17,6 +17,7 @@
     <v-tabs-items v-model="tab" touchless>
       <v-tab-item>
         <ChartYD v-if="stock" :key="stock.Code" :stock="stock" :tab="tab"/>
+        <StockMap/>
       </v-tab-item>
       <v-tab-item>
         <Stats v-if="stock"  :key="stock.Code" :stock="stock"></Stats>
@@ -32,13 +33,15 @@
 import ChartYD from '../components/ChartYD'
 import CompanyDetails from '../components/CompanyDetails'
 import Stats from '../components/Stats'
+import StockMap from '../components/StockMap'
 export default {
   name: "Search",
   components: {
     // Chart,
     ChartYD,
     CompanyDetails,
-    Stats
+    Stats,
+    StockMap
   },
   data: () => ({
     stock: null,

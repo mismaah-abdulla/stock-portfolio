@@ -73,11 +73,18 @@
         />
       </v-col>
       <v-col cols="3">
-        <v-row justify="start"  class="pb-0 mb-0 pt-5 mt-5">
+        <v-row justify="start" class="pt-4">
+          <v-btn class="disable-events" x-small outlined color="green" height="30" v-if="marketOpen">Market<br/>Open</v-btn>
+          <v-btn class="disable-events" x-small outlined color="red" height="30" v-else>Market<br/>Closed</v-btn>
+        </v-row>
+        <v-row justify="start"  class="pb-0 mb-0">
           <span class="headline">{{fetchedData.close.toFixed(2)}}</span>
         </v-row>
         <v-row justify="start" class="py-0 my-0">
           <span class="caption font-weight-light">Current price ({{fetchedData.currency}})</span>
+        </v-row>
+        <v-row v-if="!marketOpen" justify="start" class="py-0 my-0">
+          <span class="caption font-weight-light">Close date: {{intraDate}}</span>
         </v-row>
         <v-row justify="start" class="py-0 my-0">
           <span class="caption font-weight-light"><v-icon>arrow_drop_up</v-icon>+ 0.15 + 1.00%</span>
@@ -89,6 +96,9 @@
         <v-btn x-small outlined>Year</v-btn>
         <v-btn x-small outlined>Day</v-btn>
       </v-btn-toggle>
+    </v-row>
+    <v-row justify="center" v-if="year==1">
+      <span>{{intraDate}}</span>
     </v-row>
   </div>
 </template>
@@ -115,6 +125,8 @@ export default {
     dayData: null,
     fetchedData: null,
     fetchedDay: null,
+    intraDate: null,
+    marketOpen: null,
     options: {
         legend: 'none',
         vAxis: {
@@ -154,7 +166,9 @@ export default {
         .then(response => response.json())
         .then(data => {
           this.fetchedDay = data
-          this.renderChartD(data)
+          this.intraDate = data.date
+          this.marketOpen = data.marketOpen
+          this.renderChartD(data.intraday)
           this.loadedD = true
         })
       }
@@ -221,5 +235,8 @@ export default {
 .slide-enter{
   transform: translateY(-30px);
   /* opacity: 0; */
+}
+.disable-events {
+  pointer-events: none
 }
 </style>

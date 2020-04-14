@@ -18,7 +18,10 @@
             <v-icon color="#00E676">
               mdi-chevron-down
             </v-icon>
-            <div class="text-capitalize">{{selected_watchlist}}</div>
+
+            <div v-if="selected_watchlist.length<13" class="text-capitalize">{{selected_watchlist}}</div>
+            <div v-else class="text-capitalize">{{selected_watchlist.substring(0,12)+".."}}</div>
+            
             </v-btn>
           </template>
           
@@ -26,16 +29,24 @@
             <v-list-item
               v-for="(item, i) in listofWatchlist"
               :key="i"
-              @click="watchlist_clicked(item)"
             >
-            <v-list-item-title color=primary>{{ item }}</v-list-item-title>
+              <v-list-item-title @click="watchlist_clicked(item)" color=primary>{{ item }}</v-list-item-title>
+            
+              <!-- <v-btn v-if="item!='My Watchlist'" icon @click="rename_watchlist(item)"> -->
+              <v-icon class=pl-6 v-if="item!='My Watchlist'" color="grey lighten-1" small @click="rename_watchlist(item)">mdi-pencil</v-icon>
+              <!-- </v-btn> -->
+
+              <!-- <v-btn v-if="item!='My Watchlist'" icon @click="delete_watchlist(item)"> -->
+              <v-icon class="pl-3 pr-0" v-if="item!='My Watchlist'" color="grey lighten-1" small @click="delete_watchlist(item)">mdi-delete</v-icon>
+              <!-- </v-btn> -->
+  
             </v-list-item>
 
             <v-list-item class="tile pa-0" color="blue" @click="dialog_addWatchlist=true">
               <v-row justify=center>
-                <v-icon color="#00E676">
-                  mdi-playlist-plus
-                </v-icon>
+                <v-btn icon>
+                  <v-icon color="#00E676">mdi-playlist-plus</v-icon>
+                </v-btn>
               </v-row>
             </v-list-item>
 
@@ -51,7 +62,8 @@
             <v-icon>
                 mdi-chevron-down
             </v-icon>
-            <div class="text-capitalize">{{selected_watchlist}}</div> 
+            <div v-if="selected_watchlist.length<13" class="text-capitalize">{{selected_watchlist}}</div>
+            <div v-else class="text-capitalize">{{selected_watchlist.substring(0,12)+".."}}</div>
             </v-btn>
           </template>
         </v-menu>
@@ -60,15 +72,22 @@
   
       <!-- EDIT WATCHLIST BUTTON --> 
       
-        <v-bottom-sheet >
+        <!-- <v-bottom-sheet >
           <template v-slot:activator="{ on }">
             <v-btn small  v-if="(watchlistLoaded&&selected_watchlist!= 'My Watchlist')" icon v-on="on">
                     <v-icon>
                       mdi-playlist-edit
                     </v-icon> 
-                  </v-btn>
-                  <v-btn v-else icon disabled>
-                  </v-btn>
+            </v-btn>
+
+            <v-btn small  v-else-if="(!watchlistLoaded&&selected_watchlist!= 'My Watchlist')" icon color=#E0E0E0>
+                    <v-icon>
+                      mdi-playlist-edit
+                    </v-icon> 
+            </v-btn>
+
+            <v-btn v-else icon disabled/>
+                 
           </template>
           <v-list class=pa-0>
               <v-list-item class=py-5
@@ -80,16 +99,16 @@
               <v-list-item-title v-else class="text-center primary--text">{{ item }}</v-list-item-title>
               </v-list-item>
           </v-list>
-        </v-bottom-sheet>
+        </v-bottom-sheet> -->
 
       <!-- DELETE -->
-      <v-dialog v-if="(watchlistLoaded&&selected_watchlist!= 'My Watchlist')" v-model="dialog_deleteWatchlist" max-width="500px">
+      <v-dialog v-if="(watchlistLoaded)" v-model="dialog_deleteWatchlist" max-width="500px">
           <v-card>
                 <v-card-title> 
                   <span class="headline">Confirm Deletion</span>
                 </v-card-title>
                 <v-card-text>
-                  <span>Delete watchlist: {{ selected_watchlist }}</span>
+                  <span>Delete watchlist: {{ to_delete_watchlist }}</span>
                 </v-card-text>
 
                 <v-card-actions>
@@ -101,7 +120,7 @@
       </v-dialog> 
 
       <!-- RENAME -->
-      <v-dialog v-if="(watchlistLoaded&&selected_watchlist!= 'My Watchlist')" v-model="dialog_renameWatchlist" max-width="500px">
+      <v-dialog v-if="(watchlistLoaded)" v-model="dialog_renameWatchlist" max-width="500px">
           <v-card>
             <v-card-title> 
               <span class="headline">Rename Watchlist</span>
@@ -140,7 +159,10 @@
           </v-icon>
         </v-btn>
 
-        <v-btn icon small  @click="searchBtn">
+        <v-btn v-if='watchlistLoaded' icon small  @click="searchBtn">
+          <v-icon >mdi-plus</v-icon>
+        </v-btn>
+        <v-btn v-else icon small color=#E0E0E0>
           <v-icon >mdi-plus</v-icon>
         </v-btn>
 
@@ -570,9 +592,11 @@ export default {
       asset_peopleSwitch:'asset',
       new_watchlistname:'',
       edited_watchlistname:'',
+      to_edit_watchlist:'',
       default_watchlist:"My Watchlist",
       selected_watchlist:'',        //Keep track if a watchlist is selected 
       dialog_deleteWatchlist:false,
+      to_delete_watchlist:"",
       dialog_renameWatchlist:false,
       todelete_security:'',todelete_security_display:'',
       dialog_deleteSecurity:false,
@@ -664,11 +688,24 @@ export default {
 
     editwatchlist(action){
       if(action=='Delete Watchlist'){
+        this.to_delete_watchlist=this.selected_watchlist
         this.dialog_deleteWatchlist=true
       }else{
+        this.to_edit_watchlist=this.selected_watchlist
         this.edited_watchlistname=this.selected_watchlist
         this.dialog_renameWatchlist=true
       }
+    },
+
+    delete_watchlist(watchlist){
+      this.to_delete_watchlist=watchlist
+      this.dialog_deleteWatchlist=true
+    },
+
+    rename_watchlist(watchlist){
+      this.to_edit_watchlist=watchlist
+      this.edited_watchlistname=watchlist
+      this.dialog_renameWatchlist=true
     },
 
     addWatchlist(){
@@ -693,13 +730,15 @@ export default {
       }
       this.selected_watchlist=this.new_watchlistname
       this.new_watchlistname=''
+      this.securitydetails=[]
       this.fetchWatchlistsymbol(this.selected_watchlist)
+      this.fetchWatchlist_func () 
       this.close_dialog_addWatchlist()
     },
 
     renameWatchlist(){
       let hostname = window.location.hostname
-      let renamewatchlistAPI = `http://${hostname}:5000/1001/watchlist/rename/${this.selected_watchlist}/${this.edited_watchlistname}`
+      let renamewatchlistAPI = `http://${hostname}:5000/1001/watchlist/rename/${this.to_edit_watchlist}/${this.edited_watchlistname}`
       try
       {
         fetch(renamewatchlistAPI,{method: "get"})
@@ -716,17 +755,19 @@ export default {
         this.assignNull()
         console.log(error)
       }
-      this.selected_watchlist=this.edited_watchlistname
-      this.edited_watchlistname=''
+      if(this.selected_watchlist==this.to_edit_watchlist){
+        this.selected_watchlist=this.edited_watchlistname
+        this.to_edit_watchlist=''
+        this.edited_watchlistname=''
+      }
       this.fetchWatchlist_func () 
-      this.fetchWatchlistsymbol(this.selected_watchlist)
       this.dialog_renameWatchlist=false
     },
 
     deleteWatchlist(){
       var action = 'delete'
       let hostname = window.location.hostname
-      let addwatchlistAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${action}`
+      let addwatchlistAPI = `http://${hostname}:5000/1001/watchlist/${this.to_delete_watchlist}/${action}`
       try
       {
         fetch(addwatchlistAPI,{method: "get"})
@@ -743,9 +784,13 @@ export default {
         this.assignNull()
         console.log(error)
       }
+
       this.dialog_deleteWatchlist=false
-      this.selected_watchlist=this.default_watchlist
-      this.fetchWatchlistsymbol (this.selected_watchlist)
+      if(this.selected_watchlist==this.to_delete_watchlist){
+        this.securitydetails=[]
+        this.selected_watchlist=this.default_watchlist
+        this.fetchWatchlistsymbol (this.selected_watchlist)
+      }
       this.fetchWatchlist_func()
     },
 
@@ -913,10 +958,11 @@ export default {
         .then(response =>{return response.json()})
         .then(data =>{
         this.securitydetails=[]
+
         for(var i=0;i<data.length;i++){
           this.fetchrealtime (data[i]) 
         }
-        //console.log(this.securitydetails) //Log security details
+        
         if(data.length==0){this.watchlistLoaded = true}
         })
         .catch(e => {
@@ -941,6 +987,24 @@ export default {
         .then(response =>{return response.json()})
         .then(data =>{
         this.watchlistLoaded = true
+
+        var now = new Date()
+        var ts=new Date(data.last_update * 1000)
+
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+        var month = months[ts.getMonth()]
+        var date = ts.getDate()
+        var hour = ts.getHours().toString().length == 1 ? '0' + ts.getHours() : ts.getHours()
+        var min = ts.getMinutes().toString().length == 1 ? '0' + ts.getMinutes() : ts.getMinutes()
+
+        var time
+        var todaydate = now.getDate()
+        if(data.status=="True")
+          date == todaydate ? time = hour + ':' + min : time = date + ' ' + month
+        else
+          time = date + ' ' + month
+        data.last_update=time
+        
         this.securitydetails.push(Object.assign({},data))
         return data
         })

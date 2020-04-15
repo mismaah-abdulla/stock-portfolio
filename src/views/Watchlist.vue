@@ -31,15 +31,8 @@
               :key="i"
             >
               <v-list-item-title @click="watchlist_clicked(item)" color=primary>{{ item }}</v-list-item-title>
-            
-              <!-- <v-btn v-if="item!='My Watchlist'" icon @click="rename_watchlist(item)"> -->
               <v-icon class=pl-6 v-if="item!='My Watchlist'" color="grey lighten-1" small @click="rename_watchlist(item)">mdi-pencil</v-icon>
-              <!-- </v-btn> -->
-
-              <!-- <v-btn v-if="item!='My Watchlist'" icon @click="delete_watchlist(item)"> -->
               <v-icon class="pl-3 pr-0" v-if="item!='My Watchlist'" color="grey lighten-1" small @click="delete_watchlist(item)">mdi-delete</v-icon>
-              <!-- </v-btn> -->
-  
             </v-list-item>
 
             <v-list-item class="tile pa-0" color="blue" @click="dialog_addWatchlist=true">
@@ -294,21 +287,13 @@
           </v-col>
 
           <!-- INTRADAY -->
-          <v-col cols=3 class=pl-1 @click="goToMarkets(item)">
-            <GChart v-if='item.change>=0'
-              type="AreaChart"
-              :data="item.Intra"
-              :options="options_positive"
-            />
-            <GChart v-else
-              type="AreaChart"
-              :data="item.Intra"
-              :options="options_negative"
-            />
+          <v-col cols=3 class="pt-3 py-0 ma-0 pa-0" @click="goToMarkets(item)">
+            <apexchart v-if='item.change>=0' height="25%" width="90" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
+            <apexchart v-else height="25%" width="90" type="area" :options="chartOptionsNegative" :series="item.series"></apexchart>
           </v-col>
 
           <!-- PRICE -->
-          <v-col cols=2 class="pr-3 pl-0" @click="buy(item)">
+          <v-col cols=2 class="pr-3 pl-3" @click="buy(item)">
             <v-row justify ="end">
             <span class="font-weight-bold">{{item.close.toFixed(2)}}</span>
             </v-row>
@@ -536,6 +521,7 @@
     </template>
   <!-- END OF INFO LIST -->
   
+
   <!-- ADD WATCHLIST BUTTON -->
   <v-dialog v-model="dialog_addWatchlist" max-width="500px">
       <v-card>
@@ -570,18 +556,15 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import VueScroller from 'vue-scroller'
-Vue.use(VueScroller)
-
 import { SwipeList } from 'vue-swipe-actions';
 import Touch from 'vuetify/es5/directives/touch'
 import 'vue-swipe-actions/dist/vue-swipe-actions.css';
-import { GChart } from 'vue-google-charts'
+import VueApexCharts from 'vue-apexcharts'
+
 export default {
   name: 'Watchlist',
   components: {
-			SwipeList, GChart
+      SwipeList, apexchart: VueApexCharts,
     },
   directives: {
     Touch
@@ -632,44 +615,126 @@ export default {
         v => !!v || 'This field is required',
       ],
 
-      // CHART
-      dayData: null,
-      options_positive:{
-        legend: 'none',
-        areaOpacity:'0.1',
-        chartArea: {
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0
-        },
-        colors: ['#00ff00'],
-        width:'100%',
-        height: 50,
-        vAxis: {
-          gridlines: {
-          color: 'transparent'
+      //Apex Chart
+      chartOptionsNegative: {
+          chart: {
+            sparkline: {
+              enabled: true
+            },
+            toolbar:{
+              show:false
+            },
+            zoom: {
+              enabled: false
+            },
+          },
+          xaxis: {
+            labels: {
+              show: false
+            }
+          },
+          yaxis: {
+            labels: {
+              show: false
+            }
+          },
+          dataLabels: {
+              enabled: false
+          },
+          fill: {
+            colors: ["#FF0000"],
+            type: 'gradient',
+            gradient: {
+              shadeIntensity: 0.9,
+              opacityFrom: 0.9,
+              opacityTo: 0.8,
+              stops: [0, 95, 100]  
+            }
+          },
+          grid: {
+            show: false,
+            padding: {
+              left: 0,
+              right: -4,
+              bottom:0,
+              top:0
+            }
+          },
+          dropShadow: {
+            enabled: false,
+          },
+          stroke: {
+              show: true,
+              curve: 'straight',
+              lineCap: 'butt',
+              colors:  ["#FF0000"],
+              width: 1,
+              dashArray: 0,      
+          },
+          tooltip: {
+            enabled: false,
           }
-        },
       },
-      options_negative:{
-        legend: 'none',
-        areaOpacity:'0.1',
-        chartArea: {
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0
-        },
-        colors: ['#FF0000'],
-        width:'100%',
-        height: 50,
-        vAxis: {
-          gridlines: {
-          color: 'transparent'
+      chartOptionsPositive: {
+          chart: {
+            sparkline: {
+              enabled: true
+            },
+            toolbar:{
+              show:false
+            },
+            zoom: {
+              enabled: false
+            },
+          },
+          xaxis: {
+            labels: {
+              show: false
+            }
+          },
+          yaxis: {
+            labels: {
+              show: false
+            }
+          },
+          dataLabels: {
+              enabled: false
+          },
+          fill: {
+            colors: ['#00ff00'],
+            type: 'gradient',
+            gradient: {
+              shadeIntensity: 0.9,
+              opacityFrom: 0.9,
+              opacityTo: 0.8,
+              stops: [0, 95, 100]  
+            }
+          },
+          grid: {
+            show: false,
+            padding: {
+              left: 0,
+              right: -4,
+              bottom:0,
+              top:0
+            }
+          },
+          dropShadow: {
+            enabled: false,
+          },
+          stroke: {
+              show: true,
+              curve: 'straight',
+              lineCap: 'butt',
+              colors:  ['#00ff00'],
+              width: 1,
+              dashArray: 0,      
+          },
+          tooltip: {
+            enabled: false,
           }
-        },
-      }
+      },
+
     }
   },
 
@@ -911,7 +976,6 @@ export default {
 
     fetchWatchlist_func () {
       this.watchlistLoaded = false
-      this.listofWatchlist=[]
       let hostname = window.location.hostname
       let watchlist_listAPI = `http://${hostname}:5000/1001/watchlist`
       try
@@ -1177,9 +1241,6 @@ export default {
   border-bottom: 1px solid lightgray;
 }
 
-/* .swipeout-list-item:last-of-type {
-  
-} */
 
 .swipeout-list-item:first-of-type {
   border-top: none;
@@ -1212,6 +1273,7 @@ export default {
   z-index:1;  
   height:40px;     
 }
+
 
 
 

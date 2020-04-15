@@ -286,10 +286,10 @@
             </v-row>
           </v-col>
 
-          <!-- INTRADAY -->
+          <!-- INTRADAY CHART-->
           <v-col cols=3 class="pt-3 py-0 ma-0 pa-0" @click="goToMarkets(item)">
-            <apexchart v-if='item.change>=0' height="25%" width="90" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
-            <apexchart v-else height="25%" width="90" type="area" :options="chartOptionsNegative" :series="item.series"></apexchart>
+            <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
+            <apexchart v-else height="25%" width="95%" type="area" :options="chartOptionsNegative" :series="item.series"></apexchart>
           </v-col>
 
           <!-- PRICE -->

@@ -221,10 +221,10 @@
       <v-col cols=3 class="text-left pl-1">  
           Symbol 
       </v-col>
-      <v-col cols=4 class="text-center pr-0" @click="temp_change">
+      <v-col cols=3 class="text-right pr-1" @click="temp_change">
           Change
       </v-col>
-      <v-col cols=4 class="text-right pr-1">
+      <v-col cols=5 class="text-left pl-7">
           Price
       </v-col>
     </v-row>   
@@ -258,12 +258,12 @@
 					<v-row>
 
           <v-col class="px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
-            <v-avatar tile  color="transparent">
+            <v-avatar color="transparent">
               <img :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 40px; height: 40px" />
             </v-avatar>
           </v-col>
           <v-col v-else class=px-0 cols=1 @click="goToMarkets(item)">
-            <v-avatar tile color="teal" size=40>
+            <v-avatar color="teal" size=40>
               <span class="white--text title">{{getInitials(item.name)}}</span>
             </v-avatar>
           </v-col>
@@ -286,45 +286,46 @@
             </v-row>
           </v-col>
 
-          <!-- INTRADAY CHART-->
-          <v-col cols=3 class="pt-3 py-0 ma-0 pa-0" @click="goToMarkets(item)">
-            <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
-            <apexchart v-else height="25%" width="95%" type="area" :options="chartOptionsNegative" :series="item.series"></apexchart>
-          </v-col>
-
           <!-- PRICE -->
           <v-col cols=2 class="pr-3 pl-3" @click="buy(item)">
-            <v-row justify ="end">
+            <v-row justify ="center">
             <span class="font-weight-bold">{{item.close.toFixed(2)}}</span>
             </v-row>
 
-            <v-row justify ="end">
+            <v-row justify ="center">
             <span class="caption">{{item.last_update}}</span>
             </v-row>
           </v-col>
 
+          <!-- INTRADAY CHART-->
+          <v-col cols=3 class="pt-3 pl-1 py-0 ma-0 pa-0" @click="goToMarkets(item)">
+           <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
+            <apexchart v-else height="25%" width="95%" type="area" :options="chartOptionsNegative" :series="item.series"></apexchart> 
+            <!-- <highcharts :series = "item.series" :options="chartOptions" ></highcharts> -->
+          </v-col>
+
           <!-- TRADE PAGE -->
           <v-dialog v-model="sellbuy_screen"  hide-overlay fullscreen persistent :retain-focus="false" transition="dialog-bottom-transition" >  
-            <v-card>       
-              <v-toolbar dark color="primary">
-                  <v-btn icon dark @click="close_dialog_sellbuy">
-                  <v-icon >mdi-close</v-icon>
+            <v-card style=" border-radius:0px;">       
+              <v-toolbar dark color="#f5f5f5">
+                  <v-btn icon color=black @click="close_dialog_sellbuy">
+                  <v-icon>mdi-close</v-icon>
                   </v-btn>
-                  <v-toolbar-title v-if="buysell_status==='sell'">Sell </v-toolbar-title>
-                  <v-toolbar-title v-else>Buy </v-toolbar-title>
+                  <v-toolbar-title class="teal--text title" v-if="buysell_status==='sell'">Sell </v-toolbar-title>
+                  <v-toolbar-title class="teal--text title" v-else>Buy </v-toolbar-title>
                   <v-spacer></v-spacer> 
-                  <v-toolbar-title class="grey--text" v-if="buysell_status==='sell'" @click='sellbuy_change'>Buy</v-toolbar-title>
-                  <v-toolbar-title class="grey--text" v-else @click='sellbuy_change'>Sell </v-toolbar-title>
+                  <v-toolbar-title class="grey--text text--lighten-2" v-if="buysell_status==='sell'" @click='sellbuy_change'>Buy</v-toolbar-title>
+                  <v-toolbar-title class="grey--text text--lighten-2" v-else @click='sellbuy_change'>Sell </v-toolbar-title>
               </v-toolbar> 
-              <v-card>
+              <v-card style=" border-radius:0px;">
                 <v-container>
                     <v-row no-gutters>
                       <v-col cols=2 v-if="selected_security.logo"> 
                         <img :src="('https://eodhistoricaldata.com'+selected_security.logo)" style="width: 50px; height: 50px" />
                       </v-col>
                       <v-col cols=2 v-else>
-                        <v-avatar first-list-item color="teal">
-                          <span class="white--text title">{{getInitials(item.name)}}</span>
+                        <v-avatar color="teal" size=50>
+                          <span class="white--text title">{{getInitials(selected_security.name)}}</span>
                         </v-avatar>
                       </v-col>
 
@@ -335,9 +336,9 @@
                           <span class="font-weight-black">{{selected_security.display_code}}</span>
                         </v-row>
                         <v-row no-gutters > 
-                          <v-col cols=4><h2 class="font-weight-black">{{selected_security.close}} </h2></v-col>
+                          <v-col cols=5><h2 class="font-weight-black">{{selected_security.close}} </h2></v-col>
                           <v-col class=pt-2><span v-if="selected_security.change_p < 0" class="red--text"> {{selected_security.change}} ({{selected_security.change_p}}%)</span>
-                          <span v-else class="green--text">{{selected_security.change}} ({{selected_security.change_p}}%)</span></v-col>
+                          <span v-else class="green--text">+{{selected_security.change}} (+{{selected_security.change_p}}%)</span></v-col>
                         </v-row>
                       </v-col>
                     </v-row>
@@ -350,7 +351,7 @@
                 <v-col cols=8 v-else class="font-weight-black">Rate</v-col>
 
                 <v-col>
-                  <v-icon color=blue @click="change_rate_unit">mdi-swap-horizontal</v-icon>
+                  <v-icon color=#00E676 @click="change_rate_unit">mdi-swap-horizontal</v-icon>
                   <span v-if="selected_rate==='at_market'" class="font-weight-black" @click="change_rate_unit">Rate</span>
                   <span v-else class="font-weight-black" @click="change_rate_unit">Market</span>
                 </v-col>
@@ -387,7 +388,7 @@
                 <v-col cols=8 v-else class="font-weight-black">Units</v-col>
 
                 <v-col>
-                  <v-icon color=blue @click="change_unit">mdi-swap-horizontal</v-icon>
+                  <v-icon color=#00E676 @click="change_unit">mdi-swap-horizontal</v-icon>
                   <span v-if="selected_unit==='amount'" class="font-weight-black" @click="change_unit">Units</span>
                   <span v-else class="font-weight-black" @click="change_unit">Amount</span>
                 </v-col>
@@ -410,7 +411,7 @@
               <!-- TABS -->
               <v-card>
                 <v-tabs flat background-color="transparent" grow mobile-break-point="0"
-                  color="blue" center-active centered height="80" >
+                  color="#00E676" center-active centered height="80" >
                   <v-tab v-if='stoploss<0'>$ {{stoploss}} <br> Stop<br>Loss<br></v-tab>
                   <v-tab v-else>$ 0 <br> Stop<br>Loss<br></v-tab>
 
@@ -425,7 +426,7 @@
                             <v-col cols=8 v-if="selected_unit_stoploss==='amount'" class="font-weight-black">Amount</v-col>
                             <v-col cols=8 v-else class="font-weight-black">Rate</v-col>
                             <v-col>
-                              <v-icon color=blue @click="change_unit_stoploss">mdi-swap-horizontal</v-icon>
+                              <v-icon color=#00E676 @click="change_unit_stoploss">mdi-swap-horizontal</v-icon>
                               <span v-if="selected_unit_stoploss==='amount'" class="font-weight-black" @click="change_unit_stoploss">Rate</span>
                               <span v-else class="font-weight-black" @click="change_unit_stoploss">Amount</span>
                             </v-col>
@@ -480,9 +481,9 @@
               </v-card>
               <!-- END OF TABS -->
 
-              <v-card>  
-                <v-btn x-large block color="blue" dark >Set Order</v-btn>
-              </v-card>
+              <v-row class="px-3 pt-3">  
+                <v-btn x-large block color="#00E676" dark >Set Order</v-btn>
+              </v-row>
             </v-col>
             </v-card>
           </v-dialog>
@@ -538,12 +539,12 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="default" text @click="close_dialog_addWatchlist">Cancel</v-btn>
-          <v-btn class="white--text" @click='addWatchlist' color="blue" v-bind:disabled="new_watchlistname.trim()==''||check_duplicate" >Save</v-btn>
+          <v-btn class="white--text" @click='addWatchlist' color="#00E676" v-bind:disabled="new_watchlistname.trim()==''||check_duplicate" >Save</v-btn>
         </v-card-actions>  
       </v-card>
   </v-dialog>
   <!-- END OF ADD WATCHLIST BUTTON -->
-
+  <!-- <v-col cols=3><highcharts :options="chartOptions" ></highcharts></v-col> -->
   </v-card>
 
   <v-snackbar
@@ -560,11 +561,12 @@ import { SwipeList } from 'vue-swipe-actions';
 import Touch from 'vuetify/es5/directives/touch'
 import 'vue-swipe-actions/dist/vue-swipe-actions.css';
 import VueApexCharts from 'vue-apexcharts'
+//import {Chart} from 'highcharts-vue'
 
 export default {
   name: 'Watchlist',
   components: {
-      SwipeList, apexchart: VueApexCharts,
+      SwipeList,apexchart: VueApexCharts  //highcharts:Chart
     },
   directives: {
     Touch
@@ -615,6 +617,45 @@ export default {
         v => !!v || 'This field is required',
       ],
 
+      // //Highcharts
+      // chartOptions: {
+      //   title: { text: '' },
+      //   chart: {
+      //     type: 'area',
+      //     height: "70%",
+      //   },
+      //   xAxis: { visible: false },
+      //   yAxis: { visible: false },
+      //   legend: { enabled: false},
+      //   credits: { enabled: false },
+      //   tooltip: { enabled: false },
+
+      //   series: [{
+      //     lineWidth: 1,
+      //     lineColor: '#FF0000',
+      //     marker: { enabled: false},
+      //     states: {
+      //       hover: {
+      //         enabled: false
+      //       }
+      //     },
+      //     color: {
+      //           linearGradient: {
+      //             x1: 0,
+      //             x2: 0,
+      //             y1: 0,
+      //             y2: 1
+      //           },
+      //           stops: [
+      //               [0, '#FF0000'],
+      //               [1, '#F8F8FF']
+      //           ]
+      //     },
+      //     data: [5, 3, 4, 2, 4, 4, 5, 5]
+      //   }]
+      // },
+
+
       //Apex Chart
       chartOptionsNegative: {
           chart: {
@@ -643,13 +684,13 @@ export default {
           },
           fill: {
             colors: ["#FF0000"],
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 0.9,
-              opacityFrom: 0.9,
-              opacityTo: 0.8,
-              stops: [0, 95, 100]  
-            }
+            // type: 'gradient',
+            // gradient: {
+            //   shadeIntensity: 0.9,
+            //   opacityFrom: 0.9,
+            //   opacityTo: 0.8,
+            //   stops: [0, 95, 100]  
+            //}
           },
           grid: {
             show: false,
@@ -702,13 +743,13 @@ export default {
           },
           fill: {
             colors: ['#00ff00'],
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 0.9,
-              opacityFrom: 0.9,
-              opacityTo: 0.8,
-              stops: [0, 95, 100]  
-            }
+            // type: 'gradient',
+            // gradient: {
+            //   shadeIntensity: 0.9,
+            //   opacityFrom: 0.9,
+            //   opacityTo: 0,
+            //   stops: [0, 95, 100]  
+            //}
           },
           grid: {
             show: false,
@@ -793,11 +834,11 @@ export default {
         this.assignNull()
         console.log(error)
       }
+      this.listofWatchlist.push(this.edited_watchlistname)
       this.selected_watchlist=this.new_watchlistname
       this.new_watchlistname=''
       this.securitydetails=[]
-      this.fetchWatchlistsymbol(this.selected_watchlist)
-      this.fetchWatchlist_func () 
+      
       this.close_dialog_addWatchlist()
     },
 
@@ -820,12 +861,19 @@ export default {
         this.assignNull()
         console.log(error)
       }
+
+      for(var i=0;i<this.listofWatchlist.length;i++){
+        if(this.listofWatchlist[i]==this.to_edit_watchlist){
+          this.listofWatchlist[i]=this.edited_watchlistname
+          break;
+        }
+      }
       if(this.selected_watchlist==this.to_edit_watchlist){
         this.selected_watchlist=this.edited_watchlistname
         this.to_edit_watchlist=''
         this.edited_watchlistname=''
       }
-      this.fetchWatchlist_func () 
+      
       this.dialog_renameWatchlist=false
     },
 
@@ -849,14 +897,18 @@ export default {
         this.assignNull()
         console.log(error)
       }
-
-      this.dialog_deleteWatchlist=false
+      for(var i=0;i<this.listofWatchlist.length;i++){
+        if(this.listofWatchlist[i]==this.to_delete_watchlist){
+          this.listofWatchlist.splice(i,1)
+          break;
+        }
+      }
       if(this.selected_watchlist==this.to_delete_watchlist){
         this.securitydetails=[]
         this.selected_watchlist=this.default_watchlist
         this.fetchWatchlistsymbol (this.selected_watchlist)
       }
-      this.fetchWatchlist_func()
+      this.dialog_deleteWatchlist=false
     },
 
     addsecurity(){
@@ -1068,7 +1120,6 @@ export default {
         else
           time = date + ' ' + month
         data.last_update=time
-        
         this.securitydetails.push(Object.assign({},data))
         return data
         })
@@ -1170,10 +1221,12 @@ export default {
     },
 
     getInitials(name){
-      let names = name.split(' '),
-      initials = names[0].substring(0, 1).toUpperCase()
-      if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
-      return initials
+      if(name){
+        let names = name.split(' '),
+        initials = names[0].substring(0, 1).toUpperCase()
+        if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
+        return initials
+      }
     },
   },
 

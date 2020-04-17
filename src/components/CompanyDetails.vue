@@ -41,8 +41,8 @@
           </v-list-item>
         </v-list>
         <v-list-item-subtitle>
-                <span class="font-weight-light pl-3">Return</span><span class="font-weight-bold pr-3"> 10% </span>
-                <span class="font-weight-light">Volatility</span><span class="font-weight-bold pr-3"> 30% </span>
+                <span class="font-weight-light pl-3">Return</span><span class="font-weight-bold pr-3"> {{(details.Return * 100).toFixed(2)}}% </span>
+                <span class="font-weight-light">Volatility</span><span class="font-weight-bold pr-3"> {{(details.Volatility * 100).toFixed(2)}}% </span>
                 <span class="font-weight-light">Sharpe</span><span class="font-weight-bold"> 15.5%</span>
                 <v-spacer></v-spacer>
               </v-list-item-subtitle>
@@ -69,7 +69,7 @@ export default {
     fetchDetails () {
       this.loaded = false
       let hostname = window.location.hostname
-      let detailsAPI = `http://${hostname}:5000/general/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+      let detailsAPI = `http://${hostname}:5000/stockprofile/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
       try{
         fetch(detailsAPI)
         .then(response => {

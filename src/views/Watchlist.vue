@@ -5,21 +5,24 @@
       <v-app-bar-nav-icon @click.stop="drawer()"/>
       <!-- Watchlist select --> 
       <v-col>
-        <v-menu v-if='watchlistLoaded'
+        <v-menu v-if='securityLoaded'
           bottom
+          offset-y
           transition="slide-y-transition"
         >
         
           <template v-slot:activator="{ on }">
             <v-btn
-              color="white"
+              elevation=0
+              color="#f5f5f5"
               v-on="on"
+              class="pl-0 noFocus"
             >
             <v-icon color="#00E676">
               mdi-chevron-down
             </v-icon>
 
-            <div v-if="selected_watchlist.length<13" class="text-capitalize">{{selected_watchlist}}</div>
+            <div v-if="selected_watchlist.length<13" class="title text-capitalize">{{selected_watchlist}}</div>
             <div v-else class="text-capitalize">{{selected_watchlist.substring(0,12)+".."}}</div>
             
             </v-btn>
@@ -31,16 +34,15 @@
               :key="i"
             >
               <v-list-item-title @click="watchlist_clicked(item)" color=primary>{{ item }}</v-list-item-title>
-              <v-icon class=pl-6 v-if="item!='My Watchlist'" color="grey lighten-1" small @click="rename_watchlist(item)">mdi-pencil</v-icon>
-              <v-icon class="pl-3 pr-0" v-if="item!='My Watchlist'" color="grey lighten-1" small @click="delete_watchlist(item)">mdi-delete</v-icon>
+              <v-icon class=pl-6  color="grey lighten-1" small @click="rename_watchlist(item)">mdi-pencil</v-icon>
+              <v-icon class="pl-3 pr-0" color="grey lighten-1" small @click="delete_watchlist(item)">mdi-delete</v-icon>
             </v-list-item>
 
-            <v-list-item class="tile pa-0" color="blue" @click="dialog_addWatchlist=true">
-              <v-row justify=center>
+            <v-list-item class="tile " color="blue" @click="dialog_addWatchlist=true">   
+                <v-list-item-title color=primary>Add Watchlist</v-list-item-title>
                 <v-btn icon>
-                  <v-icon color="#00E676">mdi-playlist-plus</v-icon>
+                  <v-icon class=pl-4 color="#00E676">mdi-playlist-plus</v-icon>
                 </v-btn>
-              </v-row>
             </v-list-item>
 
           </v-list>
@@ -49,13 +51,15 @@
         <v-menu v-else>
           <template v-slot:activator="{ on }">
             <v-btn
-              color="white"
+              elevation=0
+              color="#f5f5f5"
               v-on="on"
+              class="pl-0 noFocus"
             >
             <v-icon>
                 mdi-chevron-down
             </v-icon>
-            <div v-if="selected_watchlist.length<13" class="text-capitalize">{{selected_watchlist}}</div>
+            <div v-if="selected_watchlist.length<13" class="title text-capitalize">{{selected_watchlist}}</div>
             <div v-else class="text-capitalize">{{selected_watchlist.substring(0,12)+".."}}</div>
             </v-btn>
           </template>
@@ -152,7 +156,7 @@
           </v-icon>
         </v-btn>
 
-        <v-btn v-if='watchlistLoaded' icon small  @click="searchBtn">
+        <v-btn  v-if='securityLoaded' icon small  @click="searchBtn">
           <v-icon >mdi-plus</v-icon>
         </v-btn>
         <v-btn v-else icon small color=#E0E0E0>
@@ -163,7 +167,7 @@
     
     <!--ADD MARKET-->
     <v-scroll-x-reverse-transition hide-on-leave>
-      <v-row v-show="searchExpand" class=pa-2>
+      <v-row v-show="searchExpand" class=pa-2 >
         <v-autocomplete
             autofocus
             ref="autocomplete"
@@ -188,7 +192,7 @@
                <v-list-item-avatar tile v-if="item.LogoURL">
                 <v-img :src="item.LogoURL"></v-img>
                </v-list-item-avatar>
-              <v-list-item-avatar tile v-else color="teal">
+              <v-list-item-avatar v-else color="teal">
                 <span class="white--text title">{{getInitials(item.Name)}}</span>
                </v-list-item-avatar>
                <v-list>
@@ -205,8 +209,8 @@
   </v-app-bar>
 
   <v-progress-linear
-      :active="!watchlistLoaded"
-      :indeterminate="!watchlistLoaded"
+      :active="!securityLoaded"
+      :indeterminate="!securityLoaded"
       top
       color="#00C853"
   ></v-progress-linear>
@@ -248,18 +252,20 @@
   
   <v-card outlined color=transparent border-color=white height=50% v-if="asset_peopleSwitch=='asset'">
     <template>
+    
 		<swipe-list 
 			ref="list"
-			:items="securitydetails"
+			:items="display_details"
 			item-key="code"
+
 		>
 			<template v-slot="{ item }">
 				<div ref="content" class="card-content" >
 					<v-row>
 
           <v-col class="px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
-            <v-avatar color="transparent">
-              <img :src="('https://eodhistoricaldata.com'+item.logo)" style="width: 40px; height: 40px" />
+            <v-avatar tile color="transparent">
+              <img :src="(item.logo)" style="width: 40px; height: 40px" />
             </v-avatar>
           </v-col>
           <v-col v-else class=px-0 cols=1 @click="goToMarkets(item)">
@@ -287,12 +293,12 @@
           </v-col>
 
           <!-- PRICE -->
-          <v-col cols=2 class="pr-3 pl-3" @click="buy(item)">
-            <v-row justify ="center">
+          <v-col cols=2 class="pr-6 pl-2" @click="buy(item)">
+            <v-row justify ="end">
             <span class="font-weight-bold">{{item.close.toFixed(2)}}</span>
             </v-row>
 
-            <v-row justify ="center">
+            <v-row justify ="end">
             <span class="caption">{{item.last_update}}</span>
             </v-row>
           </v-col>
@@ -321,8 +327,11 @@
                 <v-container>
                     <v-row no-gutters>
                       <v-col cols=2 v-if="selected_security.logo"> 
-                        <img :src="('https://eodhistoricaldata.com'+selected_security.logo)" style="width: 50px; height: 50px" />
-                      </v-col>
+                        <v-avatar tile color="transparent">
+                          <img :src="(selected_security.logo)" style="width: 50px; height: 50px" />
+                        </v-avatar>
+                      </v-col>                    
+                      
                       <v-col cols=2 v-else>
                         <v-avatar color="teal" size=50>
                           <span class="white--text title">{{getInitials(selected_security.name)}}</span>
@@ -518,7 +527,7 @@
 			</template>
 
 		</swipe-list>
-    
+
     </template>
   <!-- END OF INFO LIST -->
   
@@ -544,7 +553,7 @@
       </v-card>
   </v-dialog>
   <!-- END OF ADD WATCHLIST BUTTON -->
-  <!-- <v-col cols=3><highcharts :options="chartOptions" ></highcharts></v-col> -->
+  <v-btn icon @click="arrange">mdi-add</v-btn>
   </v-card>
 
   <v-snackbar
@@ -561,24 +570,27 @@ import { SwipeList } from 'vue-swipe-actions';
 import Touch from 'vuetify/es5/directives/touch'
 import 'vue-swipe-actions/dist/vue-swipe-actions.css';
 import VueApexCharts from 'vue-apexcharts'
-//import {Chart} from 'highcharts-vue'
+//import draggable from 'vuedraggable'
+
 
 export default {
   name: 'Watchlist',
   components: {
-      SwipeList,apexchart: VueApexCharts  //highcharts:Chart
+      SwipeList,apexchart: VueApexCharts //,draggable 
     },
   directives: {
     Touch
   },
   data: function() {
     return{
+      //drag:false,
+ 
       searchExpand: false,
       asset_peopleSwitch:'asset',
       new_watchlistname:'',
       edited_watchlistname:'',
       to_edit_watchlist:'',
-      default_watchlist:"My Watchlist",
+      default_watchlist:"",
       selected_watchlist:'',        //Keep track if a watchlist is selected 
       dialog_deleteWatchlist:false,
       to_delete_watchlist:"",
@@ -586,9 +598,12 @@ export default {
       todelete_security:'',todelete_security_display:'',
       dialog_deleteSecurity:false,
       watchlistLoaded:false, 
-      watchlist_action:["Rename Watchlist","Delete Watchlist"],
+      securityLoaded:false,
+      // watchlist_action:["Rename Watchlist","Delete Watchlist"],
       listofWatchlist:[],           //User's watchlist list w/o security
       securitydetails:[],           //Security details from selected watchlist
+      display_details:[],
+      totalsecurity:"",
       securitydetailloaded:false,
       dialog_addWatchlist:false,
       close_addwatchlist:true,
@@ -815,9 +830,9 @@ export default {
     },
 
     addWatchlist(){
-      var action = 'add'
+      var action = 'Add'
       let hostname = window.location.hostname
-      let addwatchlistAPI = `http://${hostname}:5000/1001/watchlist/${this.new_watchlistname}/${action}`
+      let addwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/1/${this.new_watchlistname}/${action}`
       try
       {
         fetch(addwatchlistAPI,{method: "get"})
@@ -834,17 +849,18 @@ export default {
         this.assignNull()
         console.log(error)
       }
-      this.listofWatchlist.push(this.edited_watchlistname)
+      this.listofWatchlist.push(this.new_watchlistname)
       this.selected_watchlist=this.new_watchlistname
       this.new_watchlistname=''
       this.securitydetails=[]
-      
+      this.totalsecurity=0
+      this.securityLoaded='True'
       this.close_dialog_addWatchlist()
     },
 
     renameWatchlist(){
       let hostname = window.location.hostname
-      let renamewatchlistAPI = `http://${hostname}:5000/1001/watchlist/rename/${this.to_edit_watchlist}/${this.edited_watchlistname}`
+      let renamewatchlistAPI = `http://${hostname}:5000/rename_watchlist/1/${this.to_edit_watchlist}/${this.edited_watchlistname}`
       try
       {
         fetch(renamewatchlistAPI,{method: "get"})
@@ -878,12 +894,12 @@ export default {
     },
 
     deleteWatchlist(){
-      var action = 'delete'
+      var action = 'Delete'
       let hostname = window.location.hostname
-      let addwatchlistAPI = `http://${hostname}:5000/1001/watchlist/${this.to_delete_watchlist}/${action}`
+      let delwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/1/${this.to_delete_watchlist}/${action}`
       try
       {
-        fetch(addwatchlistAPI,{method: "get"})
+        fetch(delwatchlistAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
         console.log(data) 
@@ -903,27 +919,34 @@ export default {
           break;
         }
       }
+      if(this.listofWatchlist==0){this.selected_watchlist='';this.default_watchlist=''}
+
       if(this.selected_watchlist==this.to_delete_watchlist){
         this.securitydetails=[]
-        this.selected_watchlist=this.default_watchlist
-        this.fetchWatchlistsymbol (this.selected_watchlist)
+        if(this.listofWatchlist.length>0){
+          console.log(this.listofWatchlist[0])
+          this.default_watchlist=this.listofWatchlist[0]
+          this.selected_watchlist=this.listofWatchlist[0]
+          this.fetchWatchlistsymbol (this.selected_watchlist)
+        }
       }
+      
       this.dialog_deleteWatchlist=false
     },
 
     addsecurity(){
-      var action = 'add'
+      var action = 'Add'
       var getdata =  ''
       let hostname = window.location.hostname
       let security = this.model.Code+'.'+this.model.Exchange
-      let addsecurityAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${security}/${action}`
+      let addsecurityAPI = `http://${hostname}:5000/add_del_security/1/${this.selected_watchlist}/${security}/${action}`
       this.$refs.autocomplete.blur()
       try
       {
         fetch(addsecurityAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
-        getdata=data.status
+        getdata=data
         console.log("Status: "+getdata)
         
         if(getdata.toLowerCase().includes("fail")){
@@ -932,6 +955,7 @@ export default {
         }else{
           this.snackbar_text=security+" added to "+this.selected_watchlist
           this.snackbar=true
+          this.totalsecurity++
         }
 
         })
@@ -952,9 +976,9 @@ export default {
 
     deletesecurity(){
       //Post delete api
-      var action = 'delete'
+      var action = 'Delete'
       let hostname = window.location.hostname
-      let deletesecurityAPI = `http://${hostname}:5000/1001/watchlist/${this.selected_watchlist}/${this.todelete_security}/${action}`
+      let deletesecurityAPI =`http://${hostname}:5000/add_del_security/1/${this.selected_watchlist}/${this.todelete_security}/${action}`
       try
       {
         fetch(deletesecurityAPI,{method: "get"})
@@ -976,6 +1000,9 @@ export default {
       for(var i=0;i<this.securitydetails.length;i++){
         if(this.securitydetails[i].code===this.todelete_security) {
           this.securitydetails.splice(i,1)
+          this.snackbar_text=this.todelete_security+" deleted from watchlist"
+          this.snackbar=true
+          this.totalsecurity--
           break
         }
       }
@@ -991,8 +1018,6 @@ export default {
 
     close_dialog_deleteSecurity(){
       this.dialog_deleteSecurity = !this.dialog_deleteSecurity
-      this.snackbar_text=this.todelete_security+" deleted from watchlist"
-      this.snackbar=true
       this.todelete_security=''
     },
 
@@ -1001,7 +1026,6 @@ export default {
     },
 
     close_dialog_addWatchlist(){
-      this.fetchWatchlist_func()
       this.dialog_addWatchlist = false
     },
 
@@ -1029,17 +1053,25 @@ export default {
     fetchWatchlist_func () {
       this.watchlistLoaded = false
       let hostname = window.location.hostname
-      let watchlist_listAPI = `http://${hostname}:5000/1001/watchlist`
+      let watchlist_listAPI = `http://${hostname}:5000/watchlist/1`
       try
       {
         fetch(watchlist_listAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
         this.listofWatchlist=[]
-        for(var i=0;i<data.length;i++){
-          this.listofWatchlist.push(data[i])
+        if(data.length>0){
+          this.default_watchlist=data[0]      
+          this.selected_watchlist=data[0]
+          for(var i=0;i<data.length;i++){
+            this.listofWatchlist.push(data[i])
+          }
+          this.fetchWatchlistsymbol(this.default_watchlist)
+          this.securityLoaded=true
         }
         //console.log(this.listofWatchlist)
+        else{this.securityLoaded=true}
+        
         this.watchlistLoaded = true
         })
         .catch(e => {
@@ -1056,6 +1088,8 @@ export default {
 
     watchlist_clicked(selection){
       this.selected_watchlist=selection;
+      this.display_details=[]
+      this.securitydetails=[]
       this.fetchWatchlistsymbol (selection)
     },
 
@@ -1065,25 +1099,25 @@ export default {
     },
 
     fetchWatchlistsymbol (value) {
-      this.watchlistLoaded = false
+      this.securitydetails=[]
       let hostname = window.location.hostname
-      let list_symbol_API = `http://${hostname}:5000/1001/watchlist/${value}`
+      let list_symbol_API = `http://${hostname}:5000/securitylist/1/${value}`
       try
       {
         fetch(list_symbol_API,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
-        this.securitydetails=[]
-
+        this.totalsecurity=data.length
         for(var i=0;i<data.length;i++){
-          this.fetchrealtime (data[i]) 
+          this.securityLoaded = false
+          this.fetchrealtime (data[i],i) 
         }
         
-        if(data.length==0){this.watchlistLoaded = true}
+        if(data.length==0){ this.securityLoaded = true}        
         })
         .catch(e => {
         console.log("Response status: "+e)
-        this.watchlistLoaded = true
+        
         })
       }
       catch(error)
@@ -1091,10 +1125,10 @@ export default {
         this.assignNull()
         console.log(error)
       }
+      
     },
 
-    fetchrealtime (security) {
-      this.watchlistLoaded = false
+    fetchrealtime (security,index) {
       let hostname = window.location.hostname
       let realtimeAPI = `http://${hostname}:5000/rt/${security}`
       try
@@ -1102,30 +1136,32 @@ export default {
         fetch(realtimeAPI,{method: "get"})
         .then(response =>{return response.json()})
         .then(data =>{
-        this.watchlistLoaded = true
-
-        var now = new Date()
+      
         var ts=new Date(data.last_update * 1000)
-
         var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
         var month = months[ts.getMonth()]
         var date = ts.getDate()
-        var hour = ts.getHours().toString().length == 1 ? '0' + ts.getHours() : ts.getHours()
-        var min = ts.getMinutes().toString().length == 1 ? '0' + ts.getMinutes() : ts.getMinutes()
-
+        //var hour = ts.getHours().toString().length == 1 ? '0' + ts.getHours() : ts.getHours()
+        //var min = ts.getMinutes().toString().length == 1 ? '0' + ts.getMinutes() : ts.getMinutes()
+        
         var time
-        var todaydate = now.getDate()
+        var now = new Date()
+        var nowdate = now.getDate()
+        var nowhour = now.getHours().toString().length == 1 ? '0' + now.getHours() : now.getHours()
+        var nowmin = now.getMinutes().toString().length == 1 ? '0' + now.getMinutes() : now.getMinutes()
+
         if(data.status=="True")
-          date == todaydate ? time = hour + ':' + min : time = date + ' ' + month
+          date == (nowdate) ? time = nowhour + ':' + nowmin : time = date + ' ' + month 
         else
           time = date + ' ' + month
+
         data.last_update=time
+        data.index=index
         this.securitydetails.push(Object.assign({},data))
         return data
         })
         .catch(e => {
         console.log("Response status: "+e)
-        this.watchlistLoaded = true
         })
       }
       catch(error)
@@ -1228,10 +1264,26 @@ export default {
         return initials
       }
     },
+
+    arrange(){
+     
+      Array.prototype.move = function (from, to) {
+        this.splice(to, 0, this.splice(from, 1)[0]);
+      };
+      console.log("before: "+this.securitydetails)
+      this.securitydetails.move(0,1)
+      console.log("after: "+this.securitydetails)
+    },
+
+
   },
 
   computed:{
    
+    // draggingInfo() {
+    //   return this.drag ? "under drag" : "";
+    // },
+
     check_duplicate()
     {
       for(var i=0;i<this.listofWatchlist.length;i++){
@@ -1261,17 +1313,51 @@ export default {
       if(this.model && val == this.model.Name) return
       this.fetchDebounced()
     },
+
+    'securitydetails.length'(){
+      if(this.securitydetails.length==this.totalsecurity){
+        this.display_details=this.securitydetails
+        this.display_details.sort((a, b) => a.index - b.index)  
+        this.securityLoaded = true
+      }
+      console.log(this.securitydetails.length+" "+this.totalsecurity)
+    }
   },
 
   mounted () {
     this.fetchWatchlist_func()
-    this.selected_watchlist=this.default_watchlist
-    this.fetchWatchlistsymbol(this.default_watchlist)
   },
 }
 </script>
 
 <style>
+/* DRAG */
+/* .button {
+  margin-top: 35px;
+}
+.handle {
+  float: left;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.close {
+  float: right;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+input {
+  display: inline-block;
+  width: 50%;
+}
+.text {
+  margin: 20px;
+} */
+
+
+
+
+
+
 .swipeout-action {
   display: flex;
   align-items: center;
@@ -1297,7 +1383,7 @@ export default {
 
 .swipeout-list-item:first-of-type {
   border-top: none;
-  border-top: 40px solid lightgray;
+  border-top: 40px solid white;
 }
 
 .card-content {
@@ -1309,6 +1395,10 @@ export default {
 	transform: translate3d(-100%, 0 ,0) !important;
 }
 
+.transition-right {
+	transform: translate3d(100%, 0 ,0) !important;
+}
+
 .centered-input input {
   text-align: center
 }
@@ -1317,7 +1407,7 @@ export default {
   background: #E8E8E8;
   border-top-style: solid;
   border-top-width: 0px;
-  border-top-color: grey;
+  border-top-color: white;
 }
 
 .header {
@@ -1327,7 +1417,9 @@ export default {
   height:40px;     
 }
 
-
+.noFocus:focus::before {
+  opacity: 0 !important;
+}
 
 
 </style>

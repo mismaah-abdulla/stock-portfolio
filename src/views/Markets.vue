@@ -17,7 +17,7 @@
     <v-tabs-items v-model="tab" touchless>
       <v-tab-item>
         <ChartYD v-if="stock" :key="stock.Code" :stock="stock" :tab="tab"/>
-        <StockMap/>
+        <StockMap :stock="stock" />
       </v-tab-item>
       <v-tab-item>
         <Stats v-if="stock"  :key="stock.Code" :stock="stock"></Stats>

@@ -17,9 +17,13 @@
               color="#f5f5f5"
               v-on="on"
               class="pl-0 noFocus"
+              @click='displaywatchlist_func'
             >
-            <v-icon color="#00E676">
+            <v-icon color="#00E676" v-if='!displaywatchlist'>
               mdi-chevron-down
+            </v-icon>
+            <v-icon color="#00E676" v-else>
+              mdi-chevron-up
             </v-icon>
 
             <div v-if="selected_watchlist.length<13" class="title text-capitalize">{{selected_watchlist}}</div>
@@ -138,7 +142,7 @@
       </v-dialog> 
       <!-- END OF EDIT WATCHLIST BUTTON -->  
       <v-spacer/>
-        <v-btn icon @click="asset_peopleSwitch='asset'" small >
+        <v-btn v-if='edit==false' icon @click="asset_peopleSwitch='asset'" small >
           <v-icon v-if="asset_peopleSwitch=='asset'" color="#00E676">
             mdi-currency-usd-circle-outline
           </v-icon>
@@ -147,7 +151,7 @@
           </v-icon>
         </v-btn> 
         
-        <v-btn icon  @click="asset_peopleSwitch='people'" small > 
+        <v-btn icon v-if='edit==false'  @click="asset_peopleSwitch='people'" small > 
           <v-icon v-if="asset_peopleSwitch=='people'" color="#00E676">
             mdi-account-multiple
           </v-icon>
@@ -156,12 +160,16 @@
           </v-icon>
         </v-btn>
 
-        <v-btn  v-if='securityLoaded' icon small  @click="searchBtn">
+        <v-btn  v-if='securityLoaded&&edit==false' icon small  @click="searchBtn">
           <v-icon >mdi-plus</v-icon>
         </v-btn>
-        <v-btn v-else icon small color=#E0E0E0>
+        <v-btn v-else-if='!securityLoaded&&edit==false' icon small color=#E0E0E0>
           <v-icon >mdi-plus</v-icon>
         </v-btn>
+        <v-btn v-else icon small color="#00E676" @click="arrange">
+          <v-icon >mdi-check</v-icon>
+        </v-btn>
+        
 
     </v-row>
     
@@ -205,7 +213,6 @@
       </v-row>
     </v-scroll-x-reverse-transition>
     <!--END OF ADD MARKET-->
-
   </v-app-bar>
 
   <v-progress-linear
@@ -217,7 +224,7 @@
 
   <!-- ASSET INFO LIST -->
 
-  <v-card class="grey lighten-5 header" v-if="asset_peopleSwitch=='asset'" elevation=1 absolute style="border-radius: 0px;" >  
+  <v-card @click="edit=true" class="grey lighten-5 header" v-if="asset_peopleSwitch=='asset'" elevation=1 absolute style="border-radius: 0px;" >  
     <v-row
         justify=center
         class="subtitle-2 font-weight-medium"
@@ -250,19 +257,20 @@
     </v-row>   
   </v-card>
   
-  <v-card outlined color=transparent border-color=white height=50% v-if="asset_peopleSwitch=='asset'">
-    <template>
-    
+  <v-card outlined color=transparent border-color=white height=50% v-if="asset_peopleSwitch=='asset'&&edit==false">
+   
+  <template >
 		<swipe-list 
 			ref="list"
 			:items="display_details"
-			item-key="code"
-
+      item-key="code"
 		>
 			<template v-slot="{ item }">
 				<div ref="content" class="card-content" >
 					<v-row>
 
+          <v-icon v-longclick="openedit" class="pa-0" x-small color="grey" >mdi-dots-vertical</v-icon>
+          
           <v-col class="px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
             <v-avatar tile color="transparent">
               <img :src="(item.logo)" style="width: 40px; height: 40px" />
@@ -503,7 +511,7 @@
 			</template>
 
       <!-- DELETE SECURITY -->
-			<template v-slot:right="{ item }">
+			<template  v-slot:right="{ item }">
 				<div class="swipeout-action red" @click="open_dialog_deletesecurity(item)">
 					<v-icon color=white>mdi-delete</v-icon>
 				</div>
@@ -525,10 +533,9 @@
           </v-card>
         </v-dialog> 
 			</template>
-
 		</swipe-list>
+  </template>
 
-    </template>
   <!-- END OF INFO LIST -->
   
 
@@ -553,8 +560,65 @@
       </v-card>
   </v-dialog>
   <!-- END OF ADD WATCHLIST BUTTON -->
-  <v-btn icon @click="arrange">mdi-add</v-btn>
   </v-card>
+
+  <!-- DRAGGABLE -->
+  <draggable class="mt-9 py-0" v-if="edit==true" v-model="display_details">
+   
+    <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1 py-0" v-for="item in display_details" :key="item.code" >
+      
+          <v-row class="ma-0 ">
+            <v-icon class="pa-0" x-small color="grey" >mdi-dots-vertical</v-icon>
+            <v-col class="px-0 ma-0" cols=1  v-if="item.logo">
+              <v-avatar tile color="transparent">
+                <img :src="(item.logo)" style="width: 40px; height: 40px" />
+              </v-avatar>
+            </v-col>
+            <v-col v-else class=px-0 cols=1 >
+              <v-avatar color="teal" size=40>
+                <span class="white--text title">{{getInitials(item.name)}}</span>
+              </v-avatar>
+            </v-col>
+
+            <v-col class="pl-8 pr-0 ma-0" > 
+              <v-row  ><span class="font-weight-bold px-0">{{item.display_code}} </span></v-row>
+              <v-row v-if="item.name.length<14" ><span class="caption px-0" style="font-size:10px">{{item.name}} </span></v-row>
+              <v-row v-else  ><span class="caption px-0" style="font-size:10px">{{item.name.substring(0,14)+".."}} </span></v-row>
+            </v-col> 
+
+            <!-- CHANGE -->
+            <v-col cols=2 class="pl-1" > 
+              <v-row justify=start>
+              <span v-if="item.change < 0" class="red--text font-weight-bold">{{parseFloat(item.change_p).toFixed(2)}}%</span>
+              <span v-else class="green--text font-weight-bold">+{{parseFloat(item.change_p).toFixed(2)}}%</span>
+              </v-row>
+              <v-row justify=center>
+              <span v-if="item.change < 0" class="red--text caption ">{{item.change.toFixed(2)}}</span>
+              <span v-else class="green--text caption">+{{item.change.toFixed(2)}}</span>
+              </v-row>
+            </v-col>
+
+            <!-- PRICE -->
+            <v-col cols=2 class="pr-6 pl-2">
+              <v-row justify ="end">
+              <span class="font-weight-bold">{{item.close.toFixed(2)}}</span>
+              </v-row>
+
+              <v-row justify ="end">
+              <span class="caption">{{item.last_update}}</span>
+              </v-row>
+            </v-col>
+
+            <!-- INTRADAY CHART-->
+            <v-col cols=3 class="pt-3 pl-1 py-0 ma-0 pa-0" >
+              <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive_drag" :series="item.series"></apexchart>
+              <apexchart v-else height="25%" width="95%" type="area" :options="chartOptionsNegative_drag" :series="item.series"></apexchart> 
+            </v-col>
+          </v-row>
+      
+    </v-list-item>
+ 
+  </draggable>
 
   <v-snackbar
       v-model="snackbar"
@@ -567,24 +631,23 @@
 
 <script>
 import { SwipeList } from 'vue-swipe-actions';
-import Touch from 'vuetify/es5/directives/touch'
 import 'vue-swipe-actions/dist/vue-swipe-actions.css';
 import VueApexCharts from 'vue-apexcharts'
-//import draggable from 'vuedraggable'
-
-
+import draggable from 'vuedraggable'
+import { longClickDirective } from 'vue-long-click'
+const longClickInstance = longClickDirective({delay: 400})
 export default {
   name: 'Watchlist',
   components: {
-      SwipeList,apexchart: VueApexCharts //,draggable 
-    },
-  directives: {
-    Touch
+    SwipeList,apexchart: VueApexCharts,draggable
+  },
+  directives:{
+    'longclick':longClickInstance
   },
   data: function() {
     return{
-      //drag:false,
- 
+      edit:false,
+      displaywatchlist:false,
       searchExpand: false,
       asset_peopleSwitch:'asset',
       new_watchlistname:'',
@@ -599,7 +662,6 @@ export default {
       dialog_deleteSecurity:false,
       watchlistLoaded:false, 
       securityLoaded:false,
-      // watchlist_action:["Rename Watchlist","Delete Watchlist"],
       listofWatchlist:[],           //User's watchlist list w/o security
       securitydetails:[],           //Security details from selected watchlist
       display_details:[],
@@ -632,45 +694,6 @@ export default {
         v => !!v || 'This field is required',
       ],
 
-      // //Highcharts
-      // chartOptions: {
-      //   title: { text: '' },
-      //   chart: {
-      //     type: 'area',
-      //     height: "70%",
-      //   },
-      //   xAxis: { visible: false },
-      //   yAxis: { visible: false },
-      //   legend: { enabled: false},
-      //   credits: { enabled: false },
-      //   tooltip: { enabled: false },
-
-      //   series: [{
-      //     lineWidth: 1,
-      //     lineColor: '#FF0000',
-      //     marker: { enabled: false},
-      //     states: {
-      //       hover: {
-      //         enabled: false
-      //       }
-      //     },
-      //     color: {
-      //           linearGradient: {
-      //             x1: 0,
-      //             x2: 0,
-      //             y1: 0,
-      //             y2: 1
-      //           },
-      //           stops: [
-      //               [0, '#FF0000'],
-      //               [1, '#F8F8FF']
-      //           ]
-      //     },
-      //     data: [5, 3, 4, 2, 4, 4, 5, 5]
-      //   }]
-      // },
-
-
       //Apex Chart
       chartOptionsNegative: {
           chart: {
@@ -683,6 +706,9 @@ export default {
             zoom: {
               enabled: false
             },
+            animations:{
+              speed: 400,
+            }
           },
           xaxis: {
             labels: {
@@ -698,14 +724,62 @@ export default {
               enabled: false
           },
           fill: {
-            colors: ["#FF0000"],
-            // type: 'gradient',
-            // gradient: {
-            //   shadeIntensity: 0.9,
-            //   opacityFrom: 0.9,
-            //   opacityTo: 0.8,
-            //   stops: [0, 95, 100]  
-            //}
+            colors: ["#ffb2b2"],
+          },
+          grid: {
+            show: false,
+            padding: {
+              left: 0,
+              right: -4,
+              bottom:0,
+              top:0
+            }
+          },
+          dropShadow: {
+            enabled: false,
+          },
+          stroke: {
+              show: true,
+              curve: 'straight',
+              lineCap: 'butt',
+              colors:  ["#FF0000"],
+              width: 1,
+              dashArray: 0,      
+          },
+          tooltip: {
+            enabled: false,
+          }
+      },
+      chartOptionsNegative_drag: {
+          chart: {
+            sparkline: {
+              enabled: true
+            },
+            toolbar:{
+              show:false
+            },
+            zoom: {
+              enabled: false
+            },
+            animations:{
+              enabled:false
+            }
+          },
+          xaxis: {
+            labels: {
+              show: false
+            }
+          },
+          yaxis: {
+            labels: {
+              show: false
+            }
+          },
+          dataLabels: {
+              enabled: false
+          },
+          fill: {
+            colors: ["#ffb2b2"],
           },
           grid: {
             show: false,
@@ -742,6 +816,9 @@ export default {
             zoom: {
               enabled: false
             },
+            animations:{
+              speed: 400,
+            }
           },
           xaxis: {
             labels: {
@@ -757,14 +834,62 @@ export default {
               enabled: false
           },
           fill: {
-            colors: ['#00ff00'],
-            // type: 'gradient',
-            // gradient: {
-            //   shadeIntensity: 0.9,
-            //   opacityFrom: 0.9,
-            //   opacityTo: 0,
-            //   stops: [0, 95, 100]  
-            //}
+            colors: ['#62ff62'],
+          },
+          grid: {
+            show: false,
+            padding: {
+              left: 0,
+              right: -4,
+              bottom:0,
+              top:0
+            }
+          },
+          dropShadow: {
+            enabled: false,
+          },
+          stroke: {
+              show: true,
+              curve: 'straight',
+              lineCap: 'butt',
+              colors:  ['#00ff00'],
+              width: 1,
+              dashArray: 0,      
+          },
+          tooltip: {
+            enabled: false,
+          }
+      },
+      chartOptionsPositive_drag: {
+          chart: {
+            sparkline: {
+              enabled: true
+            },
+            toolbar:{
+              show:false
+            },
+            zoom: {
+              enabled: false
+            },
+            animations:{
+              enabled:false
+            }
+          },
+          xaxis: {
+            labels: {
+              show: false
+            }
+          },
+          yaxis: {
+            labels: {
+              show: false
+            }
+          },
+          dataLabels: {
+              enabled: false
+          },
+          fill: {
+            colors: ['#62ff62'],
           },
           grid: {
             show: false,
@@ -795,6 +920,10 @@ export default {
   },
 
   methods:{
+
+    displaywatchlist_func(){
+      this.displaywatchlist=!this.displaywatchlist
+    },
     searchBtn(){
       this.$refs.autocomplete.focus()
       this.searchExpand = true
@@ -830,6 +959,7 @@ export default {
     },
 
     addWatchlist(){
+      this.displaywatchlist=false
       var action = 'Add'
       let hostname = window.location.hostname
       let addwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/1/${this.new_watchlistname}/${action}`
@@ -859,6 +989,7 @@ export default {
     },
 
     renameWatchlist(){
+      this.displaywatchlist=false
       let hostname = window.location.hostname
       let renamewatchlistAPI = `http://${hostname}:5000/rename_watchlist/1/${this.to_edit_watchlist}/${this.edited_watchlistname}`
       try
@@ -894,6 +1025,7 @@ export default {
     },
 
     deleteWatchlist(){
+      this.displaywatchlist=false
       var action = 'Delete'
       let hostname = window.location.hostname
       let delwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/1/${this.to_delete_watchlist}/${action}`
@@ -956,6 +1088,7 @@ export default {
           this.snackbar_text=security+" added to "+this.selected_watchlist
           this.snackbar=true
           this.totalsecurity++
+          this.fetchWatchlistsymbol (this.selected_watchlist)
         }
 
         })
@@ -971,7 +1104,7 @@ export default {
       this.search = null
       this.symbolsExchangesNames = []
       this.addmarket_screen=false
-      this.fetchWatchlistsymbol (this.selected_watchlist)
+      
     },
 
     deletesecurity(){
@@ -1091,6 +1224,7 @@ export default {
       this.display_details=[]
       this.securitydetails=[]
       this.fetchWatchlistsymbol (selection)
+      this.edit=false
     },
 
     temp_change(){
@@ -1099,6 +1233,8 @@ export default {
     },
 
     fetchWatchlistsymbol (value) {
+      this.displaywatchlist=false
+      this.display_details=[]
       this.securitydetails=[]
       let hostname = window.location.hostname
       let list_symbol_API = `http://${hostname}:5000/securitylist/1/${value}`
@@ -1141,9 +1277,7 @@ export default {
         var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
         var month = months[ts.getMonth()]
         var date = ts.getDate()
-        //var hour = ts.getHours().toString().length == 1 ? '0' + ts.getHours() : ts.getHours()
-        //var min = ts.getMinutes().toString().length == 1 ? '0' + ts.getMinutes() : ts.getMinutes()
-        
+
         var time
         var now = new Date()
         var nowdate = now.getDate()
@@ -1157,6 +1291,8 @@ export default {
 
         data.last_update=time
         data.index=index
+
+        if(data.logo) data.logo =`https://eodhistoricaldata.com${data.logo}`
         this.securitydetails.push(Object.assign({},data))
         return data
         })
@@ -1266,13 +1402,16 @@ export default {
     },
 
     arrange(){
-     
-      Array.prototype.move = function (from, to) {
-        this.splice(to, 0, this.splice(from, 1)[0]);
-      };
-      console.log("before: "+this.securitydetails)
-      this.securitydetails.move(0,1)
-      console.log("after: "+this.securitydetails)
+      this.edit=!this.edit
+      // Array.prototype.move = function (from, to) {
+      //   this.splice(to, 0, this.splice(from, 1)[0]);
+      // };
+      // console.log("before: "+this.securitydetails)
+      // this.securitydetails.move(0,1)
+      // console.log("after: "+this.securitydetails)
+    },
+    openedit(){
+      this.edit=true
     },
 
 
@@ -1319,6 +1458,7 @@ export default {
         this.display_details=this.securitydetails
         this.display_details.sort((a, b) => a.index - b.index)  
         this.securityLoaded = true
+        this.entry=true
       }
       console.log(this.securitydetails.length+" "+this.totalsecurity)
     }
@@ -1331,32 +1471,6 @@ export default {
 </script>
 
 <style>
-/* DRAG */
-/* .button {
-  margin-top: 35px;
-}
-.handle {
-  float: left;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-.close {
-  float: right;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-input {
-  display: inline-block;
-  width: 50%;
-}
-.text {
-  margin: 20px;
-} */
-
-
-
-
-
 
 .swipeout-action {
   display: flex;
@@ -1375,20 +1489,31 @@ input {
   background-color: darken(rgb(255, 59, 48), 5%);
 }
 
+.swipeout-action.blue {
+    color: white;
+    background-color: rgb(0, 122, 255);
+}
+
+.swipeout-action.blue:hover {
+    background-color: darken(rgb(0, 122, 255), 5%);
+}
+
 .swipeout-list-item {
   flex: 1;
   border-bottom: 1px solid lightgray;
 }
 
-
 .swipeout-list-item:first-of-type {
-  border-top: none;
-  border-top: 40px solid white;
+  border-top: 40px solid transparent;
+}
+
+.v-list-item:first-child {
+  border-top: 5px solid transparent;
 }
 
 .card-content {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .transition-left {

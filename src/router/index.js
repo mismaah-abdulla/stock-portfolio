@@ -3,8 +3,9 @@ import VueRouter from 'vue-router'
 import Markets from '../views/Markets'
 import Watchlist from '../views/Watchlist'
 import NewsFeed from '../views/News'
-import Portfolio from '../views/Portfolio'
-// import Login from '../views/Login'
+import Register from '../views/Register'
+import Login from '../views/Login'
+import { isValidJwt } from '../utils/index.js'
 
 Vue.use(VueRouter)
 
@@ -18,23 +19,27 @@ const routes = [
   {
     path: '/watchlist',
     name: 'Watchlist',
-    component: Watchlist
+    component: Watchlist,
   },
   {
     path: '/',
-    name: 'Portfolio',
-    component: Portfolio
+    component: Login
   },
   {
     path: '/newsfeed',
     name: 'News Feed',
     component: NewsFeed
   },
-  // {
-  //   path: '/login',
-  //   name: 'Login',
-  //   component: Login
-  // }
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  }
 ]
 
 const router = new VueRouter({
@@ -43,11 +48,18 @@ const router = new VueRouter({
   routes
 })
 
-// var isAuthenticated
-
-// router.beforeEach((to, from, next) => {
-//   if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
-//   else next()
-// })
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/login', '/register'];
+  const authRequired = !publicPages.includes(to.path);
+  const result = isValidJwt();
+  //console.log('result: '+result);
+  if (authRequired && result == false) {
+    //console.log('no token/expired');
+    next('/login');
+  } else {
+    //console.log('token available');
+    next();
+  }
+});
 
 export default router

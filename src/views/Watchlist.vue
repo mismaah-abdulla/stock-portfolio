@@ -532,10 +532,9 @@
   </v-card>
 
   <!-- DRAGGABLE -->
-  <draggable :animation="100" :move="checkMove" class="mt-9 py-0" v-if="edit==true" v-model="display_details">
+  <draggable :animation="100" :move="checkMove"  @end='enddrag' class="mt-9 py-0" v-if="edit==true" v-model="display_details">
    
     <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1 py-0" v-for="item in display_details" :key="item.code" >
-      
           <v-row class="ma-0 ">
             <v-icon class="pa-0" x-small color="grey" >mdi-dots-vertical</v-icon>
             <v-col class="px-0 ma-0" cols=1  v-if="item.logo">
@@ -619,6 +618,7 @@ export default {
   data: function() {
     return{
       user_id:'',
+      drag_symbol:'',drag_from:'',drag_where:'',
       edit:false,
       displaywatchlist:false,
       searchExpand: false,
@@ -1376,13 +1376,6 @@ export default {
 
     done_edit(){
       this.edit=!this.edit
-
-      // Array.prototype.move = function (from, to) {
-      //   this.splice(to, 0, this.splice(from, 1)[0]);
-      // };
-      // console.log("before: "+this.securitydetails)
-      // this.securitydetails.move(0,1)
-      // console.log("after: "+this.securitydetails)
     },
 
     openedit(){
@@ -1390,41 +1383,38 @@ export default {
     },
 
     checkMove: function(e) {
-
       if(e.draggedContext.index!=e.draggedContext.futureIndex){
-        window.console.log(e.draggedContext.element.code+" From:"+e.draggedContext.element.index+" Go index: " + e.draggedContext.futureIndex);
+        //window.console.log(e.draggedContext.element.code+" From:"+e.draggedContext.element.index+" Go index: " + e.draggedContext.futureIndex); 
+        this.drag_symbol=e.draggedContext.element.code
+        this.drag_from=e.draggedContext.element.index
+        this.drag_where=e.draggedContext.futureIndex  
       }
+    },
+    enddrag(){
+      console.log('end')
       let hostname = window.location.hostname
-      let list_symbol_API = `http://${hostname}:5000/re_security/${this.user_id}/${this.selected_watchlist}/${e.draggedContext.element.code}/${e.draggedContext.element.index}/${e.draggedContext.futureIndex}`
-      try
+      let rearrangeAPI = `http://${hostname}:5000/re_security/${this.user_id}/${this.selected_watchlist}/${this.drag_symbol}/${this.drag_from}/${this.drag_where}`
+      try 
       {
-        fetch(list_symbol_API,{method: "get"})
-        .then(response =>{return response.json()})
-        .then(data =>{
-          console.log(data)      
-        })
-        .catch(e => {
-        console.log("Response status: "+e)
-        
-        })
+            fetch(rearrangeAPI,{method: "get"})
+            .then(response =>{return response.json()})
+            .then(data =>{
+              console.log(data)      
+            })
+            .catch(e => {
+            console.log("Response status: "+e)
+            })
       }
       catch(error)
       {
-        this.assignNull()
-        console.log(error)
+            this.assignNull()
+            console.log(error)
       }
       
-
     }
-
   },
 
-  computed:{
-   
-    // draggingInfo() {
-    //   return this.drag ? "under drag" : "";
-    // },
-
+  computed:{ 
     check_duplicate()
     {
       for(var i=0;i<this.listofWatchlist.length;i++){
@@ -1479,7 +1469,6 @@ export default {
       console.log(this.user_id)
     }
     this.fetchWatchlist_func()
-    
     
   },
 }

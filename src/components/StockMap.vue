@@ -5,64 +5,75 @@
 <script>
 export default {
   name: "StockMap",
+  props: {
+    stock: Object
+  },
   mounted () {
+    let stock = this.$props.stock
     let Highcharts = require('highcharts')
     require('highcharts/modules/export-data')(Highcharts)
     require('highcharts/modules/accessibility')(Highcharts)
     require('highcharts/modules/boost')(Highcharts)
-    let recaptchaScript = document.createElement('script')
-      recaptchaScript.setAttribute('src', 'https://www.google.com/recaptcha/api.js')
-      document.head.appendChild(recaptchaScript)
-      let sectors = [
-    {
-      name: "Technology",
-      data: "Technology"
-    },
-    {
-      name: "Healthcare",
-      data: "Healthcare"
-    },
-    {
-      name: "Financial Services",
-      data: "Financial Services"
-    },
-    {
-      name: "Industrials",
-      data: "Industrials"
-    },
-    {
-      name: "Other",
-      data: "Other"
-    },
-    {
-      name: "Real Estate",
-      data: "Real Estate"
-    },
-    {
-      name: "Consumer Cyclical",
-      data: "Consumer Cyclical"
-    },
-  ]
-  Highcharts.getJSON(
-    "http://localhost:5000/stockmap",
+    Highcharts.getJSON(
+    `http://localhost:5000/stockmap/${stock.Code}.${stock.Exchange}`,
     function (data) {
-      const getData = (Sector) => {
+      console.log(stock.Code)
+      const getSector = (Sector) => {
         let temp = []
-        data.forEach((elm) => {
-          if(Sector == elm.Sector){
-            temp.push({x: elm.Volatility, y: elm.Return, symbol: elm.Symbol})
+        data.forEach((i) => {
+          if(Sector == i.sector && i.symbol != stock.Code){
+            temp.push({x: i.volatility, y: i.return, symbol: i.symbol})
           }
         })
         return temp
-      };
+      }
+      const getOther = (Sector) => {
+        let temp = []
+        data.forEach((i) => {
+          if(Sector != i.sector && i.symbol != stock.Code){
+            temp.push({x: i.volatility, y: i.return, symbol: i.symbol})
+          }
+        })
+        return temp
+      }
+      const getSelected = () => {
+        let temp = []
+        data.forEach((i) => {
+          if(i.symbol == stock.Code){
+            temp.push({x: i.volatility, y: i.return, symbol: i.symbol})
+          }
+        })
+        return temp
+      }
       let series = []
-      sectors.forEach((e) => {
-        series.push({
-          name: e.name,
-          data: getData(e.data)
-        });
-      });
-
+      series.push({
+        name: 'Apple Inc',
+        data: getSelected(),
+        color: '#ff0000',
+        marker:{
+          radius: 10,
+        },
+        opacity: 1
+      })
+      console.log(series)
+      series.push({
+        name: 'Technology',
+        data: getSector('Technology'),
+        color: '#32CD32'
+      })
+      series.push({
+        name: '',
+        data: getOther('Technology'),
+        turboThreshold: 2000,
+        color: '#808080',
+        marker: {
+          states: {
+            hover: {
+              enabled: false,
+            }
+          }
+        }
+      })
       Highcharts.chart("container", {
         credits: {
           enabled: false

@@ -71,37 +71,6 @@
       </v-col>
       <!-- END OF watchlist select-->  
   
-      <!-- EDIT WATCHLIST BUTTON --> 
-      
-        <!-- <v-bottom-sheet >
-          <template v-slot:activator="{ on }">
-            <v-btn small  v-if="(watchlistLoaded&&selected_watchlist!= 'My Watchlist')" icon v-on="on">
-                    <v-icon>
-                      mdi-playlist-edit
-                    </v-icon> 
-            </v-btn>
-
-            <v-btn small  v-else-if="(!watchlistLoaded&&selected_watchlist!= 'My Watchlist')" icon color=#E0E0E0>
-                    <v-icon>
-                      mdi-playlist-edit
-                    </v-icon> 
-            </v-btn>
-
-            <v-btn v-else icon disabled/>
-                 
-          </template>
-          <v-list class=pa-0>
-              <v-list-item class=py-5
-                v-for="(item, i) in watchlist_action"
-                :key="i"
-                @click="editwatchlist(item)"
-              >
-              <v-list-item-title v-if="item=='Delete Watchlist'" class="text-center red--text">{{ item }}</v-list-item-title>
-              <v-list-item-title v-else class="text-center primary--text">{{ item }}</v-list-item-title>
-              </v-list-item>
-          </v-list>
-        </v-bottom-sheet> -->
-
       <!-- DELETE -->
       <v-dialog v-if="(watchlistLoaded)" v-model="dialog_deleteWatchlist" max-width="500px">
           <v-card>
@@ -166,7 +135,7 @@
         <v-btn v-else-if='!securityLoaded&&edit==false' icon small color=#E0E0E0>
           <v-icon >mdi-plus</v-icon>
         </v-btn>
-        <v-btn v-else icon small color="#00E676" @click="arrange">
+        <v-btn v-else icon small color="#00E676" @click="done_edit">
           <v-icon >mdi-check</v-icon>
         </v-btn>
         
@@ -563,7 +532,7 @@
   </v-card>
 
   <!-- DRAGGABLE -->
-  <draggable class="mt-9 py-0" v-if="edit==true" v-model="display_details">
+  <draggable :animation="100" :move="checkMove" class="mt-9 py-0" v-if="edit==true" v-model="display_details">
    
     <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1 py-0" v-for="item in display_details" :key="item.code" >
       
@@ -636,6 +605,9 @@ import VueApexCharts from 'vue-apexcharts'
 import draggable from 'vuedraggable'
 import { longClickDirective } from 'vue-long-click'
 const longClickInstance = longClickDirective({delay: 400})
+import { getId } from '../utils'
+
+
 export default {
   name: 'Watchlist',
   components: {
@@ -646,6 +618,7 @@ export default {
   },
   data: function() {
     return{
+      user_id:'',
       edit:false,
       displaywatchlist:false,
       searchExpand: false,
@@ -962,7 +935,7 @@ export default {
       this.displaywatchlist=false
       var action = 'Add'
       let hostname = window.location.hostname
-      let addwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/1/${this.new_watchlistname}/${action}`
+      let addwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/${this.user_id}/${this.new_watchlistname}/${action}`
       try
       {
         fetch(addwatchlistAPI,{method: "get"})
@@ -991,7 +964,7 @@ export default {
     renameWatchlist(){
       this.displaywatchlist=false
       let hostname = window.location.hostname
-      let renamewatchlistAPI = `http://${hostname}:5000/rename_watchlist/1/${this.to_edit_watchlist}/${this.edited_watchlistname}`
+      let renamewatchlistAPI = `http://${hostname}:5000/rename_watchlist/${this.user_id}/${this.to_edit_watchlist}/${this.edited_watchlistname}`
       try
       {
         fetch(renamewatchlistAPI,{method: "get"})
@@ -1028,7 +1001,7 @@ export default {
       this.displaywatchlist=false
       var action = 'Delete'
       let hostname = window.location.hostname
-      let delwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/1/${this.to_delete_watchlist}/${action}`
+      let delwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/${this.user_id}/${this.to_delete_watchlist}/${action}`
       try
       {
         fetch(delwatchlistAPI,{method: "get"})
@@ -1071,7 +1044,7 @@ export default {
       var getdata =  ''
       let hostname = window.location.hostname
       let security = this.model.Code+'.'+this.model.Exchange
-      let addsecurityAPI = `http://${hostname}:5000/add_del_security/1/${this.selected_watchlist}/${security}/${action}`
+      let addsecurityAPI = `http://${hostname}:5000/add_del_security/${this.user_id}/${this.selected_watchlist}/${security}/${action}`
       this.$refs.autocomplete.blur()
       try
       {
@@ -1111,7 +1084,7 @@ export default {
       //Post delete api
       var action = 'Delete'
       let hostname = window.location.hostname
-      let deletesecurityAPI =`http://${hostname}:5000/add_del_security/1/${this.selected_watchlist}/${this.todelete_security}/${action}`
+      let deletesecurityAPI =`http://${hostname}:5000/add_del_security/${this.user_id}/${this.selected_watchlist}/${this.todelete_security}/${action}`
       try
       {
         fetch(deletesecurityAPI,{method: "get"})
@@ -1186,7 +1159,7 @@ export default {
     fetchWatchlist_func () {
       this.watchlistLoaded = false
       let hostname = window.location.hostname
-      let watchlist_listAPI = `http://${hostname}:5000/watchlist/1`
+      let watchlist_listAPI = `http://${hostname}:5000/watchlist/${this.user_id}`
       try
       {
         fetch(watchlist_listAPI,{method: "get"})
@@ -1237,7 +1210,7 @@ export default {
       this.display_details=[]
       this.securitydetails=[]
       let hostname = window.location.hostname
-      let list_symbol_API = `http://${hostname}:5000/securitylist/1/${value}`
+      let list_symbol_API = `http://${hostname}:5000/securitylist/${this.user_id}/${value}`
       try
       {
         fetch(list_symbol_API,{method: "get"})
@@ -1401,8 +1374,9 @@ export default {
       }
     },
 
-    arrange(){
+    done_edit(){
       this.edit=!this.edit
+
       // Array.prototype.move = function (from, to) {
       //   this.splice(to, 0, this.splice(from, 1)[0]);
       // };
@@ -1410,10 +1384,38 @@ export default {
       // this.securitydetails.move(0,1)
       // console.log("after: "+this.securitydetails)
     },
+
     openedit(){
       this.edit=true
     },
 
+    checkMove: function(e) {
+
+      if(e.draggedContext.index!=e.draggedContext.futureIndex){
+        window.console.log(e.draggedContext.element.code+" From:"+e.draggedContext.element.index+" Go index: " + e.draggedContext.futureIndex);
+      }
+      let hostname = window.location.hostname
+      let list_symbol_API = `http://${hostname}:5000/re_security/${this.user_id}/${this.selected_watchlist}/${e.draggedContext.element.code}/${e.draggedContext.element.index}/${e.draggedContext.futureIndex}`
+      try
+      {
+        fetch(list_symbol_API,{method: "get"})
+        .then(response =>{return response.json()})
+        .then(data =>{
+          console.log(data)      
+        })
+        .catch(e => {
+        console.log("Response status: "+e)
+        
+        })
+      }
+      catch(error)
+      {
+        this.assignNull()
+        console.log(error)
+      }
+      
+
+    }
 
   },
 
@@ -1444,7 +1446,8 @@ export default {
 
     items () {
         return this.symbolsExchangesNames
-      }
+    }
+    
   },
 
   watch: {
@@ -1465,7 +1468,19 @@ export default {
   },
 
   mounted () {
+
+    if(getId()!=0){
+      this.user_id = getId()
+      console.log(this.user_id)
+    }
+    else //FOR DEVELOPMENT PURPOSE
+    {
+      this.user_id = "1"
+      console.log(this.user_id)
+    }
     this.fetchWatchlist_func()
+    
+    
   },
 }
 </script>

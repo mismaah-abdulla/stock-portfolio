@@ -5,6 +5,7 @@ import Watchlist from '../views/Watchlist'
 import NewsFeed from '../views/News'
 import Register from '../views/Register'
 import Login from '../views/Login'
+import Portfolio from '../views/Portfolio'
 import { isValidJwt } from '../utils/index.js'
 
 Vue.use(VueRouter)
@@ -23,7 +24,7 @@ const routes = [
   },
   {
     path: '/',
-    component: Login
+    component: Portfolio
   },
   {
     path: '/newsfeed',

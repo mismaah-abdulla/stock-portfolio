@@ -84,9 +84,9 @@ export default {
           events: {
             load: function () {
               this.series.forEach((s) => {
-                s.setState("hover");
-                s.setState("");
-              });
+                s.setState("hover")
+                s.setState("")
+              })
             }
           }
         },
@@ -141,9 +141,9 @@ export default {
           pointFormat: "{point.symbol}<br/>Volatility: {point.x}% <br/> Return: {point.y}%"
         },
         series: series
-      });
+      })
     }
-  );
+  )
   }
 }
 </script>

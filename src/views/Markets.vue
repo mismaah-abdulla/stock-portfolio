@@ -16,8 +16,8 @@
     </v-tabs>
     <v-tabs-items v-model="tab" touchless>
       <v-tab-item>
-        <ChartYD v-if="stock" :key="stock.Code" :stock="stock" :tab="tab"/>
-        <StockMap :stock="stock" />
+        <Chart v-if="stock" :key="stock.Code" :stock="stock" :tab="tab"/>
+        <!-- <StockMap :stock="stock" /> -->
       </v-tab-item>
       <v-tab-item>
         <Stats v-if="stock"  :key="stock.Code" :stock="stock"></Stats>
@@ -29,19 +29,19 @@
 </template>
 
 <script>
-// import Chart from '../components/Chart'
-import ChartYD from '../components/ChartYD'
+import Chart from '../components/Chart'
+// import ChartYD from '../components/ChartYD'
 import CompanyDetails from '../components/CompanyDetails'
 import Stats from '../components/Stats'
-import StockMap from '../components/StockMap'
+// import StockMap from '../components/StockMap'
 export default {
   name: "Search",
   components: {
-    // Chart,
-    ChartYD,
+    Chart,
+    // ChartYD,
     CompanyDetails,
     Stats,
-    StockMap
+    // StockMap
   },
   data: () => ({
     stock: null,

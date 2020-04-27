@@ -16,7 +16,7 @@
               color="#f5f5f5"
               v-on="on"
               class="pl-0 noFocus"
-              @click='displaywatchlist_func'
+              @click.stop="displaywatchlist_func"
             >
             <v-icon color="#00E676" v-if='!displaywatchlist'>
               mdi-chevron-down
@@ -532,7 +532,7 @@
   <draggable :animation="100" :move="checkMove"  @end='enddrag' class="mt-9 py-0" v-if="edit==true" v-model="display_details">
    
     <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1 py-0" v-for="item in display_details" :key="item.code" >
-          <v-row class="ma-0 ">
+          <v-row class="ma-0">
             <v-icon class="pa-0" x-small color="grey" >mdi-dots-vertical</v-icon>
             <v-col class="px-0 ma-0" cols=1  v-if="item.logo">
               <v-avatar tile color="transparent">
@@ -602,7 +602,8 @@ import draggable from 'vuedraggable'
 import { longClickDirective } from 'vue-long-click'
 const longClickInstance = longClickDirective({delay: 400})
 import { getId } from '../utils'
-
+import store from '../store'
+import authHeader from '../services/auth-header'
 
 export default {
   name: 'Watchlist',
@@ -894,7 +895,16 @@ export default {
 
     displaywatchlist_func(){
       this.displaywatchlist=!this.displaywatchlist
+      this.displaywatchlist && this.$nextTick(() => {
+        document.addEventListener('click', this.hide)
+      })
     },
+
+    hide() {
+      this.displaywatchlist = false
+      document.removeEventListener('click', this.hide)
+    },
+
     searchBtn(){
       this.$refs.autocomplete.focus()
       this.searchExpand = true
@@ -936,10 +946,23 @@ export default {
       let addwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/${this.user_id}/${this.new_watchlistname}/${action}`
       try
       {
-        fetch(addwatchlistAPI,{method: "get"})
+        fetch(addwatchlistAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        console.log(data)
+          if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+          } else {
+            console.log(data)
+          }  
+          
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -965,10 +988,22 @@ export default {
       let renamewatchlistAPI = `http://${hostname}:5000/rename_watchlist/${this.user_id}/${this.to_edit_watchlist}/${this.edited_watchlistname}`
       try
       {
-        fetch(renamewatchlistAPI,{method: "get"})
+        fetch(renamewatchlistAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        console.log(data)
+        if (data.authenticated == false) {
+          store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+        } else {
+          console.log(data)
+        }  
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1002,10 +1037,22 @@ export default {
       let delwatchlistAPI = `http://${hostname}:5000/add_del_watchlist/${this.user_id}/${this.to_delete_watchlist}/${action}`
       try
       {
-        fetch(delwatchlistAPI,{method: "get"})
+        fetch(delwatchlistAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        console.log(data) 
+        if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+        } else {
+          console.log(data)
+        }  
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1046,22 +1093,33 @@ export default {
       this.$refs.autocomplete.blur()
       try
       {
-        fetch(addsecurityAPI,{method: "get"})
+        fetch(addsecurityAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        getdata=data
-        console.log("Status: "+getdata)
-        
-        if(getdata.toLowerCase().includes("fail")){
-          this.snackbar_text=security+" is already in "+this.selected_watchlist
-          this.snackbar=true
-        }else{
-          this.snackbar_text=security+" added to "+this.selected_watchlist
-          this.snackbar=true
-          this.totalsecurity++
-          this.fetchWatchlistsymbol (this.selected_watchlist)
-        }
 
+        if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+        } else {
+          console.log("Status: "+getdata)
+         
+          if(getdata.toLowerCase().includes("fail")){
+            this.snackbar_text=security+" is already in "+this.selected_watchlist
+            this.snackbar=true
+          }else{
+            this.snackbar_text=security+" added to "+this.selected_watchlist
+            this.snackbar=true
+            this.totalsecurity++
+            this.fetchWatchlistsymbol (this.selected_watchlist)
+          }
+        } 
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1085,10 +1143,23 @@ export default {
       let deletesecurityAPI =`http://${hostname}:5000/add_del_security/${this.user_id}/${this.selected_watchlist}/${this.todelete_security}/${action}`
       try
       {
-        fetch(deletesecurityAPI,{method: "get"})
+        fetch(deletesecurityAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        console.log(data) 
+        if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+        } else {
+            console.log(data);
+        }
+        
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1160,23 +1231,35 @@ export default {
       let watchlist_listAPI = `http://${hostname}:5000/watchlist/${this.user_id}`
       try
       {
-        fetch(watchlist_listAPI,{method: "get"})
+        fetch(watchlist_listAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        this.listofWatchlist=[]
-        if(data.length>0){
-          this.default_watchlist=data[0]      
-          this.selected_watchlist=data[0]
-          for(var i=0;i<data.length;i++){
-            this.listofWatchlist.push(data[i])
+        if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+        } else {
+          this.listofWatchlist=[]
+          if(data.length>0){
+            this.default_watchlist=data[0]      
+            this.selected_watchlist=data[0]
+            for(var i=0;i<data.length;i++){
+              this.listofWatchlist.push(data[i])
+            }
+            this.fetchWatchlistsymbol(this.default_watchlist)
+            this.securityLoaded=true
           }
-          this.fetchWatchlistsymbol(this.default_watchlist)
-          this.securityLoaded=true
+          //console.log(this.listofWatchlist)
+          else{this.securityLoaded=true}
+          
+          this.watchlistLoaded = true
         }
-        //console.log(this.listofWatchlist)
-        else{this.securityLoaded=true}
-        
-        this.watchlistLoaded = true
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1211,16 +1294,28 @@ export default {
       let list_symbol_API = `http://${hostname}:5000/securitylist/${this.user_id}/${value}`
       try
       {
-        fetch(list_symbol_API,{method: "get"})
+        fetch(list_symbol_API,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        this.totalsecurity=data.length
-        for(var i=0;i<data.length;i++){
-          this.securityLoaded = false
-          this.fetchrealtime (data[i],i) 
+        if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+        } else {
+          this.totalsecurity=data.length
+          for(var i=0;i<data.length;i++){
+            this.securityLoaded = false
+            this.fetchrealtime (data[i],i) 
+          } 
+          if(data.length==0){ this.securityLoaded = true} 
         }
-        
-        if(data.length==0){ this.securityLoaded = true}        
+
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1240,32 +1335,43 @@ export default {
       let realtimeAPI = `http://${hostname}:5000/rt/${security}`
       try
       {
-        fetch(realtimeAPI,{method: "get"})
+        fetch(realtimeAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-      
-        var ts=new Date(data.last_update * 1000)
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-        var month = months[ts.getMonth()]
-        var date = ts.getDate()
+          if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+          } else {
+            var ts=new Date(data.last_update * 1000)
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+            var month = months[ts.getMonth()]
+            var date = ts.getDate()
 
-        var time
-        var now = new Date()
-        var nowdate = now.getDate()
-        var nowhour = now.getHours().toString().length == 1 ? '0' + now.getHours() : now.getHours()
-        var nowmin = now.getMinutes().toString().length == 1 ? '0' + now.getMinutes() : now.getMinutes()
+            var time
+            var now = new Date()
+            var nowdate = now.getDate()
+            var nowhour = now.getHours().toString().length == 1 ? '0' + now.getHours() : now.getHours()
+            var nowmin = now.getMinutes().toString().length == 1 ? '0' + now.getMinutes() : now.getMinutes()
 
-        if(data.status=="True")
-          date == (nowdate) ? time = nowhour + ':' + nowmin : time = date + ' ' + month 
-        else
-          time = date + ' ' + month
+            if(data.status=="True")
+              date == (nowdate) ? time = nowhour + ':' + nowmin : time = date + ' ' + month 
+            else
+              time = date + ' ' + month
 
-        data.last_update=time
-        data.index=index
+            data.last_update=time
+            data.index=index
 
-        if(data.logo) data.logo =`https://eodhistoricaldata.com${data.logo}`
-        this.securitydetails.push(Object.assign({},data))
-        return data
+            if(data.logo) data.logo =`https://eodhistoricaldata.com${data.logo}`
+            this.securitydetails.push(Object.assign({},data))
+            return data
+          } 
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1373,7 +1479,7 @@ export default {
     },
 
     done_edit(){
-      this.edit=false
+      this.edit=!this.edit
     },
 
     openedit(){
@@ -1400,10 +1506,22 @@ export default {
         let rearrangeAPI = `http://${hostname}:5000/re_security/${this.user_id}/${this.selected_watchlist}/${this.drag_symbol}/${this.drag_from}/${this.drag_where}`
         try 
         {
-              fetch(rearrangeAPI,{method: "get"})
+              fetch(rearrangeAPI,{method: "get",headers: authHeader()})
               .then(response =>{return response.json()})
               .then(data =>{
-                console.log(data)      
+                if (data.authenticated == false) {
+                  store.dispatch('auth/logout').then(
+                    () => {
+                      alert("Session Expired. Please login again.")
+                      this.$router.push('/login');
+                    },
+                    error => {
+                      console.log(error);
+                    }
+                  )
+                } else {
+                  console.log(data)
+                }       
               })
               .catch(e => {
               console.log("Response status: "+e)
@@ -1466,18 +1584,23 @@ export default {
   },
 
   mounted () {
-
     if(getId()!=0){
       this.user_id = getId()
       console.log(this.user_id)
+      this.fetchWatchlist_func()
     }
-    else //FOR DEVELOPMENT PURPOSE
+    else
     {
-      this.user_id = "1"
-      console.log(this.user_id)
-    }
-    this.fetchWatchlist_func()
-    
+      store.dispatch('auth/logout').then(
+        () => {
+          alert("Session Expired. Please login again.")
+          this.$router.push('/login');
+        },
+        error => {
+          console.log(error);
+        }
+      )
+    } 
   },
 }
 </script>

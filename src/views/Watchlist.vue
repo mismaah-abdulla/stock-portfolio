@@ -224,7 +224,7 @@
     </v-row>   
   </v-card>
   
-  <v-card outlined color=transparent border-color=white height=50% v-if="asset_peopleSwitch=='asset'&&edit==false">
+  <v-card outlined color=transparent border-color=white height=50% v-show="asset_peopleSwitch=='asset'&&edit==false">
    
   <template>
 
@@ -232,7 +232,7 @@
 			ref="list"
 			:items="display_details"
       item-key="code"
-      @active="swipe_active=!swipe_active"
+      @active="swiped"
       v-longclick="openedit"
 		>
         <template v-slot="{ item }">
@@ -529,7 +529,7 @@
   </v-card>
 
   <!-- DRAGGABLE -->
-  <draggable :animation="100" :move="checkMove"  @end='enddrag' class="mt-9 py-0" v-if="edit==true" v-model="display_details">
+  <draggable :animation="100" :move="checkMove"  @end='enddrag' class="mt-9 py-0" v-show="edit==true" v-model="display_details">
    
     <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1 py-0" v-for="item in display_details" :key="item.code" >
           <v-row class="ma-0">
@@ -892,6 +892,11 @@ export default {
   },
 
   methods:{
+    swiped(){
+      if(this.edit==false){
+        this.swipe_active=!this.swipe_active
+      }
+    },
 
     displaywatchlist_func(){
       this.displaywatchlist=!this.displaywatchlist
@@ -1086,7 +1091,6 @@ export default {
 
     addsecurity(){
       var action = 'Add'
-      var getdata =  ''
       let hostname = window.location.hostname
       let security = this.model.Code+'.'+this.model.Exchange
       let addsecurityAPI = `http://${hostname}:5000/add_del_security/${this.user_id}/${this.selected_watchlist}/${security}/${action}`
@@ -1108,9 +1112,9 @@ export default {
               }
             )
         } else {
-          console.log("Status: "+getdata)
+          console.log("Status: "+data)
          
-          if(getdata.toLowerCase().includes("fail")){
+          if(data.toLowerCase().includes("fail")){
             this.snackbar_text=security+" is already in "+this.selected_watchlist
             this.snackbar=true
           }else{
@@ -1480,7 +1484,7 @@ export default {
     },
 
     done_edit(){
-      this.edit=!this.edit
+      this.edit=false
     },
 
     openedit(){
@@ -1499,7 +1503,6 @@ export default {
         this.drag_from=e.draggedContext.element.index
         this.drag_where=e.draggedContext.futureIndex  
       }
-
     },
     enddrag(){
       if((this.drag_symbol||this.drag_from||this.drag_where)!=''){

@@ -141,8 +141,8 @@
     </v-row>
     
     <!--ADD MARKET-->
-    <v-scroll-x-reverse-transition hide-on-leave>
-      <v-row v-show="searchExpand" class=pa-2 >
+    <v-scroll-x-reverse-transition  hide-on-leave>
+      <v-row v-show="searchExpand" v-if="selected_watchlist!=''" class=pa-2 >
         <v-autocomplete
             autofocus
             ref="autocomplete"
@@ -1070,7 +1070,7 @@ export default {
         }
       }
       if(this.listofWatchlist==0){this.selected_watchlist='';this.default_watchlist=''}
-
+      console.log("Selected: "+this.selected_watchlist)
       if(this.selected_watchlist==this.to_delete_watchlist){
         this.securitydetails=[]
         if(this.listofWatchlist.length>0){
@@ -1372,6 +1372,7 @@ export default {
             this.securitydetails.push(Object.assign({},data))
             return data
           } 
+
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1584,6 +1585,7 @@ export default {
   },
 
   mounted () {
+
     if(getId()!=0){
       this.user_id = getId()
       console.log(this.user_id)

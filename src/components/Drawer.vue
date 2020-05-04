@@ -13,13 +13,10 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-      </v-list>
-
-      <template v-slot:append>
         <div class="pa-2">
-          <v-btn block @click="logout()">Logout</v-btn>
+          <v-btn block color="white" @click="logout()">Logout</v-btn>
         </div>
-      </template>
+      </v-list>
 
     </v-navigation-drawer>
     <v-app-bar v-if="this.$route.name != 'Watchlist'"
@@ -87,6 +84,7 @@
       {title: "Portfolio", icon: "recent_actors", link: '/'},
       {title: "Watchlist", icon: "list", link: '/watchlist'},
       {title: "News Feed", icon: "dynamic_feed", link: '/newsfeed'},
+      {title: "Profile", icon: "mdi-account-multiple", link: '/profile'}
       ],
       search: null,
       searchExpand: false,

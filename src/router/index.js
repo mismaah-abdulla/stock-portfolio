@@ -3,10 +3,12 @@ import VueRouter from 'vue-router'
 import Markets from '../views/Markets'
 import Watchlist from '../views/Watchlist'
 import NewsFeed from '../views/News'
+//import Portfolio from '../views/Portfolio'
 import Register from '../views/Register'
 import Login from '../views/Login'
-import Portfolio from '../views/Portfolio'
+import Profile from '../views/Profile'
 import { isValidJwt } from '../utils/index.js'
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -24,7 +26,7 @@ const routes = [
   },
   {
     path: '/',
-    component: Portfolio
+    component: Login
   },
   {
     path: '/newsfeed',
@@ -40,6 +42,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
   }
 ]
 
@@ -54,9 +61,16 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.path);
   const result = isValidJwt();
   //console.log('result: '+result);
-  if (authRequired && result == false) {
-    //console.log('no token/expired');
-    next('/login');
+  if (authRequired && (result == false)) {
+    store.dispatch('auth/logout').then(
+      () => {
+        alert("Session Expired. Please login again.")
+        next('/login')
+      },
+      error => {
+        console.log(error);
+      }
+    )
   } else {
     //console.log('token available');
     next();

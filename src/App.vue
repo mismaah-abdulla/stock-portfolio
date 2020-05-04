@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Drawer v-if="(this.$route.name != 'Register') && (this.$route.name != 'Login')" :drawer="drawer"></Drawer>
+    <Drawer v-if="(this.$route.name != 'Register') && (this.$route.name != 'Login') && (this.$route.name != 'Profile')" :drawer="drawer"></Drawer>
     <v-content>
       <router-view :key="$route.fullPath" @drawer="drawer = !drawer"/>
     </v-content>
@@ -8,6 +8,7 @@
 </template>
 <script>
 import Drawer from './components/Drawer'
+
 export default {
   name: 'App',
   components: {

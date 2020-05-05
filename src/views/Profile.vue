@@ -309,11 +309,11 @@
           <div v-if="displayName == ''" contenteditable @blur="onEdit" spellcheck="false" class="body-2 font-weight-bold black--text">Display Name</div>
           <div v-else contenteditable @blur="onEdit" spellcheck="false" class="body-2 font-weight-bold black--text">{{displayName}}</div>
           <select id="countryDropdown" class="countries" @change="onEdit2">
-            <option v-if="country == ''" value="">Country</option>
-            <option v-else-if="country !== ''">{{country}}</option>
-            <option v-if="country !== 'United States'" value="United States">United States</option>
-            <option v-if="country !== 'Singapore'" value="Singapore">Singapore</option>
-            <option v-if="country !== 'Hong Kong'" value="Hong Kong">Hong Kong</option>
+            <option v-if="country !== ''">{{country}}</option> 
+            <option v-else value="">Country</option>
+            <option value="United States">United States</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Hong Kong">Hong Kong</option>
           </select>
           <!--<div v-if="country == ''" contenteditable @blur="onEdit2" spellcheck="false" class="caption font-weight-bold black--text">Country</div>
           <div v-else class="caption font-weight-regular grey--text text--darken-3">{{country}}</div>-->
@@ -1007,7 +1007,7 @@ export default {
 }
 .countries option {
   color: black;
-  padding: 6px 10px;
+  padding: 4px 8px;
   font-size: 13px;
   display: block;
 }

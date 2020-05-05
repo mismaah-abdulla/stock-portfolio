@@ -1,10 +1,10 @@
 <template>
 <div id="app">
-  <v-app-bar app>
+  <v-app-bar color=white app elevation="1">
     <v-row v-if="!searchExpand" align=center >
-      <v-app-bar-nav-icon @click.stop="drawer()"/>
+      <v-avatar  size=35 tile @click.stop="drawer()"><img src="../assets/AppLogo.jpg"></v-avatar>
       <!-- Watchlist select --> 
-      <v-col>
+      <v-col class=pl-2>
         <v-menu v-if='securityLoaded'
           bottom
           offset-y
@@ -13,7 +13,7 @@
           <template v-slot:activator="{ on }">
             <v-btn
               elevation=0
-              color="#f5f5f5"
+              color=white
               v-on="on"
               class="pl-0 noFocus"
               @click.stop="displaywatchlist_func"
@@ -55,7 +55,7 @@
           <template v-slot:activator="{ on }">
             <v-btn
               elevation=0
-              color="#f5f5f5"
+              color=white
               v-on="on"
               class="pl-0 noFocus"
             >
@@ -110,38 +110,21 @@
       </v-dialog> 
       <!-- END OF EDIT WATCHLIST BUTTON -->  
       <v-spacer/>
-        <v-btn v-if='edit==false' icon @click="asset_peopleSwitch='asset'" small >
-          <v-icon v-if="asset_peopleSwitch=='asset'" color="#00E676">
-            mdi-currency-usd-circle-outline
-          </v-icon>
-          <v-icon v-else color=#E0E0E0  >
-            mdi-currency-usd-circle-outline
-          </v-icon>
-        </v-btn> 
         
-        <v-btn icon v-if='edit==false'  @click="asset_peopleSwitch='people'" small > 
-          <v-icon v-if="asset_peopleSwitch=='people'" color="#00E676">
-            mdi-account-multiple
-          </v-icon>
-          <v-icon v-else color=#E0E0E0>
-            mdi-account-multiple
-          </v-icon>
-        </v-btn>
-
-        <v-btn  v-if='securityLoaded&&edit==false' icon small  @click="searchBtn">
-          <v-icon >mdi-plus</v-icon>
-        </v-btn>
-        <v-btn v-else-if='!securityLoaded&&edit==false' icon small color=#E0E0E0>
-          <v-icon >mdi-plus</v-icon>
-        </v-btn>
-        <v-btn v-else icon small color="#00E676" @click="done_edit">
-          <v-icon >mdi-check</v-icon>
-        </v-btn>
+      <v-btn v-if='securityLoaded&&edit==false' icon small  @click="searchBtn">
+        <v-icon >mdi-plus</v-icon>
+      </v-btn>
+      <v-btn v-else-if='!securityLoaded&&edit==false' icon small color=#E0E0E0>
+        <v-icon >mdi-plus</v-icon>
+      </v-btn>
+      <v-btn v-else icon small color="#00E676" @click="done_edit()">
+        <v-icon >mdi-check</v-icon>
+      </v-btn>
       
     </v-row>
     
     <!--ADD MARKET-->
-    <v-scroll-x-reverse-transition  hide-on-leave>
+    <v-scroll-x-reverse-transition hide-on-leave>
       <v-row v-show="searchExpand" v-if="selected_watchlist!=''" class=pa-2 >
         <v-autocomplete
             autofocus
@@ -189,17 +172,31 @@
       color="#00C853"
   ></v-progress-linear>
 
+  <!-- ASSET PEOPLE SWITCH -->
+ <v-app-bar color="grey lighten-4" flat dense height="30" >
+    <v-col cols="3" class="mr-n4 ml-n5">
+      <v-btn v-if="asset_peopleSwitch=='asset'" x-small depressed color="lime lighten-2">Assets</v-btn>
+      <v-btn v-else @click="asset_peopleSwitch='asset'" x-small outlined color="lime darken-2">Assets</v-btn>
+    </v-col>
+    <v-col cols="3" class="mr-n5">
+      <v-btn v-if="asset_peopleSwitch=='people'" x-small depressed color="lime lighten-2">People</v-btn>
+      <v-btn v-else @click="asset_peopleSwitch='people'" x-small outlined color="lime darken-2">People</v-btn>
+    </v-col>
+  </v-app-bar>
+
+
   <!-- ASSET INFO LIST -->
 
-  <v-card class="grey lighten-5 header" v-if="asset_peopleSwitch=='asset'" elevation=1 absolute style="border-radius: 0px;" >  
+  <v-card height=30 class="white header" v-if="asset_peopleSwitch=='asset'" elevation=1 absolute style="border-radius: 0px;" >  
     <v-row
         justify=center
         class="subtitle-2 font-weight-medium"
+        dense
     >
       <v-col cols=3 class="text-left pl-1">  
           Symbol 
       </v-col>
-      <v-col cols=3 class="text-right pr-1" @click="temp_change">
+      <v-col cols=3 class="text-right pr-1" >
           Change
       </v-col>
       <v-col cols=5 class="text-left pl-7">
@@ -207,15 +204,16 @@
       </v-col>
     </v-row>   
   </v-card>
-  <v-card class="grey lighten-5 header" v-else elevation=1 absolute style="border-radius: 0px;" >  
+  <v-card height=30 class="white header" v-else elevation=1 absolute style="border-radius: 0px;" >  
     <v-row
         justify=center
         class="subtitle-2 font-weight-medium"
+        dense
     >
       <v-col cols=3 class="text-left pl-1">  
           People 
       </v-col>
-      <v-col cols=4 class="text-center pr-0" @click="temp_change">
+      <v-col cols=4 class="text-center pr-0" >
           Risk Score
       </v-col>
       <v-col cols=4 class="text-right pr-1">
@@ -280,10 +278,9 @@
             </v-col>
 
             <!-- INTRADAY CHART-->
-            <v-col cols=3 class="pt-3 pl-1 py-0 ma-0 pa-0" @click="goToMarkets(item)">
-            <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
+            <v-col v-if="asset_peopleSwitch=='asset'&&edit==false" cols=3 class="pt-3 pl-1 py-0 ma-0 pa-0" @click="goToMarkets(item)">
+              <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
               <apexchart v-else height="25%" width="95%" type="area" :options="chartOptionsNegative" :series="item.series"></apexchart> 
-              <!-- <highcharts :series = "item.series" :options="chartOptions" ></highcharts> -->
             </v-col>
 
             <!-- TRADE PAGE -->
@@ -529,9 +526,9 @@
   </v-card>
 
   <!-- DRAGGABLE -->
-  <draggable :animation="100" :move="checkMove"  @end='enddrag' class="mt-9 py-0" v-show="edit==true" v-model="display_details">
+  <draggable :animation="100" :move="checkMove"  @end='enddrag' class="pt-6" v-show="edit==true" v-model="display_details">
    
-    <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1 py-0" v-for="item in display_details" :key="item.code" >
+    <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1" v-for="item in display_details" :key="item.code" >
           <v-row class="ma-0">
             <v-icon class="pa-0" x-small color="grey" >mdi-dots-vertical</v-icon>
             <v-col class="px-0 ma-0" cols=1  v-if="item.logo">
@@ -1430,11 +1427,12 @@ export default {
     },
 
     goToMarkets(item){
-  
       var model_code = item.code.split('.')[0]
       var model_exchange = item.code.split('.')[1] 
-      this.$router.push({name: 'Markets', params: {code: model_code, exchange: model_exchange}})
- 
+      var model_URL = item.logo
+      var model_name = item.name
+
+      this.$router.push({name: 'Markets', params: {code: model_code, exchange: model_exchange, LogoURL: model_URL, name: model_name}})
     },
 
     fetchData() {
@@ -1484,7 +1482,9 @@ export default {
     },
 
     done_edit(){
-      this.edit=false
+      if(this.swipe_active==false){
+        this.edit=false
+      }
     },
 
     openedit(){
@@ -1644,7 +1644,7 @@ export default {
 }
 
 .swipeout-list-item:first-of-type {
-  border-top: 40px solid transparent;
+  border-top: 28px solid transparent;
 }
 
 .v-list-item:first-child {
@@ -1666,13 +1666,6 @@ export default {
 
 .centered-input input {
   text-align: center
-}
-
-.first-list-item{
-  background: #E8E8E8;
-  border-top-style: solid;
-  border-top-width: 0px;
-  border-top-color: white;
 }
 
 .header {

@@ -1,6 +1,7 @@
 <template>
   <div id='app'>
-    <!--Setup Profile Page -->
+    <!--Setup Profile Page (REMOVED)-->
+<!--
     <div v-if="firstVisit1">
       <v-app-bar color="white">
         <v-btn icon @click="goToWatchlist()">
@@ -12,15 +13,12 @@
         <v-btn icon @click="currentPage = 'profile'">
           <v-icon v-if="currentPage=='profile'" color="#00E676">mdi-account</v-icon>
           <v-icon v-else-if="currentPage!=='profile'">mdi-account</v-icon>
-          <!--mdi-smart-card-->
         </v-btn>
         <v-btn icon @click="currentPage = 'portfolio'">
-          <!--<v-icon>mdi-book-account</v-icon>-->
           <v-icon v-if="currentPage=='portfolio'" color="#00E676">mdi-chart-areaspline</v-icon>
           <v-icon v-else-if="currentPage!=='portfolio'">mdi-chart-areaspline</v-icon>
         </v-btn>
         <v-btn icon @click="currentPage = 'activities'">
-          <!--<v-icon>mdi-newspaper-variant</v-icon>-->
           <v-icon v-if="currentPage=='activities'" color="#00E676">mdi-earth</v-icon>
           <v-icon v-else-if="currentPage!=='activities'">mdi-earth</v-icon>
         </v-btn>
@@ -59,10 +57,10 @@
         >
         </croppa>
       </v-row>
-
-
-      <v-card dense outlined color=transparent border-color=white class="px-3">
+-->
 <!--
+      <v-card dense outlined color=transparent border-color=white class="px-3">
+
         <v-row justify="center" align="center" class="mt-3">
           <form id="imageForm">
             <v-avatar size="110" color="grey lighten-2" outlined>
@@ -79,6 +77,7 @@
           </form> 
         </v-row>
 -->
+<!--
         <v-row justify="center" class="mt-2 mb-2">
           <v-btn x-small @click="removeImage(1)">Remove</v-btn>        
         </v-row>
@@ -223,223 +222,269 @@
         </ValidationObserver> 
       </v-card>
     </div>
-
+-->
     <!--Show Profile Page-->
-    <div v-else>
-      <div v-if="(editpp == false && editcp == false)">
-        <v-app-bar color="white" class="mb-n1">
-          <v-btn icon @click="goToWatchlist()">
-            <v-avatar size="45" tile color="white">
-              <img src="@/assets/AppLogo.jpg" alt="">
-            </v-avatar>          
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="currentPage = 'profile'">
-            <v-icon v-if="currentPage=='profile'" color="#00E676">mdi-account</v-icon>
-            <v-icon v-else-if="currentPage!=='profile'">mdi-account</v-icon>
-            <!--mdi-smart-card-->
-          </v-btn>
-          <v-btn icon @click="currentPage = 'portfolio'">
-            <!--<v-icon>mdi-book-account</v-icon>-->
-            <v-icon v-if="currentPage=='portfolio'" color="#00E676">mdi-chart-areaspline</v-icon>
-            <v-icon v-else-if="currentPage!=='portfolio'">mdi-chart-areaspline</v-icon>
-          </v-btn>
-          <v-btn icon @click="currentPage = 'activities'">
-            <!--<v-icon>mdi-newspaper-variant</v-icon>-->
-            <v-icon v-if="currentPage=='activities'" color="#00E676">mdi-earth</v-icon>
-            <v-icon v-else-if="currentPage!=='activities'">mdi-earth</v-icon>
-          </v-btn>
+    <div v-if="(editpp == false && editcp == false)">
+      <!--Top Bar-->
+      <v-app-bar color="white" flat dense>
+        <v-btn icon @click="goToWatchlist()">
+          <v-avatar size="35" tile color="white">
+            <v-icon v-if="profile_pic == ''" size="30">mdi-face</v-icon>
+            <img v-else :src="profilePicture">
+          </v-avatar>          
+        </v-btn>
+        <div v-if="(displayName == '' && country == '')">
+          <span spellcheck="false" class="body-2 font-weight-bold black--text">Display Name</span><br>
+        </div>
 
-          <v-spacer></v-spacer>
-          <v-btn icon>
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
-        </v-app-bar>
+        <div v-else-if="(displayName !== '' && country == '')" spellcheck="false" class="caption font-weight-bold black--text">{{displayName}}<br></div>
+        <div v-else-if="(displayName == '' && country !== '')" spellcheck="false" class="caption font-weight-bold black--text">Display Name<br>{{country}}</div>
+        <div v-else spellcheck="false" class="caption font-weight-bold black--text">{{displayName}}<br>{{country}}</div>        
 
-        <v-row dense class="mb-n12">
-          <v-col cols="12">
-            <img v-if="cover_pic == ''" src="@/assets/blueBackground.jpg" height="170" width="100%" @click="editCoverPic()">
-            <img v-else :src="coverPicture" alt="" height="170" width="100%" @click="editCoverPic()">
-          </v-col>
-        </v-row>
 
-        <v-row class="mt-n12">
+        <v-spacer></v-spacer>
+        <v-btn icon @click="currentPage = 'watchlist'">
+          <v-icon v-if="currentPage == 'watchlist'" color="#00E676">mdi-eye-plus</v-icon>
+          <v-icon v-else-if="currentPage !== 'watchlist'">mdi-eye-plus</v-icon>
+        </v-btn>
+        <v-btn icon @click="currentPage = 'writePost'">
+          <v-icon v-if="currentPage == 'writePost'" color="#00E676">mdi-pencil-box-multiple</v-icon>
+          <v-icon v-else-if="currentPage !== 'writePost'">mdi-pencil-box-multiple</v-icon>
+        </v-btn>
+        <v-btn icon>
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+      </v-app-bar>
+      <!--//Top Bar-->
+<!--
+        <v-btn icon @click="currentPage = 'profile'">
+          <v-icon v-if="currentPage=='profile'" color="#00E676">mdi-account</v-icon>
+          <v-icon v-else-if="currentPage!=='profile'">mdi-account</v-icon>
+        </v-btn>
+        <v-btn icon @click="currentPage = 'portfolio'">
+          <v-icon v-if="currentPage=='portfolio'" color="#00E676">mdi-chart-areaspline</v-icon>
+          <v-icon v-else-if="currentPage!=='portfolio'">mdi-chart-areaspline</v-icon>
+        </v-btn>
+        <v-btn icon @click="currentPage = 'activities'">
+          <v-icon v-if="currentPage=='activities'" color="#00E676">mdi-earth</v-icon>
+          <v-icon v-else-if="currentPage!=='activities'">mdi-earth</v-icon>
+        </v-btn>
+-->
+      <!--Header Bar-->
+      <v-app-bar color="grey lighten-4" class="mb-n1" dense height="30" flat>
+        <v-col cols="3" @click="currentPage = 'profile'" class="mr-n3 ml-n5">
+          <v-btn v-if="currentPage == 'profile'" x-small depressed color="lime lighten-2">Profile</v-btn>
+          <v-btn v-else x-small outlined color="lime darken-2">Profile</v-btn>
+        </v-col>
+        <v-col cols="3" @click="currentPage = 'posts'" class="mr-n5">
+          <v-btn v-if="currentPage == 'posts'" x-small depressed color="lime lighten-2">Posts</v-btn>
+          <v-btn v-else x-small outlined color="lime darken-2">Posts</v-btn>
+        </v-col>
+        <v-col cols="4" @click="currentPage = 'portfolio'">
+          <v-btn v-if="currentPage == 'portfolio'" x-small depressed color="lime lighten-2">Portfolio</v-btn>
+          <v-btn v-else x-small outlined color="lime darken-2">Portfolio</v-btn>
+        </v-col>        
+      </v-app-bar>
+      <!--//Header Bar-->
+      <!--Cover Picture-->
+      <v-row dense class="mb-n12">
+        <v-col cols="12">
+          <img v-if="cover_pic == ''" src="@/assets/blueBackground.jpg" height="110" width="100%" @click="editCoverPic()">
+          <img v-else :src="coverPicture" alt="" height="110" width="100%" @click="editCoverPic()">
+        </v-col>
+      </v-row>
+      <!--//Cover Picture-->
 
-          <v-col cols="4" class="mt-n10 ml-4">
-            <v-avatar size="120" color="white" outlined>
-              <v-icon v-if="profile_pic == ''" size="50" @click="editProfilePic()">mdi-face</v-icon>
-              <img v-else :src="profilePicture" @click="editProfilePic()">
-            </v-avatar>    
-          </v-col>
-
-          <v-col cols="6" class="mt-7">
-            <div contenteditable @blur="onEdit" spellcheck="false" class="body-2 font-weight-bold black--text">{{displayName}}</div>
-            <div class="caption font-weight-regular grey--text text--darken-3">{{country}}</div>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12" class="ml-3">
-            <div class="text-left font-weight-bold black--text">Dashboard</div>
-          </v-col>
-          <v-col cols="12" class="ml-3 mt-n5 mb-n4">
-            <div class="text-left font-italic caption">Private to you</div>
-          </v-col>
-        </v-row>
-        
-        <v-row align="center" justify="center">
-          <v-col cols="4">
-            <v-card outlined color="grey lighten-2" max-height="60">
-              <v-card-text class="body-2">
-                <div class="text-center mt-n2 font-weight-bold black--text">76</div>
-                <div class="text-center mx-n3">Profile Views</div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-          <v-col cols="4" class="ml-n3 mr-n3">
-            <v-card outlined color="grey lighten-2" max-height="60">
-              <v-card-text class="body-2">
-                <div class="text-center mt-n2 font-weight-bold black--text">150</div>
-                <div class="text-center mx-n2">Post Views</div>
-              </v-card-text>
-            </v-card>          
-          </v-col>
-          <v-col cols="4">
-            <v-card outlined color="grey lighten-2" max-height="60">
-              <v-card-text class="body-2">
-                <div class="text-center mt-n2 font-weight-bold black--text">25</div>
-                <div class="text-center mx-n2">Searches</div>
-              </v-card-text>
-            </v-card>          
-          </v-col>
-        </v-row>
-
-        <v-row class="mb-n4">
-          <v-col cols="12" class="ml-3">
-            <div class="text-left font-weight-bold black--text">About</div>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12" class="ml-3">
-            <div contenteditable @blur="onEdit1" spellcheck="false" class="text-left font-weight-light black--text">{{about}}</div>
-          </v-col>
-        </v-row>
+      <v-row class="mt-n12">
+        <!--Profile Picture-->
+        <v-col cols="4" class="mt-n10 ml-4">
+          <v-avatar size="120" color="white" outlined>
+            <v-icon v-if="profile_pic == ''" size="50" @click="editProfilePic()">mdi-face</v-icon>
+            <img v-else :src="profilePicture" @click="editProfilePic()">
+          </v-avatar>    
+        </v-col>
+        <!--//Profile Picture-->
+        <!--Display Name & Country-->
+        <v-col cols="6" class="mt-7">
+          <div v-if="displayName == ''" contenteditable @blur="onEdit" spellcheck="false" class="body-2 font-weight-bold black--text">Display Name</div>
+          <div v-else contenteditable @blur="onEdit" spellcheck="false" class="body-2 font-weight-bold black--text">{{displayName}}</div>
+          <select id="countryDropdown" class="countries" @change="onEdit2">
+            <option v-if="country == ''" value="">Country</option>
+            <option v-else-if="country !== ''">{{country}}</option>
+            <option v-if="country !== 'United States'" value="United States">United States</option>
+            <option v-if="country !== 'Singapore'" value="Singapore">Singapore</option>
+            <option v-if="country !== 'Hong Kong'" value="Hong Kong">Hong Kong</option>
+          </select>
+          <!--<div v-if="country == ''" contenteditable @blur="onEdit2" spellcheck="false" class="caption font-weight-bold black--text">Country</div>
+          <div v-else class="caption font-weight-regular grey--text text--darken-3">{{country}}</div>-->
+        </v-col>
+        <!--Display Name & Country-->
+      </v-row>
+      <!--Dashboard-->
+      <v-row>
+        <v-col cols="12" class="ml-3 mt-n4">
+          <div class="subtitle-2 text-left font-weight-bold black--text">Dashboard</div>
+        </v-col>
+        <v-col cols="12" class="ml-3 mt-n6 mb-n4">
+          <div class="text-left font-italic caption">Private to you</div>
+        </v-col>
+      </v-row>
       
-      </div>
-      <!--Edit Profile Picture -->
-      <div v-else-if="(editpp == true && editcp == false)">
-        <v-row justify="center" class="mt-5 mb-3">
-          <div class="body-2 font-weight-bold black--text">Profile Picture</div>
-        </v-row>
+      <v-row align="center" justify="center">
+        <v-col cols="4">
+          <v-card outlined color="grey lighten-2" max-height="50">
+            <v-card-text class="body-2">
+              <div class="text-center mt-n2 font-weight-bold black--text">76</div>
+              <div class="text-center mx-n3">Profile Views</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="4" class="ml-n3 mr-n3">
+          <v-card outlined color="grey lighten-2" max-height="50">
+            <v-card-text class="body-2">
+              <div class="text-center mt-n2 font-weight-bold black--text">150</div>
+              <div class="text-center mx-n2">Post Views</div>
+            </v-card-text>
+          </v-card>          
+        </v-col>
+        <v-col cols="4">
+          <v-card outlined color="grey lighten-2" max-height="50">
+            <v-card-text class="body-2">
+              <div class="text-center mt-n2 font-weight-bold black--text">25</div>
+              <div class="text-center mx-n2">Searches</div>
+            </v-card-text>
+          </v-card>          
+        </v-col>
+      </v-row>
+      <!--//Dashboard-->
+      <!--About-->
+      <v-row class="mb-n4">
+        <v-col cols="12" class="ml-3 mt-n3">
+          <div class="subtitle-2 text-left font-weight-bold black--text">About</div>
+        </v-col>
+      </v-row>
 
-        <v-row justify="center" class="mb-5">
-          <croppa
-            id="myCroppa1"
-            v-model="myCroppa1" 
-            canvas-color="transparent"
-            :image-border-radius=320
-            :placeholder="'Upload Profile Picture'"
-            :placeholder-font-size="12"
-            :placeholder-color="'black'"
-            :accept="'image/*'"
-            :quality="3"
-            :zoom-speed="3"
-            :disabled="false"
-            :disable-drag-and-drop="true"
-            :disable-click-to-choose="false"
-            :disable-drag-to-move="false"
-            :disable-scroll-to-zoom="false"   
-            :disable-rotation="true"
-            :prevent-white-space="true"
-            :show-remove-button="false"
-            :auto-sizing="true"
-          >
-          </croppa>
-        </v-row>
-        
-        <v-row justify="center" class="mt-2 mb-2">
-          <v-btn x-small @click="removeImage(2)">Remove</v-btn>        
-        </v-row>
-        
-        <v-row class="mt-4">
-          <v-spacer></v-spacer>
-            <v-btn class="mt-3"
-              text 
-              color="teal lighten-1" 
-              @click="editProfilePic()"
-            >Cancel
-            </v-btn> 
-            <v-btn class="mt-3 mr-3"
-              text 
-              color="teal lighten-1" 
-              @click="submitImages(1)"
-            >Submit
-            </v-btn> 
-        </v-row>
-      </div>
-      <!--//Edit Profile Picture -->
-      <!--Edit Cover Picture -->      
-      <div v-else-if="(editpp == false && editcp == true)">
-        <v-row justify="center" class="mt-5 mb-3">
-          <div class="body-2 font-weight-bold black--text">Cover Picture</div>
-        </v-row>
-
-        <v-row justify="center" class="mb-5">
-          <croppa 
-            id="myCroppa2"
-            v-model="myCroppa2" 
-            canvas-color="transparent"
-            :placeholder="'Upload Cover Picture'"
-            :placeholder-font-size="12"
-            :placeholder-color="'black'"
-            :accept="'image/*'"
-            :quality="3"
-            :zoom-speed="3"
-            :disabled="false"
-            :disable-drag-and-drop="true"
-            :disable-click-to-choose="false"
-            :disable-drag-to-move="false"
-            :disable-scroll-to-zoom="false"   
-            :disable-rotation="true"
-            :prevent-white-space="true"
-            :show-remove-button="false"
-            :auto-sizing="true">
-          </croppa>
-        </v-row>
-
-        <v-row justify="center" class="mt-2 mb-2">
-          <v-btn x-small @click="removeImage(3)">Remove</v-btn>        
-        </v-row>
-
-        <v-row class="mt-4">
-          <v-spacer></v-spacer>
-            <v-btn class="mt-3"
-              text 
-              color="teal lighten-1" 
-              @click="editCoverPic()"
-            >Cancel
-            </v-btn> 
-            <v-btn class="mt-3 mr-3"
-              text 
-              color="teal lighten-1" 
-              @click="submitImages(2)"
-            >Submit
-            </v-btn> 
-        </v-row>
-      </div>
-      <!--//Edit Cover Picture -->
+      <v-row>
+        <v-col cols="12" class="ml-3">
+          <div v-if="about == ''" style="max-width:320px" contenteditable @blur="onEdit1" spellcheck="false" class="text-left font-weight-light black--text">Write something about yourself!</div>
+          <div v-else style="max-width:320px" contenteditable @blur="onEdit1" spellcheck="false" class="text-left font-weight-light black--text">{{about}}</div>
+        </v-col>
+      </v-row>
+      <!--//About-->
     </div>
+    <!--Edit Profile Picture -->
+    <div v-else-if="(editpp == true && editcp == false)">
+      <v-row justify="center" class="mt-5 mb-3">
+        <div class="body-2 font-weight-bold black--text">Profile Picture</div>
+      </v-row>
+
+      <v-row justify="center" class="mb-5">
+        <croppa
+          id="myCroppa1"
+          v-model="myCroppa1" 
+          canvas-color="transparent"
+          :image-border-radius=320
+          :placeholder="'Upload Profile Picture'"
+          :placeholder-font-size="12"
+          :placeholder-color="'black'"
+          :accept="'image/*'"
+          :quality="3"
+          :zoom-speed="3"
+          :disabled="false"
+          :disable-drag-and-drop="true"
+          :disable-click-to-choose="false"
+          :disable-drag-to-move="false"
+          :disable-scroll-to-zoom="false"   
+          :disable-rotation="true"
+          :prevent-white-space="true"
+          :show-remove-button="false"
+          :auto-sizing="true"
+        >
+        </croppa>
+      </v-row>
+      
+      <v-row justify="center" class="mt-2 mb-2">
+        <v-btn x-small @click="removeImage(2)">Remove</v-btn>        
+      </v-row>
+      
+      <v-row class="mt-4">
+        <v-spacer></v-spacer>
+          <v-btn class="mt-3"
+            text 
+            color="teal lighten-1" 
+            @click="editProfilePic()"
+          >Cancel
+          </v-btn> 
+          <v-btn class="mt-3 mr-3"
+            text 
+            color="teal lighten-1" 
+            @click="submitImages(1)"
+          >Submit
+          </v-btn> 
+      </v-row>
+    </div>
+    <!--//Edit Profile Picture -->
+    <!--Edit Cover Picture -->      
+    <div v-else-if="(editpp == false && editcp == true)">
+      <v-row justify="center" class="mt-5 mb-3">
+        <div class="body-2 font-weight-bold black--text">Cover Picture</div>
+      </v-row>
+
+      <v-row justify="center" class="mb-5">
+        <croppa 
+          id="myCroppa2"
+          v-model="myCroppa2"
+          canvas-color="transparent"
+          :placeholder="'Upload Cover Picture'"
+          :placeholder-font-size="12"
+          :placeholder-color="'black'"
+          :accept="'image/*'"
+          :quality="3"
+          :zoom-speed="3"
+          :disabled="false"
+          :disable-drag-and-drop="true"
+          :disable-click-to-choose="false"
+          :disable-drag-to-move="false"
+          :disable-scroll-to-zoom="false"   
+          :disable-rotation="true"
+          :prevent-white-space="true"
+          :show-remove-button="false"
+          :auto-sizing="true">
+        </croppa>
+      </v-row>
+
+      <v-row justify="center" class="mt-2 mb-2">
+        <v-btn x-small @click="removeImage(3)">Remove</v-btn>        
+      </v-row>
+
+      <v-row class="mt-4">
+        <v-spacer></v-spacer>
+          <v-btn class="mt-3"
+            text 
+            color="teal lighten-1" 
+            @click="editCoverPic()"
+          >Cancel
+          </v-btn> 
+          <v-btn class="mt-3 mr-3"
+            text 
+            color="teal lighten-1" 
+            @click="submitImages(2)"
+          >Submit
+          </v-btn> 
+      </v-row>
+    </div>
+    <!--//Edit Cover Picture -->
   </div>
 </template>
 
 <script>
-import { ValidationProvider, extend, ValidationObserver} from "vee-validate/dist/vee-validate.full";
-import { required } from 'vee-validate/dist/rules';
+//import { ValidationProvider, extend, ValidationObserver} from "vee-validate/dist/vee-validate.full";
+//import { required } from 'vee-validate/dist/rules';
 import { getId } from '../utils';
 import authHeader from '../services/auth-header';
 import store from '../store';
 
+/*
 extend('required', {
   ...required,
   message: 'This field is required'
@@ -454,29 +499,30 @@ extend('minMax', {
   params: ['min', 'max'],
   message: 'The {_field_} must be only between {min} to {max} characters'
 })
+*/
 
 export default {
   name: "Profile",
   data() {
     return {
       displayName: '',
-      educationalLevel: '',
-      occupation: '',
-      about: 'Write something about yourself!',
-      gender: '',
-      male: 'Male',
-      female: 'Female',
-      genders: ['', 'Male', 'Female'],
+      //educationalLevel: '',
+      //occupation: '',
+      about: '',
+      //gender: '',
+      //male: 'Male',
+      //female: 'Female',
+      //genders: ['', 'Male', 'Female'],
       country: '',
       countries: ['', 'United States', 'Singapore', 'Hong Kong'],
-      datePicker: false,
-      date: '',
+      //datePicker: false,
+      //date: '',
       currentPage: 'profile',
       imageUrl: '',
       profile_pic: null,
       cover_pic: null,
       user_id: '',
-      firstVisit1: true,
+      //firstVisit1: true,
       myCroppa: {},
       myCroppa1: {},
       myCroppa2: {},
@@ -493,7 +539,7 @@ export default {
     if(getId()!=0) {
       this.user_id = getId()
       console.log(this.user_id)
-      this.firstVisit();
+      this.getData();
       this.loadImage();
     }
     else
@@ -517,10 +563,12 @@ export default {
       return `data:image/png;base64, ${this.cover_pic}`
     }
   },
+  /*
   components: {
     ValidationProvider,
     ValidationObserver
   },
+  */
   methods: {
     removeImage(image) {
       if (image == 1) {
@@ -533,11 +581,9 @@ export default {
     },
     editProfilePic() {
       this.editpp = !this.editpp;
-      console.log(this.editpp);
     },
     editCoverPic() {
       this.editcp = !this.editcp;
-      console.log(this.editcp)
     },
     loadImage() {
       let hostname = window.location.hostname
@@ -565,13 +611,111 @@ export default {
     },
     onEdit(evt) {
       var src = evt.target.innerText;
-      this.displayName = src;
+      if (src == '') {
+        alert('Display Name cannot leave empty');
+        evt.target.innerText = 'Display Name';
+      } 
+      else {
+        this.displayName = src;
+        let formData = new FormData();
+        formData.append('userId', this.user_id);
+        formData.append('data', 1);
+        formData.append('display_name', this.displayName);
+        let hostname = window.location.hostname;
+        let API_URL = `http://${hostname}:5000/profile/edit`      
+        try {
+          fetch(API_URL, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response =>{ return response.json();})
+          .then(data =>{
+            if (data == "successful") {
+              console.log(data);
+            } else {
+              console.log(data);
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+        }catch(error){
+          console.log(error);
+        }
+      }
     },
     onEdit1(evt) {
       var src = evt.target.innerText;
-      this.about = src;
+      if (src == '') {
+        evt.target.innerText = 'Write Something About Yourself!';
+      }
+      else {
+        this.about = src;
+        let formData = new FormData();
+        formData.append('userId', this.user_id);
+        formData.append('data', 2);
+        formData.append('about', this.about);
+        let hostname = window.location.hostname;
+        let API_URL = `http://${hostname}:5000/profile/edit`      
+        try {
+          fetch(API_URL, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response =>{ return response.json();})
+          .then(data =>{
+            if (data == "successful") {
+              console.log(data);
+            } else {
+              console.log(data);
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+        }catch(error){
+          console.log(error);
+        }
+      }
     },
-    firstVisit() {
+    onEdit2() {
+      var sel = document.getElementById("countryDropdown");
+      var text = sel.options[sel.selectedIndex].text;
+      if (text == 'Country') {
+        this.country = "";
+      }
+      else {
+        this.country = text;
+      }
+      if (this.country !== "") {
+        let formData = new FormData();
+        formData.append('userId', this.user_id);
+        formData.append('data', 3);
+        formData.append('countryname', this.country);
+        let hostname = window.location.hostname;
+        let API_URL = `http://${hostname}:5000/profile/edit`      
+        try {
+          fetch(API_URL, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response =>{ return response.json();})
+          .then(data =>{
+            if (data == "successful") {
+              console.log(data);
+            } else {
+              console.log(data);
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+        }catch(error){
+          console.log(error);
+        }
+      }
+    },
+    getData() {
       let hostname = window.location.hostname
       let API_URL = `http://${hostname}:5000/profile/getdata/${this.user_id}`
       try {
@@ -592,17 +736,11 @@ export default {
                 console.log(error);
               }
             )            
-          } else { 
-            if (data == 'firstVisit') {
-              this.firstVisit1 = true;
-            } else {
-              this.displayName = data.DisplayName;
-              this.country = data.Country;
-              this.date = data.DateOfBirth;
-              this.gender = data.Gender;
-              this.about = data.About;
-              this.firstVisit1 = false;
-            }
+          } 
+          else { 
+            this.displayName = data.DisplayName;
+            this.country = data.Country;
+            this.about = data.About;
           }
         })
         .catch(e => {
@@ -639,49 +777,6 @@ export default {
         //console.log(this.image)
       }
     },
-    submitFile() {
-      this.$refs.profileForm.validate().then(success => {
-        if (!success) {
-          return;
-        }
-        let formData = new FormData();
-        this.myCroppa.generateBlob(
-          blob => {
-            if (blob !== null) {
-              formData.append('image', blob, 'profile_pic.jpg');
-            }
-            formData.append('userId', this.user_id);
-            formData.append('displayName', this.displayName);
-            formData.append('gender', this.genders);
-            formData.append('dateOfBirth', this.date);
-            formData.append('country', this.country);
-            formData.append('educationalLevel', this.educationalLevel);
-            formData.append('occupation', this.occupation);            
-            try {
-              fetch('http://localhost:5000/profile/submit', {
-                method: 'POST',
-                body: formData
-              })
-              .then(response =>{ return response.json();})
-              .then(data =>{
-                if (data == "successful") {
-                  window.location.reload();
-                } else {
-                  console.log(data);
-                }
-              })
-              .catch(e => {
-                console.log(e)
-              })
-            }catch(error){
-              console.log(error);
-            }                
-          },
-          'image/*',
-          0.8
-        );
-      });
-    },
     submitImages(pic) {
       if (pic == 1) { //Profile Pic
         console.log(pic)
@@ -693,8 +788,10 @@ export default {
             }
             formData.append('userId', this.user_id);
             formData.append('pic', 1);
+            let hostname = window.location.hostname
+            let API_URL = `http://${hostname}:5000/profile/submitimages`
             try {
-              fetch('http://localhost:5000/profile/submitimages', {
+              fetch(API_URL, {
                 method: 'POST',
                 body: formData
               })
@@ -731,8 +828,10 @@ export default {
             }
             formData.append('userId', this.user_id);
             formData.append('pic', 2);
+            let hostname = window.location.hostname
+            let API_URL = `http://${hostname}:5000/profile/submitimages`
             try {
-              fetch('http://localhost:5000/profile/submitimages', {
+              fetch(API_URL, {
                 method: 'POST',
                 body: formData
               })
@@ -760,7 +859,58 @@ export default {
         );                   
       }
     },
+
+
+
+
+
+
 /*
+    submitFile() {
+      this.$refs.profileForm.validate().then(success => {
+        if (!success) {
+          return;
+        }
+        let formData = new FormData();
+        this.myCroppa.generateBlob(
+          blob => {
+            if (blob !== null) {
+              formData.append('image', blob, 'profile_pic.jpg');
+            }
+            formData.append('userId', this.user_id);
+            formData.append('displayName', this.displayName);
+            formData.append('gender', this.genders);
+            formData.append('dateOfBirth', this.date);
+            formData.append('country', this.country);
+            formData.append('educationalLevel', this.educationalLevel);
+            formData.append('occupation', this.occupation);  
+            let hostname = window.location.hostname
+            let API_URL = `http://${hostname}:5000/profile/submit`          
+            try {
+              fetch(API_URL, {
+                method: 'POST',
+                body: formData
+              })
+              .then(response =>{ return response.json();})
+              .then(data =>{
+                if (data == "successful") {
+                  window.location.reload();
+                } else {
+                  console.log(data);
+                }
+              })
+              .catch(e => {
+                console.log(e)
+              })
+            }catch(error){
+              console.log(error);
+            }                
+          },
+          'image/*',
+          0.8
+        );
+      });
+    },
         let formData = new FormData(document.getElementById("imageForm"));
         console.log(formData)
         try {
@@ -848,7 +998,18 @@ export default {
 }
 #myCroppa2 {
   width: 100%;
-  height: 170px;
+  height: 110px;
   background-color: #DCDCDC;  
 }
+.countries {
+  color: black;
+  font-size: 12px;
+}
+.countries option {
+  color: black;
+  padding: 6px 10px;
+  font-size: 13px;
+  display: block;
+}
+
 </style>

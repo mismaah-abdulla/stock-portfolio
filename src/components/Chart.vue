@@ -1,22 +1,27 @@
 <template>
-  <div id="container"></div>
+  <div>
+    <div id="container"></div>
+  </div>
 </template>
 
 <script>
 export default {
   name: "Chart",
+  data: () => ({
+    loaded: null
+  }),
   props: {
     stock: Object
   },
   mounted () {
     let stock = this.$props.stock
+    let hostname = window.location.hostname
     let Highcharts = require('highcharts')
-    // require('highstock/modules/export-data')(Highcharts)
     require('highcharts/modules/stock')(Highcharts)
     require('highcharts/modules/data')(Highcharts)
     require('highcharts/modules/drag-panes')(Highcharts)
     require('highcharts/modules/exporting')(Highcharts)
-    Highcharts.getJSON(`http://localhost:5000/chart/${stock.Code}.${stock.Exchange}`, function (data) {
+    Highcharts.getJSON(`http://${hostname}:5000/chart/${stock.Code}.${stock.Exchange}`, function (data) {
       // split the data set into ohlc and volume
       var ohlc = [],
           volume = [],
@@ -46,19 +51,21 @@ export default {
               data[i][5] // the volume
           ])
       }
-
-
       // create the chart
       Highcharts.stockChart('container', {
-
+        // chart: {
+        //   events: {
+        //     load: function() {
+        //       this.loaded = true
+        //     } 
+        //   }
+        // },
           rangeSelector: {
               selected: 1
           },
-
           title: {
               text: ''
           },
-
           yAxis: [{
               labels: {
                   align: 'right',
@@ -85,11 +92,9 @@ export default {
               offset: 0,
               lineWidth: 2
           }],
-
           tooltip: {
               split: true
           },
-
           series: [{
               type: 'candlestick',
               name: stock.Code,

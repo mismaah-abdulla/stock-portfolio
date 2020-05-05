@@ -11,11 +11,12 @@ export default {
   mounted () {
     let stock = this.$props.stock
     let Highcharts = require('highcharts')
+    let hostname = window.location.hostname
     require('highcharts/modules/export-data')(Highcharts)
     require('highcharts/modules/accessibility')(Highcharts)
     require('highcharts/modules/boost')(Highcharts)
     Highcharts.getJSON(
-    `http://localhost:5000/stockmap/${stock.Code}.${stock.Exchange}`,
+    `http://${hostname}:5000/stockmap/${stock.Code}.${stock.Exchange}`,
     function (data) {
       console.log(stock.Code)
       const getSector = (Sector) => {

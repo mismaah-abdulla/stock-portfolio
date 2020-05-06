@@ -25,6 +25,7 @@
         color=white
       >
       <v-row v-if="!searchExpand">
+        <v-app-bar-nav-icon v-if="this.$route.name != 'Markets' || !this.stock" @click.stop="drawerMain = !drawerMain" />
         <v-col cols=2 class="px-1 py-0" v-if="this.$route.name == 'Markets' && this.stock">
           <v-avatar v-if="logoURL" size=40 tile @click.stop="drawerMain = !drawerMain" class="avatar"><img :src="logoURL"></v-avatar>
           <v-avatar v-else color="teal" size=40 @click.stop="drawerMain = !drawerMain" class="avatar">

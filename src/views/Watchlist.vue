@@ -1436,29 +1436,29 @@ export default {
     },
 
     fetchData() {
-        if (this.isLoading && this.model) return
-        if (this.search == "" || this.search == ".") return
-        this.isLoading = true
-        this.symbolsExchangesNames = []
-        let hostname = window.location.hostname
-        fetch(`http://${hostname}:5000/search/${this.search}`)
-          .then(res => {
-            if(res.ok) return res.json()
+      if (this.isLoading && this.model) return
+      if (this.search == "" || this.search == ".") return
+      this.isLoading = true
+      this.symbolsExchangesNames = []
+      let hostname = window.location.hostname
+      fetch(`http://${hostname}:5000/search/${this.search}`)
+        .then(res => {
+          if(res.ok) return res.json()
+          })
+        .then(res => {
+          for(let i of res){
+            this.symbolsExchangesNames.push({
+              Code: i.Code,
+              Exchange: i.Exchange,
+              Name: i.Name,
+              LogoURL: i.LogoURL
             })
-          .then(res => {
-            for(let i of res){
-              this.symbolsExchangesNames.push({
-                Code: i.Code,
-                Exchange: i.Exchange,
-                Name: i.Name,
-                LogoURL: i.LogoURL
-              })
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          })
-          .finally(() => (this.isLoading = false))
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .finally(() => (this.isLoading = false))
     },
 
     fetchDebounced() {

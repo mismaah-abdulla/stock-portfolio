@@ -52,9 +52,6 @@
 import Financials from './Financials'
 export default {
     name: "Stats",
-    props: {
-      stock: Object,
-    },
     components: {
       Financials
     },
@@ -85,7 +82,8 @@ export default {
       fetchStats () {
         this.loaded = false
         let hostname = window.location.hostname
-        let statsAPI = `http://${hostname}:5000/stats/${this.$props.stock.Code}.${this.$props.stock.Exchange}`
+        let stock = { code: localStorage.code, exchange: localStorage.exchange}
+        let statsAPI = `http://${hostname}:5000/stats/${stock.code}.${stock.exchange}`
         try{
           fetch(statsAPI)
           .then(response =>{return response.json()})

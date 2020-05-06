@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <Drawer v-if="(this.$route.name != 'Register') && (this.$route.name != 'Login') && (this.$route.name != 'Profile')" :drawer="drawer"></Drawer>
+    <Drawer v-if="(this.$route.name != 'Register') && (this.$route.name != 'Login') && (this.$route.name != 'Profile')" :drawer="drawer" :key="updateDrawer" @updateDrawer="updateDrawer++"></Drawer>
     <v-content>
-      <router-view :key="$route.fullPath" @drawer="drawer = !drawer"/>
+      <router-view :key="$route.fullPath" @drawer="drawer = !drawer" @updateDrawer="updateDrawer++"/>
     </v-content>
   </v-app>
 </template>
@@ -15,7 +15,8 @@ export default {
     Drawer,
   },
   data: () => ({
-    drawer: null
+    drawer: null,
+    updateDrawer: 1
   })
 }
 </script>

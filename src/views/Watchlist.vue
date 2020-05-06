@@ -1431,8 +1431,12 @@ export default {
       var model_exchange = item.code.split('.')[1] 
       var model_URL = item.logo
       var model_name = item.name
-
-      this.$router.push({name: 'Markets', params: {code: model_code, exchange: model_exchange, LogoURL: model_URL, name: model_name}})
+      localStorage.code = model_code
+      localStorage.exchange = model_exchange
+      localStorage.logoURL = model_URL
+      localStorage.name = model_name
+      this.$emit('drawerUpdate')
+      this.$router.push({name: 'Markets'})
     },
 
     fetchData() {

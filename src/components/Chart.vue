@@ -10,18 +10,15 @@ export default {
   data: () => ({
     loaded: null
   }),
-  props: {
-    stock: Object
-  },
   mounted () {
-    let stock = this.$props.stock
+    let stock = { code: localStorage.code, exchange: localStorage.exchange}
     let hostname = window.location.hostname
     let Highcharts = require('highcharts')
     require('highcharts/modules/stock')(Highcharts)
     require('highcharts/modules/data')(Highcharts)
     require('highcharts/modules/drag-panes')(Highcharts)
     require('highcharts/modules/exporting')(Highcharts)
-    Highcharts.getJSON(`http://${hostname}:5000/chart/${stock.Code}.${stock.Exchange}`, function (data) {
+    Highcharts.getJSON(`http://${hostname}:5000/chart/${stock.code}.${stock.exchange}`, function (data) {
       // split the data set into ohlc and volume
       var ohlc = [],
           volume = [],
@@ -97,7 +94,7 @@ export default {
           },
           series: [{
               type: 'candlestick',
-              name: stock.Code,
+              name: stock.code,
               data: ohlc,
               dataGrouping: {
                   units: groupingUnits

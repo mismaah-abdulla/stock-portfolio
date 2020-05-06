@@ -21,15 +21,35 @@
     </v-navigation-drawer>
     <v-app-bar v-if="this.$route.name != 'Watchlist'"
         app
-        dense
+        elevation="1"
+        color=white
       >
       <v-row v-if="!searchExpand">
         <v-app-bar-nav-icon @click.stop="drawerMain = !drawerMain" />
-        <v-toolbar-title v-if="this.$route.name == 'Markets'" class="pt-2">{{ headerIfMarkets() }}</v-toolbar-title>
-        <v-toolbar-title v-else class="pt-2 ">{{ this.$route.name }}</v-toolbar-title>
+        <v-col cols=2 class="px-1 py-0" v-if="this.$route.name == 'Markets' && this.stock">
+          <v-avatar v-if="logoURL" size=40 tile ><img :src="logoURL"></v-avatar>
+          <v-avatar v-else color="teal" size=40>
+            <span class="white--text title">{{getInitials(stock.name)}}</span>
+          </v-avatar>
+        </v-col>
+        <v-col v-if="this.$route.name == 'Markets' && stock" cols=6 class="pl-2 py-0">
+          <v-row>
+            <span class="font-weight-bold" style="font-size:15px">{{stock.name}} </span>  
+          </v-row>
+          <v-row>
+            <span class="caption" style="font-size:10px">{{stock.code}}.{{stock.exchange}}</span>  
+          </v-row>          
+        </v-col>
+        <v-toolbar-title v-else class="pt-2">{{ this.$route.name }}</v-toolbar-title>
         <v-spacer/>
-        <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
+        <v-btn icon class=px-4 v-if="this.$route.name == 'Markets'">
+          <v-icon >mdi-eye-plus</v-icon>
+        </v-btn>
+        <v-btn icon class=px-4 v-if="this.$route.name == 'Markets'">
+          <v-icon >mdi-pencil-box-multiple</v-icon>
+        </v-btn>
         <v-btn icon><v-icon>mdi-facebook-messenger</v-icon></v-btn>
+        <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
       </v-row>
       <v-scroll-x-reverse-transition hide-on-leave>
       <v-row v-show="searchExpand">
@@ -82,6 +102,7 @@
       drawerMain: null,
       drawerItems: [
       {title: "Portfolio", icon: "recent_actors", link: '/'},
+      {title: "Markets", icon: "trending_up", link: '/markets'},
       {title: "Watchlist", icon: "list", link: '/watchlist'},
       {title: "News Feed", icon: "dynamic_feed", link: '/newsfeed'},
       {title: "Profile", icon: "mdi-account-multiple", link: '/profile'}
@@ -91,6 +112,9 @@
       model: null,
       isLoading: false,
       symbolsExchangesNames: [],
+      stock: null,
+      logoURL: null,
+      update: 1,
     }),
     props: {
       source: String,
@@ -146,7 +170,17 @@
     goToMarkets(){
       if (this.model){
         this.$refs.autocomplete.blur()
-        this.$router.push({name: 'Markets', params: {code: this.model.Code, exchange: this.model.Exchange}})
+        localStorage.code = this.model.Code
+        localStorage.exchange = this.model.Exchange
+        localStorage.name = this.model.Name
+        if (this.model.LogoURL) {
+          localStorage.logoURL = this.model.LogoURL
+        }
+        else {
+          if (localStorage.logoURL) localStorage.removeItem('logoURL')
+        }
+        if(this.$route.name == 'Markets') this.$emit(`updateDrawer`)
+        else this.$router.push({name: 'Markets'})
         this.symbolsExchangesNames = []
         this.search = null
       }
@@ -161,9 +195,6 @@
       this.$refs.autocomplete.focus()
       this.searchExpand = true
     },
-    headerIfMarkets(){
-      return this.$route.path.split('/')[3]+":"+this.$route.path.split('/')[2]
-    }
   },
   watch: {
     search (val) {
@@ -172,6 +203,16 @@
     },
     drawer: function(){
       this.drawerMain = !this.drawerMain
+    },
+  },
+  mounted () {
+    if (localStorage.code) {
+      this.stock = {
+        name: localStorage.name,
+        code: localStorage.code,
+        exchange: localStorage.exchange
+      }
+      localStorage.logoURL ? this.logoURL = localStorage.logoURL : null
     }
   }
 } 

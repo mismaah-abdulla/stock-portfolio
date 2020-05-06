@@ -1,75 +1,5 @@
 <template>
-  <div app>
-
-    <!-- TOP BAR -->
-    <v-app-bar class=px-2 color=white app elevation="1">
-      <v-row v-if="!searchExpand"  align=center>
-        <v-col cols=2 class=px-1>
-          <v-avatar @click.stop="drawer()" v-if="URL!=''" size=40 tile ><img :src="URL"></v-avatar>
-          <v-avatar @click.stop="drawer()" v-else color="teal" size=40>
-            <span class="white--text title">{{getInitials(this.$props.name)}}</span>
-          </v-avatar>
-        </v-col>
-        <v-col cols=6 class="pa-0 pl-2">
-          <v-row>
-            <span class="font-weight-bold " style="font-size:15px">{{this.$props.name}} </span>  
-          </v-row>
-
-          <v-row>
-            <span class="caption" style="font-size:10px">{{this.$props.code}}.{{this.$props.exchange}}</span>  
-          </v-row>          
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-btn icon small class=px-4 @click="sheet=!sheet">
-          <v-icon >mdi-eye-plus</v-icon>
-        </v-btn>
-        <v-btn icon small class=px-4>
-          <v-icon >mdi-pencil-box-multiple</v-icon>
-        </v-btn>
-        <v-btn icon small @click="searchBtn" class=px-4>
-          <v-icon >mdi-magnify</v-icon>
-        </v-btn>        
-      </v-row>
-      
-      <v-scroll-x-reverse-transition hide-on-leave>
-        <v-row v-show="searchExpand"  class=pa-2 >
-          <v-autocomplete
-              autofocus
-              ref="autocomplete"
-              class="pt-3"
-              spellcheck="false"
-              v-model="model"
-              :items="items"
-              :loading="isLoading"
-              :search-input.sync="search"
-              placeholder="Search Market"
-              no-filter
-              hide-no-data
-              hide-selected
-              clearable
-              prepend-icon="mdi-magnify"
-              return-object
-              dense
-              @blur="searchExpand = false"
-              @input="goToMarkets()"
-          >
-            <template v-slot:item="{ item }" >
-                <v-list-item-avatar tile v-if="item.LogoURL">
-                  <v-img :src="item.LogoURL"></v-img>
-                </v-list-item-avatar>
-                <v-list-item-avatar v-else color="teal">
-                  <span class="white--text title">{{getInitials(item.Name)}}</span>
-                </v-list-item-avatar>
-                <v-list>
-                    <v-list-item-title class="justify-center">{{item.Code}}</v-list-item-title>
-                    <v-list-item-subtitle>{{item.Name}}</v-list-item-subtitle>
-                    <v-list-item-subtitle>{{item.Exchange}}</v-list-item-subtitle>
-                </v-list>
-              </template>
-          </v-autocomplete>
-        </v-row>
-      </v-scroll-x-reverse-transition>
-    </v-app-bar>
+  <div>
 
     <!-- <CompanyDetails v-if="stock" :key="stock.Code" :stock="stock"></CompanyDetails> -->
     <v-card class="white pt-1 pb-2" flat absolute style="border-radius: 0px;" >
@@ -127,18 +57,14 @@
         </v-col>
       </v-app-bar>
     </v-card>
-
     <v-divider ></v-divider>
-
-    <Chart v-show="page=='charts'" v-if="stock" :key="stock.Code" :stock="stock" :tab="tab"/>
-    <Stats v-show="page=='stats'" v-if="stock"  :key="stock.Code" :stock="stock"></Stats>
-
+    <Chart v-show="page=='charts'" v-if="stock"/>
+    <Stats v-show="page=='stats'" v-if="stock"/>
     <v-bottom-sheet v-model="sheet">
       <v-sheet class="text-center" height="200px">
         <div class="py-3">This is a bottom sheet using the controlled by v-model instead of activator</div>
       </v-sheet>
     </v-bottom-sheet>
-
   </div>
 </template>
 
@@ -163,23 +89,9 @@ export default {
   data: () => ({
     page:"charts",
     stock: null,
-    URL:'',
-    tab: null,
-    tabHeaders: ["Chart", "Stats", "News Feed"],
-    searchExpand:false,
-    model:null,
-    isLoading:false,
-    search: null,
-    symbolsExchangesNames: [],
     sheet: false,
     user_id:'',
   }),
-  props: {
-    code: String,
-    exchange: String,
-    LogoURL: String,
-    name: String
-  },
   methods: {
     
     drawer(){
@@ -194,45 +106,6 @@ export default {
         return initials
       }
     },
-
-    fetchData() {
-        if (this.isLoading && this.model) return
-        if (this.search == "" || this.search == ".") return
-        this.isLoading = true
-        this.symbolsExchangesNames = []
-        let hostname = window.location.hostname
-        fetch(`http://${hostname}:5000/search/${this.search}`)
-          .then(res => {
-            if(res.ok) return res.json()
-            })
-          .then(res => {
-            for(let i of res){
-              this.symbolsExchangesNames.push({
-                Code: i.Code,
-                Exchange: i.Exchange,
-                Name: i.Name,
-                LogoURL: i.LogoURL
-              })
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          })
-          .finally(() => (this.isLoading = false))
-    },
-
-    fetchDebounced() {
-      clearTimeout(this._timerId)
-      this._timerId = setTimeout(() => {
-        this.fetchData()
-      }, 200)
-    },
-
-    searchBtn(){
-      this.$refs.autocomplete.focus()
-      this.searchExpand = true
-    },
-
     fetchWatchlist_func () {
       this.watchlistLoaded = false
       let hostname = window.location.hostname
@@ -282,17 +155,6 @@ export default {
       return this.symbolsExchangesNames
     }
   },
-  watch: {
-    model () {
-      this.tab = "Stats"
-    },
-
-    search (val) {
-      if(this.model && val == this.model.Name) return
-      this.fetchDebounced()
-    },
-
-  },
   mounted () {
     if(getId()!=0){
       this.user_id = getId()
@@ -310,9 +172,7 @@ export default {
         }
       )
     }
-     
-    this.stock = { Code: this.$props.code, Exchange: this.$props.exchange, Logo: this.$props.LogoURL, Name:this.$props.name }
-    if(this.$props.LogoURL){this.URL=this.$props.LogoURL}
+    this.stock = { code: localStorage.code, exchange: localStorage.exchange, logo: localStorage.logoURL, name: localStorage.name }
   }
 }
 </script>

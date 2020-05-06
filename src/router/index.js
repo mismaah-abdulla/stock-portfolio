@@ -14,10 +14,9 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/markets/:exchange/:code',
+    path: '/markets',
     name: 'Markets',
     component: Markets,
-    props: true
   },
   {
     path: '/watchlist',

@@ -24,7 +24,7 @@
         elevation="1"
         color=white
       >
-      <v-row v-if="!searchExpand">
+      <v-row v-if="!searchExpand" align=center>
         <v-app-bar-nav-icon v-if="this.$route.name != 'Markets' || !this.stock" @click.stop="drawerMain = !drawerMain" />
         <v-col cols=2 class="px-1 py-0" v-if="this.$route.name == 'Markets' && this.stock">
           <v-avatar v-if="logoURL" size=40 tile @click.stop="drawerMain = !drawerMain" class="avatar"><img :src="logoURL"></v-avatar>
@@ -34,21 +34,21 @@
         </v-col>
         <v-col v-if="this.$route.name == 'Markets' && stock" cols=6 class="pl-2 py-0">
           <v-row>
-            <span class="font-weight-bold" style="font-size:15px">{{stock.name}} </span>  
+            <span class="body-2 font-weight-bold" >{{stock.name}} </span>  
           </v-row>
           <v-row>
-            <span class="caption" style="font-size:10px">{{stock.code}}.{{stock.exchange}}</span>  
+            <span class="caption" >{{stock.code}}.{{stock.exchange}}</span>  
           </v-row>          
         </v-col>
         <v-toolbar-title v-else class="pt-2">{{ this.$route.name }}</v-toolbar-title>
         <v-spacer/>
-        <v-btn icon class=px-4 v-if="this.$route.name == 'Markets'">
+        <v-btn @click="sheet=true" icon small class=mx-1 v-if="this.$route.name == 'Markets'">
           <v-icon >mdi-eye-plus</v-icon>
         </v-btn>
-        <v-btn icon class=px-4 v-if="this.$route.name == 'Markets'">
+        <v-btn icon small class=mx-1 v-if="this.$route.name == 'Markets'">
           <v-icon >mdi-pencil-box-multiple</v-icon>
         </v-btn>
-        <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
+        <v-btn class=mx-1 small @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
       </v-row>
       <v-scroll-x-reverse-transition hide-on-leave>
       <v-row v-show="searchExpand">
@@ -91,10 +91,29 @@
       </v-row>
       </v-scroll-x-reverse-transition>
     </v-app-bar>
+    <v-bottom-sheet v-model="sheet">
+      <v-list>
+        <v-subheader class="pl-5 title justify-center">Add to Watchlist</v-subheader>
+        <v-list-item
+          v-for="(watchlist,index) in listofWatchlist"
+          :key="index"
+          @click="sheet = false"
+        >
+          <v-list-item-title>{{ watchlist.watchlist_name }}</v-list-item-title>
+          <v-icon v-if='watchlist.symbol_in_list==true' class="pl-3 pr-0" color="green" small>mdi-check</v-icon>
+          <!-- <v-icon v-else class="pl-3 pr-0" color="grey lighten-1" small>mdi-check</v-icon> -->
+
+        </v-list-item>
+      </v-list>
+    </v-bottom-sheet>
   </div>
 </template>
 
 <script>
+  import store from '../store'
+  import authHeader from '../services/auth-header'
+  import { getId } from '../utils'
+
   export default {
     name: 'Drawer',
     data: () => ({
@@ -113,7 +132,9 @@
       symbolsExchangesNames: [],
       stock: null,
       logoURL: null,
-      update: 1,
+      sheet:false,
+      listofWatchlist:[],
+      user_id:''
     }),
     props: {
       source: String,
@@ -194,6 +215,46 @@
       this.$refs.autocomplete.focus()
       this.searchExpand = true
     },
+    fetchWatchlist_func () {
+      this.watchlistLoaded = false
+      let hostname = window.location.hostname
+      let watchlist_listAPI = `http://${hostname}:5000/market/${this.stock.code}.${this.stock.exchange}/${this.user_id}`
+      try
+      {
+        fetch(watchlist_listAPI,{method: "get",headers: authHeader()})
+        .then(response =>{return response.json()})
+        .then(data =>{
+        if (data.authenticated == false) {
+            store.dispatch('auth/logout').then(
+              () => {
+                alert("Session Expired. Please login again.")
+                this.$router.push('/login');
+              },
+              error => {
+                console.log(error);
+              }
+            )
+        } 
+        else {
+          this.listofWatchlist=[]
+          if(data.length>0){
+            for(var i=0;i<data.length;i++){
+              this.listofWatchlist.push(data[i])
+            }
+            console.log(this.listofWatchlist)
+          }
+        }
+        })
+        .catch(e => {
+        console.log("Response status: "+e)
+        })
+      }
+      catch(error)
+      {
+        this.assignNull()
+        console.log(error)
+      }
+    },
   },
   watch: {
     search (val) {
@@ -203,8 +264,10 @@
     drawer: function(){
       this.drawerMain = !this.drawerMain
     },
+    
   },
   mounted () {
+    this.user_id = getId()
     if (localStorage.code) {
       this.stock = {
         name: localStorage.name,
@@ -213,6 +276,7 @@
       }
       localStorage.logoURL ? this.logoURL = localStorage.logoURL : null
     }
+    this.fetchWatchlist_func () 
   }
 } 
 </script>

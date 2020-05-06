@@ -25,10 +25,9 @@
         color=white
       >
       <v-row v-if="!searchExpand">
-        <v-app-bar-nav-icon @click.stop="drawerMain = !drawerMain" />
         <v-col cols=2 class="px-1 py-0" v-if="this.$route.name == 'Markets' && this.stock">
-          <v-avatar v-if="logoURL" size=40 tile ><img :src="logoURL"></v-avatar>
-          <v-avatar v-else color="teal" size=40>
+          <v-avatar v-if="logoURL" size=40 tile @click.stop="drawerMain = !drawerMain" class="avatar"><img :src="logoURL"></v-avatar>
+          <v-avatar v-else color="teal" size=40 @click.stop="drawerMain = !drawerMain" class="avatar">
             <span class="white--text title">{{getInitials(stock.name)}}</span>
           </v-avatar>
         </v-col>
@@ -48,7 +47,6 @@
         <v-btn icon class=px-4 v-if="this.$route.name == 'Markets'">
           <v-icon >mdi-pencil-box-multiple</v-icon>
         </v-btn>
-        <v-btn icon><v-icon>mdi-facebook-messenger</v-icon></v-btn>
         <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
       </v-row>
       <v-scroll-x-reverse-transition hide-on-leave>
@@ -217,3 +215,9 @@
   }
 } 
 </script>
+
+<style>
+.avatar {
+  cursor: pointer !important;
+}
+</style>

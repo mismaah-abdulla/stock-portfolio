@@ -1,6 +1,11 @@
 <template>
   <div>
-
+    <v-progress-linear
+      :active="!securityLoaded"
+      :indeterminate="!securityLoaded"
+      top
+      color="#00C853"
+    ></v-progress-linear>
     <!-- <CompanyDetails v-if="stock" :key="stock.Code" :stock="stock"></CompanyDetails> -->
     <v-card class="white pt-1 pb-2" flat absolute style="border-radius: 0px;" >
       <v-app-bar class=px-2 color=white dense flat height=30>
@@ -14,15 +19,19 @@
         </v-row>
       </v-app-bar>
 
-      <v-app-bar class=px-2 color=white dense flat height=60>
+      <v-app-bar v-if="securityLoaded" class=px-2 color=white dense flat height=60>
         <v-row class="pt-0 pb-1" align=start>
           <v-col cols=3 class="pt-1 pb-1 px-0">
-            <span class="red--text display-1 font-weight-bold">282</span> 
-            <span class="red--text body-1 font-weight-bold">.80 </span>   
+            <span v-if="securitydetails.change<0" class="red--text display-1 font-weight-bold">{{securitydetails.price1}}</span> 
+            <span v-else class="green--text display-1 font-weight-bold">{{securitydetails.price1}}</span> 
+            <span v-if="securitydetails.change<0" class="red--text body-1 font-weight-bold">{{securitydetails.price2}} </span>   
+            <span v-else class="green--text body-1 font-weight-bold">{{securitydetails.price2}} </span> 
           </v-col>
           <v-col cols=5 class="pt-5 pb-0 pl-3 pr-0">
-            <v-icon size=x-large color=red>mdi-menu-down</v-icon>
-            <span class="red--text body-1 font-weight-bold" style="font-size:10px">3.89 (1.36%)</span>  
+            <v-icon v-if="securitydetails.change<0" size=x-large color=red>mdi-menu-down</v-icon>
+            <v-icon v-else size=x-large color=green>mdi-menu-up</v-icon>
+            <span v-if="securitydetails.change<0" class="red--text body-1 font-weight-bold" style="font-size:10px">{{securitydetails.change.toFixed(2).substr(1)}} ({{parseFloat(securitydetails.change_p).toFixed(2)}}%)</span>  
+            <span v-else class="green--text body-1 font-weight-bold" style="font-size:10px">{{securitydetails.change.toFixed(2)}} ({{parseFloat(securitydetails.change_p).toFixed(2)}}%)</span>  
           </v-col>
           <v-col class="px-0 pt-3 pb-0">
             <v-btn small color=green class="white--text">
@@ -38,33 +47,56 @@
         </v-row>
       </v-app-bar>
       
-      <v-app-bar color=white height="30" flat dense >
+      <v-app-bar v-else class=px-2 color=white dense flat height=60>
+        <v-row class="pt-0 pb-1" align=start>
+          <v-col cols=3 class="pt-1 pb-1 px-0">
+            <!-- <span class="black--text display-1 font-weight-bold">0.00</span>  -->
+          </v-col>
+          <v-col cols=5 class="pt-5 pb-0 pl-3 pr-0">
+            <!-- <span class="black--text body-1 font-weight-bold" style="font-size:10px">0.00 (0.00%)</span>   -->
+          </v-col>
+          <v-col class="px-0 pt-3 pb-0">
+            <v-btn small color="grey-lighten-1" class="black--text">
+              Buy
+            </v-btn> 
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col class="px-0 pt-3 pb-0">
+            <v-btn small color="grey-lighten-1" class="black--text">
+              Sell
+            </v-btn> 
+          </v-col>
+        </v-row>
+      </v-app-bar>
+
+      <v-app-bar class=px-1 color=white height="30" flat dense >
         <v-col cols=3 class="mr-n4 ml-n5">
-          <v-btn v-if="page!='about'" @click.end="page='about'" x-small outlined color="lime darken-2">About</v-btn>
-          <v-btn v-else x-small depressed color="lime lighten-2">About</v-btn>
+          <v-btn v-if="page!='about'&&securityLoaded" @click.end="page='about'" x-small outlined color="lime darken-2">About</v-btn>
+          <v-btn v-else-if="securityLoaded" x-small depressed color="lime lighten-2">About</v-btn>
+          <v-btn v-else x-small depressed color="grey-lighten-1">About</v-btn>
         </v-col>
         <v-col cols=3  class="mr-n5">
-          <v-btn v-if="page!='stats'" @click.end="page='stats'" x-small outlined color="lime darken-2">Stats</v-btn>
-          <v-btn v-else x-small depressed color="lime lighten-2">Stats</v-btn>
+          <v-btn v-if="page!='stats'&&securityLoaded" @click.end="page='stats'" x-small outlined color="lime darken-2">Stats</v-btn>
+          <v-btn v-else-if="securityLoaded" x-small depressed color="lime lighten-2">Stats</v-btn>
+          <v-btn v-else x-small depressed color="grey-lighten-1">Stats</v-btn>
         </v-col>
         <v-col cols=3 class="mr-0">
-          <v-btn v-if="page!='charts'" @click.end="page='charts'" x-small outlined color="lime darken-2">Charts</v-btn>
-          <v-btn v-else x-small depressed color="lime lighten-2">Charts</v-btn>
+          <v-btn v-if="page!='charts'&&securityLoaded" @click.end="page='charts'" x-small outlined color="lime darken-2">Charts</v-btn>
+          <v-btn v-else-if="securityLoaded" x-small depressed color="lime lighten-2">Charts</v-btn>
+          <v-btn v-else x-small depressed color="grey-lighten-1">Charts</v-btn>
         </v-col>
         <v-col cols=3 class="pl-1">
-          <v-btn v-if="page!='posts'" @click.end="page='posts'" x-small outlined color="lime darken-2">Posts</v-btn>
-          <v-btn v-else x-small depressed color="lime lighten-2">Posts</v-btn>
+          <v-btn v-if="page!='posts'&&securityLoaded" @click.end="page='posts'" x-small outlined color="lime darken-2">Posts</v-btn>
+          <v-btn v-else-if="securityLoaded" x-small depressed color="lime lighten-2">Posts</v-btn>
+          <v-btn v-else x-small depressed color="grey-lighten-1">Posts</v-btn>
         </v-col>
+        
       </v-app-bar>
     </v-card>
-    <v-divider ></v-divider>
+
     <Chart v-show="page=='charts'" v-if="stock"/>
     <Stats v-show="page=='stats'" v-if="stock"/>
-    <v-bottom-sheet v-model="sheet">
-      <v-sheet class="text-center" height="200px">
-        <div class="py-3">This is a bottom sheet using the controlled by v-model instead of activator</div>
-      </v-sheet>
-    </v-bottom-sheet>
+
   </div>
 </template>
 
@@ -91,6 +123,8 @@ export default {
     stock: null,
     sheet: false,
     user_id:'',
+    securitydetails:null,  
+    securityLoaded: false
   }),
   methods: {
     
@@ -106,16 +140,16 @@ export default {
         return initials
       }
     },
-    fetchWatchlist_func () {
-      this.watchlistLoaded = false
+
+    fetchrealtime () {
       let hostname = window.location.hostname
-      let watchlist_listAPI = `http://${hostname}:5000/watchlist/${this.user_id}`
+      let realtimeAPI = `http://${hostname}:5000/price/${localStorage.code}.${localStorage.exchange}`
       try
       {
-        fetch(watchlist_listAPI,{method: "get",headers: authHeader()})
+        fetch(realtimeAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-        if (data.authenticated == false) {
+          if (data.authenticated == false) {
             store.dispatch('auth/logout').then(
               () => {
                 alert("Session Expired. Please login again.")
@@ -125,18 +159,15 @@ export default {
                 console.log(error);
               }
             )
-        } 
-        else {
-          this.listofWatchlist=[]
-          if(data.length>0){
-            for(var i=0;i<data.length;i++){
-              this.listofWatchlist.push(data[i])
-            }
-          }
-          else{
+          } else {
+            this.securitydetails=data
+            var close=this.securitydetails.close+ ''
+            var arr=close.split(".")
+            this.securitydetails.price1=arr[0]
+            arr[1].length<2?this.securitydetails.price2='.'+arr[1]+'0':this.securitydetails.price2='.'+arr[1]
             this.securityLoaded=true
-          }
-        }
+          } 
+
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -158,7 +189,6 @@ export default {
   mounted () {
     if(getId()!=0){
       this.user_id = getId()
-      this.fetchWatchlist_func()
     }
     else
     {
@@ -172,7 +202,9 @@ export default {
         }
       )
     }
+    this.fetchrealtime ()
     this.stock = { code: localStorage.code, exchange: localStorage.exchange, logo: localStorage.logoURL, name: localStorage.name }
-  }
+  },
+
 }
 </script>

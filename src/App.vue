@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Drawer v-if="(this.$route.name != 'Register') && (this.$route.name != 'Login') && (this.$route.name != 'Profile')" :drawer="drawer" :key="updateDrawer" @updateDrawer="updateDrawer++"></Drawer>
+    <Drawer v-if="(this.$route.name != 'Register') && (this.$route.name != 'Login') && (this.$route.name != 'Profile')" :drawer="drawer" :key="`${$route.fullPath}${updateDrawer}`" @updateDrawer="updateDrawer++"></Drawer>
     <v-content>
       <router-view :key="`${$route.fullPath}${updateDrawer}`" @drawer="drawer = !drawer" @updateDrawer="updateDrawer++"/>
     </v-content>

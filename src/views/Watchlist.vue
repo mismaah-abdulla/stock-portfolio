@@ -173,53 +173,47 @@
   ></v-progress-linear>
 
   <!-- ASSET PEOPLE SWITCH -->
- <v-app-bar color="grey lighten-4" flat dense height="30" >
-    <v-col cols="3" class="mr-n4 ml-n5">
-      <v-btn v-if="asset_peopleSwitch=='asset'" x-small depressed color="lime lighten-2">Assets</v-btn>
-      <v-btn v-else @click="asset_peopleSwitch='asset'" x-small outlined color="lime darken-2">Assets</v-btn>
-    </v-col>
-    <v-col cols="3" class="mr-n5">
-      <v-btn v-if="asset_peopleSwitch=='people'" x-small depressed color="lime lighten-2">People</v-btn>
-      <v-btn v-else @click="asset_peopleSwitch='people'" x-small outlined color="lime darken-2">People</v-btn>
-    </v-col>
-  </v-app-bar>
-
-
-  <!-- ASSET INFO LIST -->
-
-  <v-card height=30 class="white header" v-if="asset_peopleSwitch=='asset'" elevation=1 absolute style="border-radius: 0px;" >  
-    <v-row
+  <v-card height=30 class="white header"  elevation=1 absolute style="border-radius: 0px;" >  
+  
+  <v-app-bar color="grey lighten-4" flat dense height="30" >
+      <v-col cols="3" class="mr-n4 ml-n5">
+        <v-btn v-if="asset_peopleSwitch=='asset'" x-small depressed color="lime lighten-2">Assets</v-btn>
+        <v-btn v-else @click="asset_peopleSwitch='asset'" x-small outlined color="lime darken-2">Assets</v-btn>
+      </v-col>
+      <v-col cols="3" class="mr-n5">
+        <v-btn v-if="asset_peopleSwitch=='people'" x-small depressed color="lime lighten-2">People</v-btn>
+        <v-btn v-else @click="asset_peopleSwitch='people'" x-small outlined color="lime darken-2">People</v-btn>
+      </v-col>
+    </v-app-bar>
+    <!-- ASSET INFO LIST -->
+    <v-app-bar color="white" flat dense height="30" elevation="1"
         justify=center
         class="subtitle-2 font-weight-medium"
-        dense
     >
-      <v-col cols=3 class="text-left pl-1">  
-          Symbol 
-      </v-col>
-      <v-col cols=3 class="text-right pr-1" >
-          Change
-      </v-col>
-      <v-col cols=5 class="text-left pl-7">
-          Price
-      </v-col>
-    </v-row>   
-  </v-card>
-  <v-card height=30 class="white header" v-else elevation=1 absolute style="border-radius: 0px;" >  
-    <v-row
-        justify=center
-        class="subtitle-2 font-weight-medium"
-        dense
-    >
-      <v-col cols=3 class="text-left pl-1">  
-          People 
-      </v-col>
-      <v-col cols=4 class="text-center pr-0" >
-          Risk Score
-      </v-col>
-      <v-col cols=4 class="text-right pr-1">
-          Change
-      </v-col>
-    </v-row>   
+      <v-row v-if="asset_peopleSwitch=='asset'">
+        <v-col cols=4 class="text-left pl-1">  
+            Symbol 
+        </v-col>
+        <v-col cols=3 class="text-right pr-4" >
+            Change
+        </v-col>
+        <v-col cols=5 class="text-left pl-4">
+            Price
+        </v-col>
+      </v-row>
+      <v-row v-else>
+        <v-col cols=3 class="text-left pl-1">  
+            People 
+        </v-col>
+        <v-col cols=3 class="text-right pr-1" >
+            Risk Score
+        </v-col>
+        <v-col cols=5 class="text-left pl-7">
+            Change
+        </v-col>
+      </v-row>
+    </v-app-bar>  
+    <v-divider></v-divider> 
   </v-card>
   
   <v-card outlined color=transparent border-color=white height=50% v-show="asset_peopleSwitch=='asset'&&edit==false">
@@ -526,7 +520,7 @@
   </v-card>
 
   <!-- DRAGGABLE -->
-  <draggable :animation="100" :move="checkMove"  @end='enddrag' class="pt-6" v-show="edit==true" v-model="display_details">
+  <draggable :animation="100" :move="checkMove"  @end='enddrag' class="mt-2 pt-12" v-show="edit==true" v-model="display_details">
    
     <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1" v-for="item in display_details" :key="item.code" >
           <v-row class="ma-0">
@@ -597,7 +591,7 @@ import 'vue-swipe-actions/dist/vue-swipe-actions.css';
 import VueApexCharts from 'vue-apexcharts'
 import draggable from 'vuedraggable'
 import { longClickDirective } from 'vue-long-click'
-const longClickInstance = longClickDirective({delay: 400})
+const longClickInstance = longClickDirective({delay: 1200})
 import { getId } from '../utils'
 import store from '../store'
 import authHeader from '../services/auth-header'
@@ -1648,7 +1642,7 @@ export default {
 }
 
 .swipeout-list-item:first-of-type {
-  border-top: 28px solid transparent;
+  border-top: 60px solid transparent;
 }
 
 .v-list-item:first-child {

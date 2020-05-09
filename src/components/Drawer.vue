@@ -366,7 +366,6 @@
       },
       '$route.fullPath': {
         handler: function() {
-          console.log("Route change")
           if (localStorage.code) {
             this.stock = {
               name: localStorage.name,

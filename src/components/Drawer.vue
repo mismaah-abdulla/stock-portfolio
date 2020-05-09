@@ -155,7 +155,6 @@
       },
     },
     methods: {
-
       logout() {
         this.$store.dispatch('auth/logout').then(
           () => {
@@ -365,18 +364,25 @@
       drawer: function(){
         this.drawerMain = !this.drawerMain
       },
+      '$route.fullPath': {
+        handler: function() {
+          console.log("Route change")
+          if (localStorage.code) {
+            this.stock = {
+              name: localStorage.name,
+              code: localStorage.code,
+              exchange: localStorage.exchange
+            }
+            localStorage.logoURL != "null" ? this.logoURL = localStorage.logoURL : this.logoURL = null
+          }
+        },
+        deep: true,
+        immediate: true
+      }
     },
     
     mounted () {
       this.user_id = getId()
-      if (localStorage.code) {
-        this.stock = {
-          name: localStorage.name,
-          code: localStorage.code,
-          exchange: localStorage.exchange
-        }
-        localStorage.logoURL ? this.logoURL = localStorage.logoURL : null
-      }
       this.fetchWatchlist_func () 
     }
   } 

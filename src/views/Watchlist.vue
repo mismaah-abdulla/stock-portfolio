@@ -1427,6 +1427,12 @@ export default {
       var model_name = item.name
       localStorage.code = model_code
       localStorage.exchange = model_exchange
+      if (model_URL){
+        localStorage.logoURL = model_URL
+      }
+      else {
+        if (localStorage.logoURL) localStorage.removeItem('logoURL')
+      }
       localStorage.logoURL = model_URL
       localStorage.name = model_name
       this.$emit('drawerUpdate')

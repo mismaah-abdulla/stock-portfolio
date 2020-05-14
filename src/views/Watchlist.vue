@@ -231,48 +231,52 @@
           <div ref="content" class="card-content" >
             <v-row>
                         
-            <v-col class="px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
+            <v-col class="py-1 px-0 ma-0" cols=1 @click="goToMarkets(item)" v-if="item.logo">
               <v-avatar tile color="transparent">
                 <img :src="(item.logo)" style="width: 40px; height: 40px" />
               </v-avatar>
             </v-col>
-            <v-col v-else class=px-0 cols=1 @click="goToMarkets(item)">
+            <v-col v-else class="py-2 px-0 ma-0" cols=1 @click="goToMarkets(item)">
               <v-avatar color="teal" size=40>
                 <span class="white--text title">{{getInitials(item.name)}}</span>
               </v-avatar>
             </v-col>
 
-            <v-col class="pl-8 pr-0 ma-0" > 
+            <v-col class="py-2 pl-8 pr-0 ma-0" > 
               <v-row  @click="goToMarkets(item)"><span class="font-weight-bold px-0">{{item.display_code}} </span></v-row>
               <v-row v-if="item.name.length<14"  @click="goToMarkets(item)"><span class="caption px-0" style="font-size:10px">{{item.name}} </span></v-row>
               <v-row v-else  @click="goToMarkets(item)"><span class="caption px-0" style="font-size:10px">{{item.name.substring(0,14)+".."}} </span></v-row>
             </v-col> 
 
             <!-- CHANGE -->
-            <v-col cols=2 class="pl-1" @click="goToMarkets(item)"> 
+            <v-col cols=2 class="py-2 pl-1" @click="goToMarkets(item)"> 
               <v-row justify=start>
-              <span v-if="item.change < 0" class="red--text font-weight-bold">{{parseFloat(item.change_p).toFixed(2)}}%</span>
-              <span v-else class="green--text font-weight-bold">+{{parseFloat(item.change_p).toFixed(2)}}%</span>
+                <span v-if="item.change < 0" class="red--text font-weight-bold">{{parseFloat(item.change_p).toFixed(2)}}%</span>
+                <span v-else class="green--text font-weight-bold">+{{parseFloat(item.change_p).toFixed(2)}}%</span>
               </v-row>
+
               <v-row justify=center>
-              <span v-if="item.change < 0" class="red--text caption ">{{item.change.toFixed(2)}}</span>
-              <span v-else class="green--text caption">+{{item.change.toFixed(2)}}</span>
+                <span v-if="item.change < 0 && item.change>-0.01" class="red--text caption ">{{item.change.toFixed(3)}}</span>
+                <span v-else-if="item.change < 0 && item.change<=-0.01" class="red--text caption ">{{item.change.toFixed(2)}}</span>
+                <span v-else-if="item.change >= 0 && item.change>=0.01" class="green--text caption">+{{item.change.toFixed(2)}}</span>
+                <span v-else class="green--text caption">+{{item.change.toFixed(3)}}</span>
               </v-row>
             </v-col>
-
+            
             <!-- PRICE -->
-            <v-col cols=2 class="pr-6 pl-2" @click="buy(item)">
+            <v-col  cols=2 class="py-2 pr-6 pl-2" @click="buy(item)">
               <v-row justify ="end">
-              <span class="font-weight-bold">{{item.close.toFixed(2)}}</span>
-              </v-row>
+              <span class="font-weight-bold">{{item.close}}</span>
 
+              </v-row>
               <v-row justify ="end">
               <span class="caption">{{item.last_update}}</span>
               </v-row>
             </v-col>
+            
 
             <!-- INTRADAY CHART-->
-            <v-col v-if="asset_peopleSwitch=='asset'&&edit==false" cols=3 class="pt-3 pl-1 py-0 ma-0 pa-0" @click="goToMarkets(item)">
+            <v-col v-if="asset_peopleSwitch=='asset'&&edit==false" cols=3 class="pt-2 pl-1 py-0 ma-0 pa-0" @click="goToMarkets(item)">
               <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive" :series="item.series"></apexchart>
               <apexchart v-else height="25%" width="95%" type="area" :options="chartOptionsNegative" :series="item.series"></apexchart> 
             </v-col>
@@ -524,26 +528,26 @@
    
     <v-list-item style="border-bottom: 1px solid lightgray;" class="px-1" v-for="item in display_details" :key="item.code" >
           <v-row class="ma-0">
-            <v-icon class="pa-0" x-small color="grey" >mdi-dots-vertical</v-icon>
-            <v-col class="px-0 ma-0" cols=1  v-if="item.logo">
+            <v-icon class="py-2 pa-0" x-small color="grey" >mdi-dots-vertical</v-icon>
+            <v-col class="py-1 px-0 ma-0" cols=1  v-if="item.logo">
               <v-avatar tile color="transparent">
                 <img :src="(item.logo)" style="width: 40px; height: 40px" />
               </v-avatar>
             </v-col>
-            <v-col v-else class=px-0 cols=1 >
+            <v-col v-else class="py-2 px-0" cols=1 >
               <v-avatar color="teal" size=40>
                 <span class="white--text title">{{getInitials(item.name)}}</span>
               </v-avatar>
             </v-col>
 
-            <v-col class="pl-8 pr-0 ma-0" > 
+            <v-col class="py-2 pl-8 pr-0 ma-0" > 
               <v-row  ><span class="font-weight-bold px-0">{{item.display_code}} </span></v-row>
               <v-row v-if="item.name.length<14" ><span class="caption px-0" style="font-size:10px">{{item.name}} </span></v-row>
-              <v-row v-else  ><span class="caption px-0" style="font-size:10px">{{item.name.substring(0,14)+".."}} </span></v-row>
+              <v-row v-else  ><span class="caption px-0" style="font-size:10px">{{item.name.substring(0,10)+".."}} </span></v-row>
             </v-col> 
 
             <!-- CHANGE -->
-            <v-col cols=2 class="pl-1" > 
+            <v-col cols=2 class="py-2 pl-1" > 
               <v-row justify=start>
               <span v-if="item.change < 0" class="red--text font-weight-bold">{{parseFloat(item.change_p).toFixed(2)}}%</span>
               <span v-else class="green--text font-weight-bold">+{{parseFloat(item.change_p).toFixed(2)}}%</span>
@@ -555,9 +559,9 @@
             </v-col>
 
             <!-- PRICE -->
-            <v-col cols=2 class="pr-6 pl-2">
+            <v-col cols=2 class="py-2 pr-6 pl-2">
               <v-row justify ="end">
-              <span class="font-weight-bold">{{item.close.toFixed(2)}}</span>
+              <span class="font-weight-bold">{{item.close}}</span>
               </v-row>
 
               <v-row justify ="end">
@@ -566,7 +570,7 @@
             </v-col>
 
             <!-- INTRADAY CHART-->
-            <v-col cols=3 class="pt-3 pl-1 py-0 ma-0 pa-0" >
+            <v-col cols=3 class="pt-2 pl-1 py-0 ma-0 pa-0" >
               <apexchart v-if='item.change>=0' height="25%" width="95%" type="area" :options="chartOptionsPositive_drag" :series="item.series"></apexchart>
               <apexchart v-else height="25%" width="95%" type="area" :options="chartOptionsNegative_drag" :series="item.series"></apexchart> 
             </v-col>
@@ -595,7 +599,6 @@ const longClickInstance = longClickDirective({delay: 1200})
 import { getId } from '../utils'
 import store from '../store'
 import authHeader from '../services/auth-header'
-
 export default {
   name: 'Watchlist',
   components: {
@@ -656,7 +659,6 @@ export default {
       strRules: [
         v => !!v || 'This field is required',
       ],
-
       //Apex Chart
       chartOptionsNegative: {
           chart: {
@@ -878,41 +880,34 @@ export default {
             enabled: false,
           }
       },
-
     }
   },
-
   methods:{
     swiped(){
       if(this.edit==false){
         this.swipe_active=!this.swipe_active
       }
     },
-
     displaywatchlist_func(){
       this.displaywatchlist=!this.displaywatchlist
       this.displaywatchlist && this.$nextTick(() => {
         document.addEventListener('click', this.hide)
       })
     },
-
     hide() {
       this.displaywatchlist = false
       document.removeEventListener('click', this.hide)
     },
-
     searchBtn(){
       this.$refs.autocomplete.focus()
       this.searchExpand = true
     },
-
     drawer(){
       this.$emit('drawer')
     },
     swipe (direction) {
         (direction=='Left') ? this.asset_peopleSwitch='people':this.asset_peopleSwitch='asset'
     },
-
     editwatchlist(action){
       if(action=='Delete Watchlist'){
         this.to_delete_watchlist=this.selected_watchlist
@@ -923,18 +918,15 @@ export default {
         this.dialog_renameWatchlist=true
       }
     },
-
     delete_watchlist(watchlist){
       this.to_delete_watchlist=watchlist
       this.dialog_deleteWatchlist=true
     },
-
     rename_watchlist(watchlist){
       this.to_edit_watchlist=watchlist
       this.edited_watchlistname=watchlist
       this.dialog_renameWatchlist=true
     },
-
     addWatchlist(){
       this.displaywatchlist=false
       var action = 'Add'
@@ -977,7 +969,6 @@ export default {
       this.securityLoaded='True'
       this.close_dialog_addWatchlist()
     },
-
     renameWatchlist(){
       this.displaywatchlist=false
       let hostname = window.location.hostname
@@ -1010,7 +1001,6 @@ export default {
         this.assignNull()
         console.log(error)
       }
-
       for(var i=0;i<this.listofWatchlist.length;i++){
         if(this.listofWatchlist[i]==this.to_edit_watchlist){
           this.listofWatchlist[i]=this.edited_watchlistname
@@ -1025,7 +1015,6 @@ export default {
       
       this.dialog_renameWatchlist=false
     },
-
     deleteWatchlist(){
       this.displaywatchlist=false
       var action = 'Delete'
@@ -1079,7 +1068,6 @@ export default {
       
       this.dialog_deleteWatchlist=false
     },
-
     addsecurity(){
       var action = 'Add'
       let hostname = window.location.hostname
@@ -1091,7 +1079,6 @@ export default {
         fetch(addsecurityAPI,{method: "get",headers: authHeader()})
         .then(response =>{return response.json()})
         .then(data =>{
-
         if (data.authenticated == false) {
             store.dispatch('auth/logout').then(
               () => {
@@ -1130,7 +1117,6 @@ export default {
       this.addmarket_screen=false
       
     },
-
     deletesecurity(){
       //Post delete api
       var action = 'Delete'
@@ -1165,7 +1151,6 @@ export default {
         this.assignNull()
         console.log(error)
       }
-
       //Delete from security details (local)
       for(var i=0;i<this.securitydetails.length;i++){
         if(this.securitydetails[i].code===this.todelete_security) {
@@ -1179,47 +1164,39 @@ export default {
       this.close_dialog_deleteSecurity()
       
     },
-
     open_dialog_deletesecurity(security){
       this.todelete_security=security.code
       this.todelete_security_display= this.todelete_security.split('.')[0]
       this.dialog_deleteSecurity=true
     },
-
     close_dialog_deleteSecurity(){
       this.dialog_deleteSecurity = !this.dialog_deleteSecurity
       this.todelete_security=''
     },
-
     close_dialog_deleteWatchlist(){
       this.dialog_deleteWatchlist = false
     },
-
     close_dialog_addWatchlist(){
       this.dialog_addWatchlist = false
     },
-
     close_dialog_sellbuy(){
       this.sellbuy_screen=false
       this.amountunit=1000,
       this.stoploss=-1000, 
       this.takeprofit=1000
     },
-
     sell(security){
       this.buysell_status="sell"
       this.selected_security = security
       console.log(this.selected_security)
       this.sellbuy_screen = true
     },
-
     buy(security){
       this.buysell_status="buy"
       this.selected_security = security
       console.log(this.selected_security)
       this.sellbuy_screen = true
     },
-
     fetchWatchlist_func () {
       this.watchlistLoaded = false
       let hostname = window.location.hostname
@@ -1259,6 +1236,7 @@ export default {
         .catch(e => {
         console.log("Response status: "+e)
         this.watchlistLoaded = true
+        this.securityLoaded=true
         })
       }
       catch(error)
@@ -1267,7 +1245,6 @@ export default {
         console.log(error)
       }
     },
-
     watchlist_clicked(selection){
       this.selected_watchlist=selection;
       this.display_details=[]
@@ -1275,12 +1252,10 @@ export default {
       this.fetchWatchlistsymbol (selection)
       this.edit=false
     },
-
     temp_change(){
       this.simulated_change=!this.simulated_change
       this.asset_peopleSwitch='asset'
     },
-
     fetchWatchlistsymbol (value) {
       this.displaywatchlist=false
       this.display_details=[]
@@ -1310,7 +1285,6 @@ export default {
           } 
           if(data.length==0){ this.securityLoaded = true} 
         }
-
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1324,7 +1298,6 @@ export default {
       }
       
     },
-
     fetchrealtime (security,index) {
       let hostname = window.location.hostname
       let realtimeAPI = `http://${hostname}:5000/rt/${security}`
@@ -1348,26 +1321,25 @@ export default {
             var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
             var month = months[ts.getMonth()]
             var date = ts.getDate()
-
             var time
             var now = new Date()
             var nowdate = now.getDate()
             var nowhour = now.getHours().toString().length == 1 ? '0' + now.getHours() : now.getHours()
             var nowmin = now.getMinutes().toString().length == 1 ? '0' + now.getMinutes() : now.getMinutes()
-
             if(data.status=="True")
               date == (nowdate) ? time = nowhour + ':' + nowmin : time = date + ' ' + month 
             else
               time = date + ' ' + month
-
             data.last_update=time
             data.index=index
-
             if(data.logo) data.logo =`https://eodhistoricaldata.com${data.logo}`
+            if(data.close<0.01) 
+              data.close=parseFloat(data.close).toFixed(3);
+            else 
+              data.close=parseFloat(data.close).toFixed(2);
             this.securitydetails.push(Object.assign({},data))
             return data
           } 
-
         })
         .catch(e => {
         console.log("Response status: "+e)
@@ -1379,29 +1351,23 @@ export default {
         console.log(error)
       }
     },
-
     sellbuy_change(){
       this.buysell_status==='buy'? this.buysell_status='sell':this.buysell_status='buy'
     },
-
     change_unit(){
       this.selected_unit==='amount'? this.selected_unit='unit':this.selected_unit='amount'
     },
-
     change_unit_stoploss(){
       this.selected_unit_stoploss==='amount'? this.selected_unit_stoploss='rate':this.selected_unit_stoploss='amount'
     },
-
     change_unit_takeprofit(){
       this.selected_unit_takeprofit==='amount'? this.selected_unit_takeprofit='rate':this.selected_unit_takeprofit='amount'
     },
       
     inc_amountunit(){this.amountunit+=25},
     dec_amountunit(){if(this.amountunit>25){this.amountunit-=25}else{this.amountunit=0}},
-
     dec_stoploss(){this.stoploss-=25},
     inc_stoploss(){if(this.stoploss<=-25){this.stoploss+=25}else{this.stoploss=0}},
-
     inc_takeprofit(){this.takeprofit+=25},
     dec_takeprofit(){if(this.takeprofit>25){this.takeprofit-=25}else{this.takeprofit=0}},
     
@@ -1415,11 +1381,9 @@ export default {
     inc_rate(){
       this.current_rate+=0.01
     },
-
     dec_rate(){
       this.current_rate+=0.01
     },
-
     goToMarkets(item){
       var model_code = item.code.split('.')[0]
       var model_exchange = item.code.split('.')[1] 
@@ -1438,7 +1402,6 @@ export default {
       this.$emit('drawerUpdate')
       this.$router.push({name: 'Markets'})
     },
-
     fetchData() {
       if (this.isLoading && this.model) return
       if (this.search == "" || this.search == ".") return
@@ -1464,18 +1427,15 @@ export default {
         })
         .finally(() => (this.isLoading = false))
     },
-
     fetchDebounced() {
       clearTimeout(this._timerId)
       this._timerId = setTimeout(() => {
         this.fetchData()
       }, 200)
     },
-
     customFilter(){
       return true
     },
-
     getInitials(name){
       if(name){
         let names = name.split(' '),
@@ -1484,19 +1444,16 @@ export default {
         return initials
       }
     },
-
     done_edit(){
       if(this.swipe_active==false){
         this.edit=false
       }
     },
-
     openedit(){
       if(this.swipe_active==false){
         this.edit=true
       }
     },
-
     checkMove: function(e) {
       this.drag_symbol=''
       this.drag_from=''
@@ -1547,7 +1504,6 @@ export default {
       this.done_edit()
     }
   },
-
   computed:{ 
     check_duplicate()
     {
@@ -1567,19 +1523,16 @@ export default {
       }
       return false
     },
-
     items () {
         return this.symbolsExchangesNames
     }
     
   },
-
   watch: {
     search (val) {
       if(this.model && val == this.model.Name) return
       this.fetchDebounced()
     },
-
     'securitydetails.length'(){
       if(this.securitydetails.length==this.totalsecurity){
         this.display_details=this.securitydetails
@@ -1590,9 +1543,7 @@ export default {
       console.log(this.securitydetails.length+" "+this.totalsecurity)
     }
   },
-
   mounted () {
-
     if(getId()!=0){
       this.user_id = getId()
       console.log(this.user_id)
@@ -1615,7 +1566,6 @@ export default {
 </script>
 
 <style>
-
 .swipeout-action {
   display: flex;
   align-items: center;
@@ -1623,65 +1573,50 @@ export default {
   cursor: pointer;
   left: 0;
 }
-
 .swipeout-action.red {
   color: white;
   background-color: rgb(255, 59, 48);
 }
-
 .swipeout-action.red:hover {
   background-color: darken(rgb(255, 59, 48), 5%);
 }
-
 .swipeout-action.blue {
     color: white;
     background-color: rgb(0, 122, 255);
 }
-
 .swipeout-action.blue:hover {
     background-color: darken(rgb(0, 122, 255), 5%);
 }
-
 .swipeout-list-item {
   flex: 1;
   border-bottom: 1px solid lightgray;
 }
-
 .swipeout-list-item:first-of-type {
   border-top: 60px solid transparent;
 }
-
 .v-list-item:first-child {
   border-top: 5px solid transparent;
 }
-
 .card-content {
   padding-left: 15px;
   padding-right: 15px;
 }
-
 .transition-left {
 	transform: translate3d(-100%, 0 ,0) !important;
 }
-
 .transition-right {
 	transform: translate3d(100%, 0 ,0) !important;
 }
-
 .centered-input input {
   text-align: center
 }
-
 .header {
   position:fixed;      
   width:100vw; 
   z-index:1;  
   height:40px;     
 }
-
 .noFocus:focus::before {
   opacity: 0 !important;
 }
-
-
 </style>

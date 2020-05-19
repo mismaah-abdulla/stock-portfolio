@@ -30,8 +30,8 @@
           <v-col cols=5 class="pt-5 pb-0 pl-3 pr-0">
             <v-icon v-if="securitydetails.change<0" size=x-large color=red>mdi-menu-down</v-icon>
             <v-icon v-else size=x-large color=green>mdi-menu-up</v-icon>
-            <span v-if="securitydetails.change<0" class="red--text body-1 font-weight-bold" style="font-size:10px">{{securitydetails.change.toFixed(2).substr(1)}} ({{parseFloat(securitydetails.change_p).toFixed(2)}}%)</span>  
-            <span v-else class="green--text body-1 font-weight-bold" style="font-size:10px">{{securitydetails.change.toFixed(2)}} ({{parseFloat(securitydetails.change_p).toFixed(2)}}%)</span>  
+            <span v-if="securitydetails.change<0" class="red--text body-2 font-weight-bold" style="font-size:10px">{{securitydetails.change.toFixed(2).substr(1)}} ({{parseFloat(securitydetails.change_p).toFixed(2)}}%)</span>  
+            <span v-else class="green--text body-2 font-weight-bold" style="font-size:10px">{{securitydetails.change}} ({{parseFloat(securitydetails.change_p).toFixed(2)}}%)</span>  
           </v-col>
           <v-col class="px-0 pt-3 pb-0">
             <v-btn small color=green class="white--text">
@@ -161,10 +161,17 @@ export default {
             )
           } else {
             this.securitydetails=data
+            if(this.securitydetails.close<0.01) 
+              this.securitydetails.close=parseFloat(this.securitydetails.close).toFixed(3);
+            else 
+              this.securitydetails.close=parseFloat(this.securitydetails.close).toFixed(2);
+
             var close=this.securitydetails.close+ ''
             var arr=close.split(".")
             this.securitydetails.price1=arr[0]
             arr[1].length<2?this.securitydetails.price2='.'+arr[1]+'0':this.securitydetails.price2='.'+arr[1]
+            this.securitydetails.change=parseFloat(this.securitydetails.change)
+
             this.securityLoaded=true
           } 
 

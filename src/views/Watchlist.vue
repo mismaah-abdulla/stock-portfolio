@@ -1317,7 +1317,12 @@ export default {
               }
             )
           } else {
-            var ts=new Date(data.last_update * 1000)
+            var ts 
+            if(data.code.includes("US")){
+              ts=new Date(data.last_update * 1000)
+            }else{
+              ts = new Date(data.last_update);
+            }
             var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
             var month = months[ts.getMonth()]
             var date = ts.getDate()
@@ -1326,10 +1331,12 @@ export default {
             var nowdate = now.getDate()
             var nowhour = now.getHours().toString().length == 1 ? '0' + now.getHours() : now.getHours()
             var nowmin = now.getMinutes().toString().length == 1 ? '0' + now.getMinutes() : now.getMinutes()
+            console.log(data.status)
             if(data.status=="True")
               date == (nowdate) ? time = nowhour + ':' + nowmin : time = date + ' ' + month 
             else
               time = date + ' ' + month
+
             data.last_update=time
             data.index=index
             if(data.logo) data.logo =`https://eodhistoricaldata.com${data.logo}`
@@ -1337,6 +1344,7 @@ export default {
               data.close=parseFloat(data.close).toFixed(3);
             else 
               data.close=parseFloat(data.close).toFixed(2);
+            data.change=parseFloat(data.change)
             this.securitydetails.push(Object.assign({},data))
             return data
           } 

@@ -1,5 +1,4 @@
 <template>
-<!-- test -->
 <div id="app">
   <v-app-bar color=white app elevation="1">
     <v-row v-if="!searchExpand" align=center >

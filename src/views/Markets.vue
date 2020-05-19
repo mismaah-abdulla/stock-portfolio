@@ -163,9 +163,14 @@ export default {
           } else {
             this.securitydetails=data
             if(this.securitydetails.close<0.01) 
-              this.securitydetails.close=parseFloat(this.securitydetails.close).toFixed(3);
+              this.securitydetails.close=parseFloat(this.securitydetails.close).toFixed(3); 
             else 
               this.securitydetails.close=parseFloat(this.securitydetails.close).toFixed(2);
+            
+            if(this.securitydetails.change<0.01)
+              this.securitydetails.change=parseFloat(this.securitydetails.change).toFixed(3);
+            else              
+              this.securitydetails.change=parseFloat(this.securitydetails.change).toFixed(2);
 
             var close=this.securitydetails.close+ ''
             var arr=close.split(".")

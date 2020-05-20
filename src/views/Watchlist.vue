@@ -1091,8 +1091,11 @@ export default {
             )
         } else {
           console.log("Status: "+data)
-         
-          if(data.toLowerCase().includes("fail")){
+          if (data.toLowerCase().includes("invalid")){
+            this.snackbar_text="Invalid Security Code"
+            this.snackbar=true
+          }
+          else if(data.toLowerCase().includes("duplicate")){
             this.snackbar_text=security+" is already in "+this.selected_watchlist
             this.snackbar=true
           }else{

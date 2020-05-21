@@ -97,6 +97,7 @@
 
     <Chart v-show="page=='charts'" v-if="stock"/>
     <Stats v-show="page=='stats'" v-if="stock"/>
+    <About v-show="page=='about'" v-if="stock"/>
 
   </div>
 </template>
@@ -106,6 +107,7 @@ import Chart from '../components/Chart'
 // import ChartYD from '../components/ChartYD'
 //import CompanyDetails from '../components/CompanyDetails'
 import Stats from '../components/Stats'
+import About from '../components/About'
 // import StockMap from '../components/StockMap'
 import { getId } from '../utils'
 import store from '../store'
@@ -117,6 +119,7 @@ export default {
     // ChartYD,
     //CompanyDetails,
     Stats,
+    About,
     // StockMap
   },
   data: () => ({

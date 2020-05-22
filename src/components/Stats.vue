@@ -1,5 +1,6 @@
 <template>
-  <v-container>
+  <div>
+    <v-divider></v-divider>
     <v-row v-if="!loaded" class="py-5 my-5" justify="center">
       <v-progress-circular
         :size="70"
@@ -10,24 +11,22 @@
     </v-row>
     <v-row v-if="loaded" no-gutters>
       <v-col xs="12" cols=7>
-        <v-card v-if="page=='Summary'" outlined>
-          <v-card-title>Overview</v-card-title>
-          <v-simple-table dense>
+        <v-card v-if="page=='Summary'" flat>
+          <v-card-title class="pl-2 font-weight-bold">Summary</v-card-title>
+          <v-simple-table divider dense>
             <template v-slot:default>
               <tbody>
                 <tr v-for="item in items" :key="item.name">
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.data }}</td>
+                  <td width=55% class="caption pr-0">{{ item.name }}</td>
+                  <td class="caption pl-0 font-weight-bold">{{ item.data }}</td>
                 </tr>
               </tbody>
             </template>
           </v-simple-table>
         </v-card>
-
-        
       </v-col>
 
-      <v-col xs="12" >
+      <v-col xs="12" class=pt-4>
         <v-row justify=end class="pr-2 py-1" >
             <v-btn v-if="page=='Summary'" x-small width=140 depressed color="green lighten-2"><span class="mr-11 pr-9">Summary</span></v-btn>
             <v-btn v-else @click="page='Summary'" text x-small width=140 depressed color="green darken-2"><span class="mr-11 pr-9">Summary</span></v-btn>
@@ -83,7 +82,7 @@
     <v-row v-if="loaded && $vuetify.breakpoint.smAndDown" class="mt-3">
       <Financials :financials="financials"/>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -108,7 +107,7 @@ export default {
         marketCap: {name: "Market Cap", data: null},
         peRatio: {name: "P/E Ratio", data: null},
         revenue: {name: "Revenue", data: null},
-        avgVol: {name: "Average Volume (3m)", data: null},
+        avgVol: {name: "Avg. Volume (3m)", data: null},
         dividend: {name: "Dividend (Yield)", data: null},
       },
       items3: {

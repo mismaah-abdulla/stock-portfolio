@@ -24,6 +24,12 @@
             </template>
           </v-simple-table>
         </v-card>
+        <v-card v-if="page=='Income'" flat>
+          <v-row v-if="loaded && $vuetify.breakpoint.smAndDown" class="mt-3">
+            <Financials :financials="financials"/>
+          </v-row>
+        </v-card>
+
       </v-col>
 
       <v-col xs="12" class=pt-4>
@@ -79,9 +85,7 @@
         </v-col>
       </v-row>
     </v-card>
-    <v-row v-if="loaded && $vuetify.breakpoint.smAndDown" class="mt-3">
-      <Financials :financials="financials"/>
-    </v-row>
+
   </div>
 </template>
 

@@ -1303,7 +1303,7 @@ export default {
     },
     fetchrealtime (security,index) {
       let hostname = window.location.hostname
-      let realtimeAPI = `http://${hostname}:5000/rt/${security}`
+      let realtimeAPI = `http://${hostname}:5000/realtime/${security}`
       try
       {
         fetch(realtimeAPI,{method: "get",headers: authHeader()})

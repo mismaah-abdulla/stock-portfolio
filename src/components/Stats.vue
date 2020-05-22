@@ -9,21 +9,59 @@
       ></v-progress-circular>
     </v-row>
     <v-row v-if="loaded" no-gutters>
-      <v-col xs="12" md="4">
-        <v-card outlined>
+      <v-col xs="12" cols=7>
+        <v-card v-if="page=='Summary'" outlined>
           <v-card-title>Overview</v-card-title>
           <v-simple-table dense>
             <template v-slot:default>
               <tbody>
                 <tr v-for="item in items" :key="item.name">
                   <td>{{ item.name }}</td>
-                  <td class="text--secondary subtitle-1">{{ item.data }}</td>
+                  <td>{{ item.data }}</td>
                 </tr>
               </tbody>
             </template>
           </v-simple-table>
         </v-card>
+
+        
       </v-col>
+
+      <v-col xs="12" >
+        <v-row justify=end class="pr-2 py-1" >
+            <v-btn v-if="page=='Summary'" x-small width=140 depressed color="green lighten-2"><span class="mr-11 pr-9">Summary</span></v-btn>
+            <v-btn v-else @click="page='Summary'" text x-small width=140 depressed color="green darken-2"><span class="mr-11 pr-9">Summary</span></v-btn>
+        </v-row>
+        <v-row justify=end class="pr-2 py-1">
+            <v-btn v-if="page=='Valuation'" x-small width=140 depressed color="green lighten-2"><span class="mr-10 pr-8">Valuation</span></v-btn>
+            <v-btn v-else @click="page='Valuation'" text x-small width=140 depressed color="green darken-2"><span class="mr-10 pr-8">Valuation</span></v-btn>
+        </v-row>
+        <v-row justify=end class="pr-2 py-1">
+            <v-btn v-if="page=='Financial'" x-small width=140 depressed color="green lighten-2"><span class="mr-1">Financial Highlights</span></v-btn>
+            <v-btn v-else @click="page='Financial'" text x-small width=140 depressed color="green darken-2"><span class="mr-1">Financial Highlights</span></v-btn>
+        </v-row>
+        <v-row justify=end class="pr-2 py-1">
+            <v-btn v-if="page=='Income'" x-small width=140 depressed color="green lighten-2"><span class="mr-5">Income Statement</span></v-btn>
+            <v-btn v-else @click="page='Income'" text x-small width=140 depressed color="green darken-2"><span class="mr-5">Income Statement</span></v-btn>
+        </v-row>
+        <v-row justify=end class="pr-2 py-1">
+            <v-btn v-if="page=='Balance'" x-small width=140 depressed color="green lighten-2"><span class="mr-11">Balance Sheet</span></v-btn>
+            <v-btn v-else @click="page='Balance'" text x-small width=140 depressed color="green darken-2"><span class="mr-11">Balance Sheet</span></v-btn>
+        </v-row>
+        <v-row justify=end class="pr-2 py-1">
+            <v-btn v-if="page=='Cashflow'" x-small width=140 depressed color="green lighten-2"><span class="mr-11 pr-7">Cashflow</span></v-btn>   
+            <v-btn v-else @click="page='Cashflow'" text x-small width=140 depressed color="green darken-2"><span class="mr-11 pr-7">Cashflow</span></v-btn>   
+        </v-row>
+        <v-row justify=end class="pr-2 py-1">
+            <v-btn v-if="page=='Trading'" x-small width=140 depressed color="green lighten-2"><span class="mr-0">Trading & Share Stats</span></v-btn>
+            <v-btn v-else @click="page='Trading'" text x-small width=140 depressed color="green darken-2"><span class="mr-0">Trading & Share Stats</span></v-btn>
+        </v-row>
+        <v-row justify=end class="pr-2 py-1">
+            <v-btn v-if="page=='Divident'" x-small width=140 depressed color="green lighten-2"><span class="mr-8">Divident & Spilts</span></v-btn>
+            <v-btn v-else @click="page='Divident'" text x-small width=140 depressed color="green darken-2"><span class="mr-8">Divident & Spilts</span></v-btn>
+        </v-row>
+      </v-col>
+
       <v-col md="8" v-if="$vuetify.breakpoint.mdAndUp">
         <Financials :financials="financials"/>
       </v-col>
@@ -56,6 +94,7 @@ export default {
       Financials
     },
     data: () => ({
+      page:'Summary',
       loaded: false,
       stats: null,
       financials: null,

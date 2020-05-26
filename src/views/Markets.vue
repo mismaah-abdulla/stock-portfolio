@@ -7,7 +7,6 @@
       top
       color="#00C853"
     ></v-progress-linear>
-    <!-- <CompanyDetails v-if="stock" :key="stock.Code" :stock="stock"></CompanyDetails> -->
     <v-card class="white pt-1 pb-2" flat absolute style="border-radius: 0px;" >
       <v-app-bar class=px-2 color=white dense flat height=30>
         <v-row class="pt-1 pb-0">
@@ -99,6 +98,7 @@
     </v-card>
 
     <Chart v-show="page=='charts'" v-if="stock"/>
+    <!-- <StockMap v-show="page=='charts'" v-if="stock"/> -->
     <Stats v-show="page=='stats'" v-if="stock"/>
     <About v-show="page=='about'" v-if="stock"/>
 

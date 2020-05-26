@@ -5,11 +5,8 @@
 <script>
 export default {
   name: "StockMap",
-  props: {
-    stock: Object
-  },
   mounted () {
-    let stock = this.$props.stock
+    let stock = this.stock = { code: localStorage.code, exchange: localStorage.exchange, logo: localStorage.logoURL, name: localStorage.name }
     let Highcharts = require('highcharts')
     let hostname = window.location.hostname
     require('highcharts/modules/export-data')(Highcharts)

@@ -107,8 +107,6 @@
 
 <script>
 import Chart from '../components/Chart'
-// import ChartYD from '../components/ChartYD'
-//import CompanyDetails from '../components/CompanyDetails'
 import Stats from '../components/Stats'
 import About from '../components/About'
 // import StockMap from '../components/StockMap'
@@ -119,8 +117,6 @@ import authHeader from '../services/auth-header'
 export default {
   components: {
     Chart,
-    // ChartYD,
-    //CompanyDetails,
     Stats,
     About,
     // StockMap

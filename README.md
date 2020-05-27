@@ -1,4 +1,4 @@
-# stock-portfolio
+# stock-app
 
 ## Project setup
 ```

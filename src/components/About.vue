@@ -46,6 +46,7 @@
 <script>
 import store from '../store'
 import authHeader from '../services/auth-header'
+import { getId } from '../utils'
 export default {
     name: "About",
 
@@ -54,13 +55,14 @@ export default {
         loaded: false,
         info: null,
         overflow:false,
-        description: ''
+        description: '',
+        user_id:'',
     }),
 
     methods: {
       fetchdata () {
       let hostname = window.location.hostname
-      let realtimeAPI = `http://${hostname}:5000/general/${localStorage.code}.${localStorage.exchange}`
+      let realtimeAPI = `http://${hostname}:5000/general/${this.user_id}/${localStorage.code}.${localStorage.exchange}`
       try
       {
         fetch(realtimeAPI,{method: "get",headers: authHeader()})
@@ -94,6 +96,7 @@ export default {
       },
     },
     mounted(){
+      this.user_id = getId()
       this.stock = { code: localStorage.code, exchange: localStorage.exchange}
       this.fetchdata ()
     }

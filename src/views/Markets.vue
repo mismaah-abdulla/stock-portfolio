@@ -146,7 +146,7 @@ export default {
 
     fetchrealtime () {
       let hostname = window.location.hostname
-      let realtimeAPI = `http://${hostname}:5000/price/${localStorage.code}.${localStorage.exchange}`
+      let realtimeAPI = `http://${hostname}:5000/price/${this.user_id}/${localStorage.code}.${localStorage.exchange}`
       try
       {
         fetch(realtimeAPI,{method: "get",headers: authHeader()})

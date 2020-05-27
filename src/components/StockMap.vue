@@ -5,7 +5,11 @@
 <script>
 export default {
   name: "StockMap",
+  data: () => ({
+      user_id:''
+  }),
   mounted () {
+    this.user_id = getId()
     let stock = this.stock = { code: localStorage.code, exchange: localStorage.exchange, logo: localStorage.logoURL, name: localStorage.name }
     let Highcharts = require('highcharts')
     let hostname = window.location.hostname
@@ -13,7 +17,7 @@ export default {
     require('highcharts/modules/accessibility')(Highcharts)
     require('highcharts/modules/boost')(Highcharts)
     Highcharts.getJSON(
-    `http://${hostname}:5000/stockmap/${stock.Code}.${stock.Exchange}`,
+    `http://${hostname}:5000/stockmap/${this.user_id}/${stock.Code}.${stock.Exchange}`,
     function (data) {
       console.log(stock.Code)
       const getSector = (Sector) => {

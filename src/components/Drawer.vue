@@ -171,7 +171,7 @@
         this.isLoading = true
         this.symbolsExchangesNames = []
         let hostname = window.location.hostname
-        fetch(`http://${hostname}:5000/search/${this.search}`)
+        fetch(`http://${hostname}:5000/search/${this.user_id}/${this.search}`)
           .then(res => {
             if(res.ok) return res.json()
             })
@@ -228,7 +228,7 @@
       fetchWatchlist_func () {
         this.watchlistLoaded = false
         let hostname = window.location.hostname
-        let watchlist_listAPI = `http://${hostname}:5000/market/${this.stock.code}.${this.stock.exchange}/${this.user_id}`
+        let watchlist_listAPI = `http://${hostname}:5000/market/${this.user_id}/${this.stock.code}.${this.stock.exchange}`
         try
         {
           fetch(watchlist_listAPI,{method: "get",headers: authHeader()})

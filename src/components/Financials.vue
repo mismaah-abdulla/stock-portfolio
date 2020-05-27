@@ -98,12 +98,14 @@
 </template>
 
 <script>
+import { getId } from '../utils'
 export default {
   data: () => ({
     tabHeaders: ["Income Statement", "Balance Sheet", "Cash Flow Statement"],
     tab: null,
     quarterly: false,
     incomeTable: null,
+    user_id:'',
   }),
   props: {
     financials: Object
@@ -133,6 +135,7 @@ export default {
     }
   },
   mounted () {
+    this.user_id = getId()
     this.assignYearly()
   }
 }

@@ -91,12 +91,14 @@
 
 <script>
 import Financials from './Financials'
+import { getId } from '../utils'
 export default {
     name: "Stats",
     components: {
       Financials
     },
     data: () => ({
+      user_id:'',
       page:'Summary',
       loaded: false,
       stats: null,
@@ -125,7 +127,7 @@ export default {
         this.loaded = false
         let hostname = window.location.hostname
         let stock = { code: localStorage.code, exchange: localStorage.exchange}
-        let statsAPI = `http://${hostname}:5000/stats/${stock.code}.${stock.exchange}`
+        let statsAPI = `http://${hostname}:5000/stats/${this.user_id}/${stock.code}.${stock.exchange}`
         try{
           fetch(statsAPI)
           .then(response =>{return response.json()})
@@ -177,6 +179,7 @@ export default {
       }
     },
     mounted () {
+      this.user_id = getId()
       this.fetchStats()
     }
 }

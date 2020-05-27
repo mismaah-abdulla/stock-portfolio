@@ -1303,7 +1303,7 @@ export default {
     },
     fetchrealtime (security,index) {
       let hostname = window.location.hostname
-      let realtimeAPI = `http://${hostname}:5000/realtime/${security}`
+      let realtimeAPI = `http://${hostname}:5000/realtime/${this.user_id}/${security}`
       try
       {
         fetch(realtimeAPI,{method: "get",headers: authHeader()})
@@ -1419,7 +1419,7 @@ export default {
       this.isLoading = true
       this.symbolsExchangesNames = []
       let hostname = window.location.hostname
-      fetch(`http://${hostname}:5000/search/${this.search}`)
+      fetch(`http://${hostname}:5000/search/${this.user_id}/${this.search}`)
         .then(res => {
           if(res.ok) return res.json()
           })

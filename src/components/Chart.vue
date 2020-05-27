@@ -7,12 +7,15 @@
 </template>
 
 <script>
+import { getId } from '../utils'
 export default {
   name: "Chart",
   data: () => ({
-    loaded: null
+    loaded: null,
+    user_id:'',
   }),
   mounted () {
+    this.user_id = getId()
     let stock = { code: localStorage.code, exchange: localStorage.exchange, logo: localStorage.logoURL, name: localStorage.name }
     let hostname = window.location.hostname
     let Highcharts = require('highcharts')
@@ -23,7 +26,7 @@ export default {
     require('highcharts/modules/export-data')(Highcharts)
     require('highcharts/modules/accessibility')(Highcharts)
     require('highcharts/modules/boost')(Highcharts)
-    Highcharts.getJSON(`http://${hostname}:5000/chart/${stock.code}.${stock.exchange}`, function (data) {
+    Highcharts.getJSON(`http://${hostname}:5000/chart/${this.user_id}/${stock.code}.${stock.exchange}`, function (data) {
       // split the data set into ohlc and volume
       var ohlc = [],
           volume = [],
@@ -118,7 +121,7 @@ export default {
       })
   })
     Highcharts.getJSON(
-        `http://${hostname}:5000/stockmap/${stock.code}.${stock.exchange}`,
+        `http://${hostname}:5000/stockmap/${this.user_id}/${stock.code}.${stock.exchange}`,
         function (data) {
         console.log(stock.code)
         const getSector = (Sector) => {

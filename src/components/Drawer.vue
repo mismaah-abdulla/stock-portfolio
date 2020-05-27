@@ -19,37 +19,36 @@
       </v-list>
 
     </v-navigation-drawer>
-    <v-app-bar v-if="(this.$route.name != 'Watchlist' && this.$route.name != 'Profile' && this.$route.name != 'Post')"
+      <v-app-bar v-if="(this.$route.name != 'Watchlist' && this.$route.name != 'Profile' && this.$route.name != 'Post')"
         app
         elevation="1"
         color=white
       >
-      <v-row v-if="!searchExpand">
-        <v-app-bar-nav-icon @click.stop="drawerMain = !drawerMain" />
+      <v-row v-if="!searchExpand" align=center>
+        <v-app-bar-nav-icon v-if="this.$route.name != 'Markets' || !this.stock" @click.stop="drawerMain = !drawerMain" />
         <v-col cols=2 class="px-1 py-0" v-if="this.$route.name == 'Markets' && this.stock">
-          <v-avatar v-if="logoURL" size=40 tile ><img :src="logoURL"></v-avatar>
-          <v-avatar v-else color="teal" size=40>
+          <v-avatar v-if="logoURL" size=40 tile @click.stop="drawerMain = !drawerMain" class="avatar"><img :src="logoURL"></v-avatar>
+          <v-avatar v-else color="teal" size=40 @click.stop="drawerMain = !drawerMain" class="avatar">
             <span class="white--text title">{{getInitials(stock.name)}}</span>
           </v-avatar>
         </v-col>
         <v-col v-if="this.$route.name == 'Markets' && stock" cols=6 class="pl-2 py-0">
           <v-row>
-            <span class="font-weight-bold" style="font-size:15px">{{stock.name}} </span>  
+            <span class="body-2 font-weight-bold" >{{stock.name}} </span>  
           </v-row>
           <v-row>
-            <span class="caption" style="font-size:10px">{{stock.code}}.{{stock.exchange}}</span>  
+            <span class="caption" >{{stock.code}}.{{stock.exchange}}</span>  
           </v-row>          
         </v-col>
         <v-toolbar-title v-else class="pt-2">{{ this.$route.name }}</v-toolbar-title>
         <v-spacer/>
-        <v-btn icon class=px-4 v-if="this.$route.name == 'Markets'">
+        <v-btn @click="opensheet" icon small class=mx-1 v-if="this.$route.name == 'Markets'">
           <v-icon >mdi-eye-plus</v-icon>
         </v-btn>
-        <v-btn icon class=px-4 v-if="this.$route.name == 'Markets'">
+        <v-btn icon small class=mx-1 v-if="this.$route.name == 'Markets'">
           <v-icon >mdi-pencil-box-multiple</v-icon>
         </v-btn>
-        <v-btn icon><v-icon>mdi-facebook-messenger</v-icon></v-btn>
-        <v-btn  @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
+        <v-btn class=mx-1 small @click="searchBtn()" icon><v-icon>search</v-icon></v-btn>
       </v-row>
       <v-scroll-x-reverse-transition hide-on-leave>
       <v-row v-show="searchExpand">
@@ -92,10 +91,36 @@
       </v-row>
       </v-scroll-x-reverse-transition>
     </v-app-bar>
+    <v-bottom-sheet v-model="sheet">
+      <v-list>
+        <v-subheader class="pl-5 title justify-center">Add to Watchlist</v-subheader>
+        <v-list-item
+          v-for="(watchlist,index) in listofWatchlist"
+          :key="index"
+          @click="addWatchlist(watchlist)"
+        >
+          <v-list-item-title>{{ watchlist.watchlist_name }}</v-list-item-title>
+          <v-icon v-if='watchlist.symbol_in_list==true' class="pl-3 pr-0" color="green" small>mdi-check</v-icon>
+          <!-- <v-icon v-else class="pl-3 pr-0" color="grey lighten-1" small>mdi-check</v-icon> -->
+
+        </v-list-item>
+      </v-list>
+    </v-bottom-sheet>
+
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="2000"
+    >
+      {{ snackbar_text }}
+  </v-snackbar>
   </div>
 </template>
 
 <script>
+  import store from '../store'
+  import authHeader from '../services/auth-header'
+  import { getId } from '../utils'
+
   export default {
     name: 'Drawer',
     data: () => ({
@@ -114,7 +139,11 @@
       symbolsExchangesNames: [],
       stock: null,
       logoURL: null,
-      update: 1,
+      sheet:false,
+      listofWatchlist:[],
+      user_id:'',
+      snackbar:false,
+      snackbar_text:'',
     }),
     props: {
       source: String,
@@ -161,59 +190,205 @@
           })
           .finally(() => (this.isLoading = false))
       },
-    fetchDebounced() {
-      clearTimeout(this._timerId)
-      this._timerId = setTimeout(() => {
-        this.fetchData()
-      }, 200)
+      fetchDebounced() {
+        clearTimeout(this._timerId)
+        this._timerId = setTimeout(() => {
+          this.fetchData()
+        }, 200)
+      },
+      goToMarkets(){
+        if (this.model){
+          this.$refs.autocomplete.blur()
+          localStorage.code = this.model.Code
+          localStorage.exchange = this.model.Exchange
+          localStorage.name = this.model.Name
+          if (this.model.LogoURL) {
+            localStorage.logoURL = this.model.LogoURL
+          }
+          else {
+            if (localStorage.logoURL) localStorage.removeItem('logoURL')
+          }
+          if(this.$route.name == 'Markets') this.$emit(`updateDrawer`)
+          else this.$router.push({name: 'Markets'})
+          this.symbolsExchangesNames = []
+          this.search = null
+        }
+      },
+      getInitials(name){
+        let names = name.split(' '),
+        initials = names[0].substring(0, 1).toUpperCase()
+        if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
+        return initials
+      },
+      searchBtn(){
+        this.$refs.autocomplete.focus()
+        this.searchExpand = true
+      },
+      
+      fetchWatchlist_func () {
+        this.watchlistLoaded = false
+        let hostname = window.location.hostname
+        let watchlist_listAPI = `http://${hostname}:5000/market/${this.stock.code}.${this.stock.exchange}/${this.user_id}`
+        try
+        {
+          fetch(watchlist_listAPI,{method: "get",headers: authHeader()})
+          .then(response =>{return response.json()})
+          .then(data =>{
+          if (data.authenticated == false) {
+              store.dispatch('auth/logout').then(
+                () => {
+                  alert("Session Expired. Please login again.")
+                  this.$router.push('/login');
+                },
+                error => {
+                  console.log(error);
+                }
+              )
+          } 
+          else {
+            this.listofWatchlist=[]
+            if(data.length>0){
+              for(var i=0;i<data.length;i++){
+                this.listofWatchlist.push(data[i])
+              }
+            }
+          }
+          
+          })
+          .catch(e => {
+          console.log("Response status: "+e)
+          })
+        }
+        catch(error)
+        {
+          this.assignNull()
+          console.log(error)
+        }
+      },
+
+      opensheet(){
+        this.fetchWatchlist_func () 
+        this.sheet=true
+      },
+
+      addWatchlist(watchlist){
+        if(watchlist.symbol_in_list){ //Remove
+          this.deletesecurity(watchlist.watchlist_name)
+          this.snackbar_text=this.stock.code+"."+this.stock.exchange+" removed from watchlist"
+        }
+        else{ //Add
+          this.addsecurity(watchlist.watchlist_name)
+          this.snackbar_text=this.stock.code+"."+this.stock.exchange+" added to watchlist"
+        }
+        this.snackbar=true
+        watchlist.symbol_in_list=!watchlist.symbol_in_list
+      },
+
+      addsecurity(selected_watchlist){
+        var action = 'Add'
+        let hostname = window.location.hostname
+        let addsecurityAPI = `http://${hostname}:5000/add_del_security/${this.user_id}/${selected_watchlist}/${this.stock.code}.${this.stock.exchange}/${action}`
+        try
+        {
+          fetch(addsecurityAPI,{method: "get",headers: authHeader()})
+          .then(response =>{return response.json()})
+          .then(data =>{
+
+          if (data.authenticated == false) {
+              store.dispatch('auth/logout').then(
+                () => {
+                  alert("Session Expired. Please login again.")
+                  this.$router.push('/login');
+                },
+                error => {
+                  console.log(error);
+                }
+              )
+          } else {
+            console.log("Status: "+data)
+          } 
+          })
+          .catch(e => {
+          console.log("Response status: "+e)
+          })
+        }
+        catch(error)
+        {
+          this.assignNull()
+          console.log(error)
+        }
+      },
+
+      deletesecurity(selected_watchlist){
+        //Post delete api
+        var action = 'Delete'
+        let hostname = window.location.hostname
+        let deletesecurityAPI =`http://${hostname}:5000/add_del_security/${this.user_id}/${selected_watchlist}/${this.stock.code}.${this.stock.exchange}/${action}`
+        try
+        {
+          fetch(deletesecurityAPI,{method: "get",headers: authHeader()})
+          .then(response =>{return response.json()})
+          .then(data =>{
+          if (data.authenticated == false) {
+              store.dispatch('auth/logout').then(
+                () => {
+                  alert("Session Expired. Please login again.")
+                  this.$router.push('/login');
+                },
+                error => {
+                  console.log(error);
+                }
+              )
+          } else {
+            console.log("Status: "+data)
+          }
+          
+          })
+          .catch(e => {
+          console.log("Response status: "+e)
+          })
+        }
+        catch(error)
+        {
+          this.assignNull()
+          console.log(error)
+        }
+      },
+
     },
-    goToMarkets(){
-      if (this.model){
-        this.$refs.autocomplete.blur()
-        localStorage.code = this.model.Code
-        localStorage.exchange = this.model.Exchange
-        localStorage.name = this.model.Name
-        if (this.model.LogoURL) {
-          localStorage.logoURL = this.model.LogoURL
-        }
-        else {
-          if (localStorage.logoURL) localStorage.removeItem('logoURL')
-        }
-        if(this.$route.name == 'Markets') this.$emit(`updateDrawer`)
-        else this.$router.push({name: 'Markets'})
-        this.symbolsExchangesNames = []
-        this.search = null
+    watch: {
+      search (val) {
+        if(this.model && val == this.model.Name) return
+        this.fetchDebounced()
+      },
+      drawer: function(){
+        this.drawerMain = !this.drawerMain
+      },
+      '$route.fullPath': {
+        handler: function() {
+          if (localStorage.code) {
+            this.stock = {
+              name: localStorage.name,
+              code: localStorage.code,
+              exchange: localStorage.exchange
+            }
+            localStorage.logoURL != "null" ? this.logoURL = localStorage.logoURL : this.logoURL = null
+          }
+        },
+        deep: true,
+        immediate: true
       }
     },
-    getInitials(name){
-      let names = name.split(' '),
-      initials = names[0].substring(0, 1).toUpperCase()
-      if(names.length > 1) initials += names[1].substring(0,1).toUpperCase()
-      return initials
-    },
-    searchBtn(){
-      this.$refs.autocomplete.focus()
-      this.searchExpand = true
-    },
-  },
-  watch: {
-    search (val) {
-      if(this.model && val == this.model.Name) return
-      this.fetchDebounced()
-    },
-    drawer: function(){
-      this.drawerMain = !this.drawerMain
-    },
-  },
-  mounted () {
-    if (localStorage.code) {
-      this.stock = {
-        name: localStorage.name,
-        code: localStorage.code,
-        exchange: localStorage.exchange
-      }
-      localStorage.logoURL ? this.logoURL = localStorage.logoURL : null
+    
+    mounted () {
+      this.user_id = getId()
+      this.fetchWatchlist_func () 
     }
-  }
-} 
+  } 
 </script>
+
+<style>
+.avatar {
+  cursor: pointer !important;
+}
+</style>

@@ -158,16 +158,8 @@
           </v-app-bar>
 
           <div id="container" class="container" v-html="post.postContent"></div>
-          <div v-if="post.postLiked==false" class="ml-3 caption font-weight-bold black--text">
-            {{ post.postTotalLikes }}       
-            <v-icon class="mb-1" size="20">mdi-thumb-up-outline</v-icon>
-          </div>
-          <div v-else class="ml-3 caption font-weight-bold black--text">
-            {{ post.postTotalLikes }}       
-            <v-icon class="mb-1" size="20">mdi-thumb-up</v-icon>
-          </div>
-
-          <v-container class="grey-lighten-5 pl-0 pr-0 pb-0 mt-n3 mb-n5" style="height:60px">
+          
+          <v-container class="grey-lighten-5 pl-0 pr-0 pb-0 mb-n5" style="height:60px">
             <v-row no-gutters>
               <v-col v-for="k in 3" :key="k" bottom>
                 <v-btn v-if="(k == 1 && post.postLiked == false)" @click="likePost(post.postId)" tile small bottom block color="grey lighten-4">
@@ -547,9 +539,10 @@ export default {
         return
       }
       let formData = new FormData();
+      formData.append('userId', this.user_id);
       formData.append('content', this.valueContent);
       let hostname = window.location.hostname;
-      let API_URL = `http://${hostname}:5000/createpost/${this.user_id}`      
+      let API_URL = `http://${hostname}:5000/createpost`      
       try {
         fetch(API_URL, {
           method: 'POST',
@@ -573,46 +566,6 @@ export default {
         console.log(error);
       }
     },
-    likePost(postId) {
-      let formData = new FormData();
-      formData.append('postId', postId);
-      let hostname = window.location.hostname
-      let API_URL = `http://${hostname}:5000/likepost/${this.user_id}`
-      try {
-        fetch(API_URL, {
-          method: 'POST',
-          body: formData
-        })
-        .then(response =>{ return response.json();})
-        .then(data =>{
-          if (data == "liked") {
-            for (let i=0;i<this.posts.length;i++) {
-              if (this.posts[i].postId == postId) {
-                this.posts[i].postLiked = true;
-                this.posts[i].postTotalLikes = this.posts[i].postTotalLikes + 1;
-              }
-            }
-          }
-          else if (data == "unliked") {
-            for (let i=0;i<this.posts.length;i++) {
-              if (this.posts[i].postId == postId) {               
-                this.posts[i].postLiked = false;
-                this.posts[i].postTotalLikes = this.posts[i].postTotalLikes - 1;
-              }
-            }            
-          } 
-          else {
-            console.log(data);
-          }
-        })
-        .catch(e => {
-          console.log(e)
-        })
-      }
-      catch(error){
-        console.log(error);
-      }
-    },    
     getMentionsLoaded() {
       if (this.displayName == '') {
         alert('You need to update your display name');
@@ -620,7 +573,7 @@ export default {
       else {
         try {
           let hostname = window.location.hostname
-          let API_URL = `http://${hostname}:5000/profile/getalluser/${this.user_id}`
+          let API_URL = `http://${hostname}:5000/profile/getalluser`
           fetch(API_URL)
           .then(response => {return response.json()})
           .then(data => {
@@ -659,7 +612,7 @@ export default {
         try {
           this.createPostDialog = true;
           let hostname = window.location.hostname
-          let API_URL = `http://${hostname}:5000/profile/getallsec/${this.user_id}`
+          let API_URL = `http://${hostname}:5000/profile/getallsec`
           fetch(API_URL)
           .then(response => {return response.json()})
           .then(data => {
@@ -716,10 +669,11 @@ export default {
         }
         this.displayName = src;
         let formData = new FormData();
+        formData.append('userId', this.user_id);
         formData.append('data', 1);
         formData.append('display_name', this.displayName);
         let hostname = window.location.hostname;
-        let API_URL = `http://${hostname}:5000/profile/edit/${this.user_id}`      
+        let API_URL = `http://${hostname}:5000/profile/edit`      
         try {
           fetch(API_URL, {
             method: 'POST',
@@ -751,10 +705,11 @@ export default {
       else {
         this.about = src;
         let formData = new FormData();
+        formData.append('userId', this.user_id);
         formData.append('data', 2);
         formData.append('about', this.about);
         let hostname = window.location.hostname;
-        let API_URL = `http://${hostname}:5000/profile/edit/${this.user_id}`      
+        let API_URL = `http://${hostname}:5000/profile/edit`      
         try {
           fetch(API_URL, {
             method: 'POST',
@@ -787,10 +742,11 @@ export default {
       }
       if (this.country !== "") {
         let formData = new FormData();
+        formData.append('userId', this.user_id);
         formData.append('data', 3);
         formData.append('countryname', this.country);
         let hostname = window.location.hostname;
-        let API_URL = `http://${hostname}:5000/profile/edit/${this.user_id}`      
+        let API_URL = `http://${hostname}:5000/profile/edit`      
         try {
           fetch(API_URL, {
             method: 'POST',
@@ -821,9 +777,10 @@ export default {
             if (blob !== null) {
               formData.append('profile', blob, 'profile_pic.jpg');
             }
+            formData.append('userId', this.user_id);
             formData.append('pic', 1);
             let hostname = window.location.hostname
-            let API_URL = `http://${hostname}:5000/profile/submitimages/${this.user_id}`
+            let API_URL = `http://${hostname}:5000/profile/submitimages`
             try {
               fetch(API_URL, {
                 method: 'POST',
@@ -860,9 +817,10 @@ export default {
             if (blob !== null) {
               formData.append('cover', blob, 'cover_pic.jpg');
             }
+            formData.append('userId', this.user_id);
             formData.append('pic', 2);
             let hostname = window.location.hostname
-            let API_URL = `http://${hostname}:5000/profile/submitimages/${this.user_id}`
+            let API_URL = `http://${hostname}:5000/profile/submitimages`
             try {
               fetch(API_URL, {
                 method: 'POST',
@@ -953,12 +911,15 @@ export default {
       }      
     },
     loadPost() {
+      let formData = new FormData();
+      formData.append('userId', this.user_id);
       let hostname = window.location.hostname
-      let API_URL = `http://${hostname}:5000/getownpost/${this.user_id}`
+      let API_URL = `http://${hostname}:5000/getownpost`
       try {
         fetch(API_URL,
         {
           method: "POST",
+          body: formData
         })
         .then(response => {return response.json()})
         .then(data => {
@@ -970,8 +931,7 @@ export default {
               postProfilePic: 'data:image/png;base64, ' + data[i].profilePic,
               postDate: data[i].postDate,
               postContent: data[i].content,
-              postLiked: data[i].liked,
-              postTotalLikes: data[i].totalLikes
+              postLiked: data[i].liked
             }
             this.posts.push(object);
           }

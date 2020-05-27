@@ -139,10 +139,9 @@ export default {
     },
     likePost(postId) {
       let formData = new FormData();
-      formData.append('userId', this.user_id);
       formData.append('postId', postId);
       let hostname = window.location.hostname
-      let API_URL = `http://${hostname}:5000/likepost`
+      let API_URL = `http://${hostname}:5000/likepost/${this.user_id}`
       try {
         fetch(API_URL, {
           method: 'POST',
@@ -151,22 +150,16 @@ export default {
         .then(response =>{ return response.json();})
         .then(data =>{
           if (data == "liked") {
-            console.log(data)
-            console.log(postId)
             for (let i=0;i<this.posts.length;i++) {
               if (this.posts[i].postId == postId) {
-                console.log(postId);
                 this.posts[i].postLiked = true;
                 this.posts[i].postTotalLikes = this.posts[i].postTotalLikes + 1;
               }
             }
           }
           else if (data == "unliked") {
-            console.log(data)
-            console.log(postId)
             for (let i=0;i<this.posts.length;i++) {
-              if (this.posts[i].postId == postId) {
-                console.log(postId);                
+              if (this.posts[i].postId == postId) {               
                 this.posts[i].postLiked = false;
                 this.posts[i].postTotalLikes = this.posts[i].postTotalLikes - 1;
               }
@@ -191,15 +184,12 @@ export default {
       this.$emit('drawer')
     },    
     loadPost() {
-      let formData = new FormData();
-      formData.append('userId', this.user_id);
       let hostname = window.location.hostname
-      let API_URL = `http://${hostname}:5000/getpost`
+      let API_URL = `http://${hostname}:5000/getpost/${this.user_id}`
       try {
         fetch(API_URL,
         {
           method: 'POST',
-          body: formData
         })
         .then(response => {return response.json()})
         .then(data => {
@@ -283,7 +273,6 @@ export default {
       }      
     },
   },
-  //push again
 }
 
 </script>

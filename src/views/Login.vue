@@ -177,7 +177,7 @@ export default {
         this.user.password = this.userPassword1;
         this.$store.dispatch('auth/login', this.user).then(
           () => {
-            this.$router.push({ name: 'Watchlist'});
+            this.$router.push({ name: 'Profile'});
           },
           error => {
             console.log(error);

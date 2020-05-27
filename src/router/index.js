@@ -7,9 +7,9 @@ import NewsFeed from '../views/News'
 import Register from '../views/Register'
 import Login from '../views/Login'
 import Profile from '../views/Profile'
-import { isValidJwt } from '../utils/index.js'
+import Post from '../views/Post'
 import store from '../store'
-
+import { isValidJwt } from '../utils/index.js'
 Vue.use(VueRouter)
 
 const routes = [
@@ -46,6 +46,11 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: Profile
+  },
+  {
+    path: '/post',
+    name: 'Post',
+    component: Post
   }
 ]
 

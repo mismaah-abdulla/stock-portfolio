@@ -1,24 +1,32 @@
 # stock-app
 
-## Project setup
+## Installation
+- Install dependencies. Required after every clone.
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+- Compile and hot-reloads for development
+
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Build for Production
 
-### Lints and fixes files
+- Lint and fix files
+
 ```
 npm run lint
 ```
 
-### Customize configuration
+- Compile and minify for production
+
+```
+npm run build
+```
+
+
+## Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
